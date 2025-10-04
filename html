@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чи-Фань — Выручка в реальном времени</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
+    .card { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+    .good { color: #22c55e; }
+    .warn { color: #f59e0b; }
+    .bad { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <h1>Выручка по филиалам</h1>
+  <div id="last-update">Загрузка...</div>
+  <div id="plan-progress" class="card">
+    <h3>Прогресс по плану</h3>
+    <div id="plan-text">—</div>
+    <div id="plan-bar">[...]</div>
+  </div>
+  <div id="venues-data">
+    <h3>Круглогодичные филиалы</h3>
+    <div id="year-round"></div>
+    <h3>Сезонные филиалы</h3>
+    <div id="seasonal"></div>
+  </div>
+
+  <script>
+    const fmt = new Intl.NumberFormat('ru-RU');
+
+    function renderVenueTable(venues, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const table = document.createElement('table');
+      const header = `<tr><th>Филиал</th><th>Заказы</th><th>Выручка</th><th>Доставка</th><th>Кафе</th><th>Самовывоз</th></tr>`;
+      table.innerHTML = header;
+
+      for (const [name, data] of Object.entries(venues)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${name}</td>
+          <td>${data.total_orders}</td>
+          <td>${fmt.format(data.total_revenue)} ₽</td>
+          <td>${fmt.format(data.delivery_revenue)} ₽</td>
+          <td>${fmt.format(data.cafe_revenue)} ₽</td>
+          <td>${fmt.format(data.pickup_revenue)} ₽</td>
+        `;
+        table.appendChild(row);
+      }
+      container.appendChild(table);
+    }
+
+    function renderPlanProgress(data) {
+      const plan = data.plan || {};
+      const total = data.total || {};
+      const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
+      const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
+
+      document.getElementById('plan-text').textContent = `${fmt.format(total.total_revenue)} ₽ / ${fmt.format(plan.total_revenue)} ₽`;
+      document.getElementById('plan-bar').textContent = `[${'█'.repeat(Math.floor(revenueFulfill / 5))}${'░'.repeat(20 - Math.floor(revenueFulfill / 5))}] ${revenueFulfill.toFixed(1)}%`;
+    }
+
+    async function load() {
+      try {
+        const response = await fetch('data/revenue.json');
+        const data = await response.json();
+        document.getElementById('last-update').textContent = `Последнее обновление: ${data.time} (${data.date})`;
+        renderPlanProgress(data);
+        renderVenueTable(data.year_round, 'year-round');
+        renderVenueTable(data.seasonal, 'seasonal');
+      } catch (e) {
+        console.error("Ошибка загрузки данных:", e);
+      }
+    }
+
+    // Загрузка при старте и каждые 5 минут
+    load();
+    setInterval(load, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
