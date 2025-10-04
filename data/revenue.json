@@ -1,26 +1,26 @@
 {
   "date": "04.10.2025",
-  "time": "19:13",
+  "time": "19:14",
   "year_round": {
     "Красота": {
-      "total_orders": 71,
-      "delivery_orders": 33,
-      "pickup_orders": 8,
-      "cafe_orders": 30,
-      "total_revenue": 75507.0,
-      "delivery_revenue": 52588.0,
-      "pickup_revenue": 5131.0,
-      "cafe_revenue": 17788.0
+      "total_orders": 74,
+      "delivery_orders": 34,
+      "pickup_orders": 9,
+      "cafe_orders": 31,
+      "total_revenue": 79810.0,
+      "delivery_revenue": 53907.0,
+      "pickup_revenue": 7216.0,
+      "cafe_revenue": 18687.0
     },
     "Тобольская": {
-      "total_orders": 93,
-      "delivery_orders": 24,
-      "pickup_orders": 19,
-      "cafe_orders": 50,
-      "total_revenue": 79251.0,
-      "delivery_revenue": 36001.0,
-      "pickup_revenue": 12528.0,
-      "cafe_revenue": 30722.0
+      "total_orders": 96,
+      "delivery_orders": 25,
+      "pickup_orders": 20,
+      "cafe_orders": 51,
+      "total_revenue": 81564.0,
+      "delivery_revenue": 37231.0,
+      "pickup_revenue": 12893.0,
+      "cafe_revenue": 31440.0
     },
     "Чуркин": {
       "total_orders": 135,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 1026,
-    "total_revenue": 642777.0
+    "total_orders": 1032,
+    "total_revenue": 649393.0
   },
   "plan": {
     "total_revenue": 200000,
