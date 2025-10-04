@@ -1,22 +1,22 @@
 {
   "date": "05.10.2025",
-  "time": "00:43",
+  "time": "00:44",
   "year_round": {
     "Красота": {
-      "total_orders": 4,
-      "delivery_orders": 4,
+      "total_orders": 7,
+      "delivery_orders": 6,
       "pickup_orders": 0,
-      "cafe_orders": 0,
-      "total_revenue": 6690.0,
-      "delivery_revenue": 6690.0,
+      "cafe_orders": 1,
+      "total_revenue": 11649.0,
+      "delivery_revenue": 10592.0,
       "pickup_revenue": 0,
-      "cafe_revenue": 0
+      "cafe_revenue": 1057.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 4,
-    "total_revenue": 6690.0
+    "total_orders": 7,
+    "total_revenue": 11649.0
   },
   "plan": {
     "total_revenue": 200000,
