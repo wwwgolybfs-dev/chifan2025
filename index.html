@@ -39,7 +39,7 @@
             background: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
-            transition: background 0.9s ease, color 0.9s ease;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -68,7 +68,7 @@
             padding: 10px;
             border-radius: 50%;
             cursor: pointer;
-            transition: background 0.9s ease;
+            transition: background 0.3s ease;
         }
 
         .theme-toggle:hover {
@@ -101,7 +101,7 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.9s ease;
+            transition: background 0.3s ease;
             font-size: 0.9rem;
         }
 
@@ -122,7 +122,7 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             text-align: center;
-            transition: transform 0.9s ease, box-shadow 0.9s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: slideIn 0.5s ease;
             opacity: 0;
             transform: translateY(20px);
@@ -221,7 +221,7 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: var(--shadow);
-            transition: box-shadow 0.9s ease;
+            transition: box-shadow 0.3s ease;
             cursor: pointer;
         }
 
@@ -284,7 +284,7 @@
             padding: 10px 20px;
             border-radius: 8px;
             opacity: 0;
-            transition: opacity 0.9s ease;
+            transition: opacity 0.3s ease;
             z-index: 1000;
         }
 
@@ -358,7 +358,7 @@
         
         <div class="date-range-selector">
             <label for="start-date">Начальная дата:</label>
-            <input type="date" id="start-date" value="2025-10-04">
+            <input type="date" id="start-date" value="2025-10-05">
             <label for="end-date">Конечная дата:</label>
             <input type="date" id="end-date" value="2025-10-05">
             <button onclick="loadCustomData()"><i class="fas fa-download"></i> Загрузить</button>
@@ -417,14 +417,34 @@
     <script>
         let barChart1, barChart2;
         let dataCache = {}; // Кэш данных
-        let currentStartDate = '2025-10-04';
+        let currentStartDate = '2025-10-05';
         let currentEndDate = '2025-10-05';
 
-        // --- МОК-ДАННЫЕ ДЛЯ ДЕМОНСТРАЦИИ РАЗНЫХ ДНЕЙ ---
+        // --- МОК-ДАННЫЕ: ВАШ JSON для 4 октября + ДАННЫЕ ДЛЯ 5 октября ---
         const dailyMockData = {
-            // Дневной план 500,000 ₽ на всю сеть, чтобы было 15 млн в месяц.
-            // Если нужен план 1.5 млн в месяц, ставьте total_revenue: 50000.
-            "daily_network_plan": 500000, 
+            // ЕЖЕДНЕВНЫЙ ПЛАН СЕТИ ПО УМОЛЧАНИЮ (1.5 млн / 30 дней)
+            "daily_network_plan": 50000, 
+            
+            // ДАННЫЕ ЗА 4 ОКТЯБРЯ (Из вашего последнего запроса)
+            "2025-10-04": {
+                "date": "2025-10-04", "time": "23:59",
+                "year_round": {
+                    "Красота": { "total_orders": 102, "delivery_orders": 41, "pickup_orders": 12, "cafe_orders": 49, "total_revenue": 99683.0, "delivery_revenue": 63064.0, "pickup_revenue": 9142.0, "cafe_revenue": 27477.0 },
+                    "Тобольская": { "total_orders": 140, "delivery_orders": 44, "pickup_orders": 24, "cafe_orders": 72, "total_revenue": 129540.0, "delivery_revenue": 71443.0, "pickup_revenue": 14596.0, "cafe_revenue": 43501.0 },
+                    "Чуркин": { "total_orders": 143, "delivery_orders": 0, "pickup_orders": 15, "cafe_orders": 128, "total_revenue": 86801.0, "delivery_revenue": 0, "pickup_revenue": 10701.0, "cafe_revenue": 76100.0 },
+                    "Светланская": { "total_orders": 108, "delivery_orders": 5, "pickup_orders": 19, "cafe_orders": 84, "total_revenue": 71195.0, "delivery_revenue": 8940.0, "pickup_revenue": 14352.0, "cafe_revenue": 47903.0 },
+                    "Парк": { "total_orders": 151, "delivery_orders": 0, "pickup_orders": 2, "cafe_orders": 149, "total_revenue": 72556.0, "delivery_revenue": 0, "pickup_revenue": 947.0, "cafe_revenue": 71609.0 },
+                    "Тихая": { "total_orders": 89, "delivery_orders": 12, "pickup_orders": 28, "cafe_orders": 49, "total_revenue": 70224.0, "delivery_revenue": 18946.0, "pickup_revenue": 17427.0, "cafe_revenue": 33851.0 }
+                },
+                "seasonal": {
+                    "Юбилейный": { "total_orders": 592, "delivery_orders": 0, "pickup_orders": 3, "cafe_orders": 589, "total_revenue": 300516.0, "delivery_revenue": 0, "pickup_revenue": 989.0, "cafe_revenue": 299527.0 },
+                    "Кунгас": { "total_orders": 117, "delivery_orders": 0, "pickup_orders": 2, "cafe_orders": 115, "total_revenue": 60034.0, "delivery_revenue": 0, "pickup_revenue": 1178.0, "cafe_revenue": 58856.0 },
+                    "МГУ": { "total_orders": 57, "delivery_orders": 0, "pickup_orders": 2, "cafe_orders": 55, "total_revenue": 30898.0, "delivery_revenue": 0, "pickup_revenue": 685.0, "cafe_revenue": 30213.0 }
+                },
+                "plan": { "total_revenue": 500000, "total_orders": 1000 } // Исправлено на 500к для одного дня
+            },
+            
+            // ДАННЫЕ ЗА 5 ОКТЯБРЯ (Для теста "Сегодня")
             "2025-10-05": {
                 "date": "2025-10-05", "time": "15:00",
                 "year_round": {
@@ -439,23 +459,6 @@
                     "Кунгас": { "total_orders": 90, "delivery_orders": 0, "pickup_orders": 1, "cafe_orders": 89, "total_revenue": 48007.0, "delivery_revenue": 0, "pickup_revenue": 588.0, "cafe_revenue": 47419.0 },
                     "МГУ": { "total_orders": 34, "delivery_orders": 0, "pickup_orders": 6, "cafe_orders": 28, "total_revenue": 15767.0, "delivery_revenue": 0, "pickup_revenue": 2437.0, "cafe_revenue": 13330.0 },
                     "Юбилейный": { "total_orders": 284, "delivery_orders": 0, "pickup_orders": 1, "cafe_orders": 283, "total_revenue": 148362.0, "delivery_revenue": 0, "pickup_revenue": 169.0, "cafe_revenue": 148193.0 }
-                },
-                "plan": { "total_revenue": 500000, "total_orders": 1000 } // Дневной план 500,000 ₽ (на сеть)
-            },
-            "2025-10-04": {
-                "date": "2025-10-04", "time": "23:59",
-                "year_round": {
-                    "Светланская": { "total_orders": 100, "delivery_orders": 10, "pickup_orders": 20, "cafe_orders": 70, "total_revenue": 65000.0, "delivery_revenue": 15000.0, "pickup_revenue": 12000.0, "cafe_revenue": 38000.0 },
-                    "Парк": { "total_orders": 70, "delivery_orders": 5, "pickup_orders": 5, "cafe_orders": 60, "total_revenue": 45000.0, "delivery_revenue": 5000.0, "pickup_revenue": 2000.0, "cafe_revenue": 38000.0 },
-                    "Красота": { "total_orders": 150, "delivery_orders": 80, "pickup_orders": 30, "cafe_orders": 40, "total_revenue": 160000.0, "delivery_revenue": 110000.0, "pickup_revenue": 20000.0, "cafe_revenue": 30000.0 },
-                    "Тобольская": { "total_orders": 120, "delivery_orders": 50, "pickup_orders": 20, "cafe_orders": 50, "total_revenue": 125000.0, "delivery_revenue": 70000.0, "pickup_revenue": 20000.0, "cafe_revenue": 35000.0 },
-                    "Тихая": { "total_orders": 110, "delivery_orders": 25, "pickup_orders": 25, "cafe_orders": 60, "total_revenue": 95000.0, "delivery_revenue": 35000.0, "pickup_revenue": 15000.0, "cafe_revenue": 45000.0 },
-                    "Чуркин": { "total_orders": 90, "delivery_orders": 5, "pickup_orders": 15, "cafe_orders": 70, "total_revenue": 60000.0, "delivery_revenue": 5000.0, "pickup_revenue": 8000.0, "cafe_revenue": 47000.0 }
-                },
-                "seasonal": {
-                    "Кунгас": { "total_orders": 100, "delivery_orders": 5, "pickup_orders": 2, "cafe_orders": 93, "total_revenue": 55000.0, "delivery_revenue": 5000.0, "pickup_revenue": 600.0, "cafe_revenue": 49400.0 },
-                    "МГУ": { "total_orders": 40, "delivery_orders": 0, "pickup_orders": 8, "cafe_orders": 32, "total_revenue": 18000.0, "delivery_revenue": 0, "pickup_revenue": 3000.0, "cafe_revenue": 15000.0 },
-                    "Юбилейный": { "total_orders": 300, "delivery_orders": 5, "pickup_orders": 2, "cafe_orders": 293, "total_revenue": 155000.0, "delivery_revenue": 5000.0, "pickup_revenue": 200.0, "cafe_revenue": 149800.0 }
                 },
                 "plan": { "total_revenue": 500000, "total_orders": 1000 }
             }
@@ -478,14 +481,16 @@
         
         function updateChartTheme() {
             const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            const updateOptions = { scales: { x: { title: { color: textColor }, ticks: { color: textColor } }, y: { title: { color: textColor }, ticks: { color: textColor } } }, plugins: { legend: { labels: { color: textColor } } } };
+            
             if (barChart1) {
-                const options = { scales: { x: { title: { color: textColor }, ticks: { color: textColor } }, y: { title: { color: textColor }, ticks: { color: textColor } } }, plugins: { legend: { labels: { color: textColor } } } };
-                barChart1.options = { ...barChart1.options, ...options };
+                barChart1.options.scales = updateOptions.scales;
+                barChart1.options.plugins.legend.labels.color = textColor;
                 barChart1.update();
             }
             if (barChart2) {
-                 const options = { scales: { x: { title: { color: textColor }, ticks: { color: textColor } }, y: { title: { color: textColor }, ticks: { color: textColor } } }, plugins: { legend: { labels: { color: textColor } } } };
-                barChart2.options = { ...barChart2.options, ...options };
+                barChart2.options.scales = updateOptions.scales;
+                barChart2.options.plugins.legend.labels.color = textColor;
                 barChart2.update();
             }
         }
@@ -507,11 +512,18 @@
 
         // --- ЛОГИКА ДАННЫХ И РАСЧЕТОВ ---
         
-        // ВАЖНО: В реальном приложении эта функция должна суммировать данные
-        // по всем дням в диапазоне [startDateStr, endDateStr]. 
-        // Здесь для демонстрации разных данных мы просто берем данные за КОНЕЧНУЮ дату.
+        // Вспомогательная функция для получения количества дней в периоде
+        function getDiffDays(startDateStr, endDateStr) {
+             const diffTime = Math.abs(new Date(endDateStr) - new Date(startDateStr));
+             // +1, чтобы включить начальную и конечную дату (для одного дня будет 1)
+             return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        // Вспомогательная функция для получения данных за один день
         function getMockDataForDate(dateStr) {
             const baseData = dailyMockData[dateStr];
+            
+            // Проверка наличия данных
             if (!baseData) {
                 return {
                     date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
@@ -530,8 +542,13 @@
                 calculatedOrders += stats.total_orders;
             });
             
+            // Используем план из JSON, если он есть, иначе - дефолтный план сети
+            const planRevenue = baseData.plan?.total_revenue || dailyMockData.daily_network_plan;
+            const planOrders = baseData.plan?.total_orders || 1000;
+            
             return {
                 ...baseData,
+                plan: { total_revenue: planRevenue, total_orders: planOrders },
                 total: {
                     total_revenue: calculatedRevenue,
                     total_orders: calculatedOrders
@@ -540,49 +557,64 @@
         }
 
         async function loadData(startDateStr, endDateStr) {
-            // Имитация загрузки: Если даты разные, суммируем мок-данные.
-            // Т.к. у нас только 2 мок-дня, мы можем их сложить.
-            // В реальном приложении данные за период должны приходить с сервера.
-            
-            const startData = getMockDataForDate(startDateStr);
-            const endData = getMockDataForDate(endDateStr);
-            
-            // Если start и end одинаковы, используем только один день.
-            if (startDateStr === endDateStr) {
-                return endData;
-            }
+            const diffDays = getDiffDays(startDateStr, endDateStr);
+            let combinedData = {
+                year_round: {}, seasonal: {}, 
+                total: { total_revenue: 0, total_orders: 0 },
+                date: `${startDateStr} - ${endDateStr}`,
+                time: "23:59"
+            };
 
-            // Если даты разные, суммируем данные
-            let combinedData = JSON.parse(JSON.stringify(endData)); // Клонируем структуру
+            // Генерация списка дат в диапазоне
+            const dateList = [];
+            let currentDate = new Date(startDateStr);
+            const endDate = new Date(endDateStr);
+            while (currentDate <= endDate) {
+                dateList.push(currentDate.toISOString().split('T')[0]);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
             
-            // Упрощенное сложение данных только для year_round и total.
-            // Этого достаточно для демонстрации многодневного отчета.
-            for (const venue in combinedData.year_round) {
-                if (startData.year_round[venue]) {
-                    combinedData.year_round[venue].total_revenue += startData.year_round[venue].total_revenue;
-                    combinedData.year_round[venue].total_orders += startData.year_round[venue].total_orders;
-                    // и т.д. для delivery, pickup, cafe
+            let totalDailyPlan = 0;
+
+            // Суммирование данных
+            dateList.forEach(dateStr => {
+                const dailyData = getMockDataForDate(dateStr);
+                
+                // Суммирование общей выручки и заказов
+                combinedData.total.total_revenue += dailyData.total.total_revenue;
+                combinedData.total.total_orders += dailyData.total.total_orders;
+                
+                // Суммирование ежедневного плана для расчета плана периода
+                totalDailyPlan += dailyData.plan.total_revenue;
+
+                // Суммирование данных по филиалам
+                const venuesToCombine = { ...dailyData.year_round, ...dailyData.seasonal };
+                for (const venue in venuesToCombine) {
+                    const stats = venuesToCombine[venue];
+                    if (!combinedData.year_round[venue] && !combinedData.seasonal[venue]) {
+                        // Определяем, куда добавить новый филиал
+                        const target = dailyData.year_round[venue] ? combinedData.year_round : combinedData.seasonal;
+                        target[venue] = { ...stats };
+                    } else {
+                        // Если филиал уже есть (в year_round или seasonal), суммируем метрики
+                        const existingStats = combinedData.year_round[venue] || combinedData.seasonal[venue];
+                        for (const key in stats) {
+                            if (typeof stats[key] === 'number') {
+                                existingStats[key] += stats[key];
+                            }
+                        }
+                    }
                 }
-            }
-            for (const venue in combinedData.seasonal) {
-                 if (startData.seasonal[venue]) {
-                    combinedData.seasonal[venue].total_revenue += startData.seasonal[venue].total_revenue;
-                    combinedData.seasonal[venue].total_orders += startData.seasonal[venue].total_orders;
-                }
-            }
+            });
 
-            combinedData.total.total_revenue += startData.total.total_revenue;
-            combinedData.total.total_orders += startData.total.total_orders;
-            combinedData.date = `${startData.date} - ${endData.date}`;
-
-            // Рассчитываем план для периода: Дневной план * количество дней
-            const diffTime = Math.abs(new Date(endDateStr) - new Date(startDateStr));
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            combinedData.plan.total_revenue = dailyMockData.daily_network_plan * diffDays;
-            combinedData.plan.total_orders = combinedData.plan.total_orders * diffDays;
+            // Расчет плана для всего периода: daily_network_plan * diffDays (Или сумма всех daily plans, что уже сделано)
+            combinedData.plan = {
+                total_revenue: totalDailyPlan,
+                total_orders: 1000 * diffDays // Упрощенный расчет для заказов
+            };
             
             return new Promise(resolve => {
-                setTimeout(() => resolve(combinedData), 500);
+                setTimeout(() => resolve(combinedData), 100);
             });
         }
 
@@ -599,7 +631,7 @@
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
-                    <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
+                    <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
                     <div class="metric-label">Выручка за период</div>
                 </div>
                 <div class="metric-card fade-in">
@@ -628,8 +660,8 @@
                 bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
                 bar.style.width = Math.min(revenueFulfill, 100) + '%';
                 progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
-                currentValue.textContent = `${fmt.format(total.total_revenue)} ₽`;
-                planValue.textContent = `${fmt.format(plan.total_revenue)} ₽`;
+                currentValue.textContent = `${fmt.format(total.total_revenue.toFixed(0))} ₽`;
+                planValue.textContent = `${fmt.format(plan.total_revenue.toFixed(0))} ₽`;
             }
 
             if (revenueFulfill > 100) {
@@ -639,9 +671,9 @@
 
         function renderVenueCard(venue, stats) {
             // ЕЖЕДНЕВНЫЕ ПЛАНЫ ПО УМОЛЧАНИЮ (1.5 млн / 30 дней = 50 000 ₽ / день)
-            const dailyPlanBase = 50000; 
+            const dailyPlanBase = dailyMockData.daily_network_plan; 
             
-            // Индивидуальные дневные планы (замените на ваши реальные данные)
+            // Индивидуальные дневные планы 
             const fixedDailyPlans = {
                 "Тобольская": 70000,
                 "Тихая": 55000,
@@ -650,8 +682,7 @@
             const dailyPlan = fixedDailyPlans[venue] || dailyPlanBase;
 
             // Расчет количества дней в текущем периоде
-            const diffTime = Math.abs(new Date(currentEndDate) - new Date(currentStartDate));
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            const diffDays = getDiffDays(currentStartDate, currentEndDate);
             
             // Расчетный план для филиала за ВЕСЬ период
             const planRevenueForPeriod = dailyPlan * diffDays;
@@ -662,16 +693,16 @@
             return `
                 <div class="venue-card fade-in">
                     <div class="venue-name">${venue}</div>
-                    <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(stats.total_revenue)} ₽</span></div>
+                    <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(stats.total_revenue.toFixed(0))} ₽</span></div>
                     <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders}</span></div>
-                    <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format(stats.delivery_revenue || 0)} ₽</span></div>
-                    <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format(stats.cafe_revenue || 0)} ₽</span></div>
-                    <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format(stats.pickup_revenue || 0)} ₽</span></div>
+                    <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format(stats.delivery_revenue.toFixed(0) || 0)} ₽</span></div>
+                    <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format(stats.cafe_revenue.toFixed(0) || 0)} ₽</span></div>
+                    <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format(stats.pickup_revenue.toFixed(0) || 0)} ₽</span></div>
                     <div style="margin-top: 10px;">
                         <div class="progress-bar" style="height: 8px;">
                             <div class="progress-fill ${statusClass}" style="width: ${Math.min(fulfill, 100)}%;"></div>
                         </div>
-                        <small>${fulfill.toFixed(1)}% от плана (${fmt.format(planRevenueForPeriod)} ₽)</small>
+                        <small>${fulfill.toFixed(1)}% от плана (${fmt.format(planRevenueForPeriod.toFixed(0))} ₽)</small>
                     </div>
                 </div>
             `;
@@ -693,7 +724,7 @@
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats)).join('');
         }
 
-        // --- ФУНКЦИИ ГРАФИКОВ (Перенесены сюда, чтобы избежать ReferenceError) ---
+        // --- ФУНКЦИИ ГРАФИКОВ ---
         
         function renderCharts(data) {
             const allVenues = { ...data.year_round, ...data.seasonal };
@@ -771,9 +802,14 @@
             const endDate = document.getElementById('end-date').value;
             
             if (!startDate || !endDate) {
-                showToast('Пожалуйста, выберите начальную и конечную дату', 'error');
+                // Если даты не выбраны, устанавливаем "Сегодня"
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('start-date').value = today;
+                document.getElementById('end-date').value = today;
+                load(today, today);
                 return;
             }
+
             if (new Date(startDate) > new Date(endDate)) {
                 showToast('Начальная дата не может быть позже конечной', 'error');
                 return;
@@ -787,7 +823,7 @@
             load(startDate, endDate);
         }
 
-        async function load(startDateStr = '2025-10-05', endDateStr = '2025-10-05') {
+        async function load(startDateStr, endDateStr) {
             const updateEl = document.getElementById('last-update');
             if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
             
@@ -798,12 +834,17 @@
                 const data = await loadData(startDateStr, endDateStr); 
                 dataCache = data; 
 
-                if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
+                // Форматирование даты для отображения
+                const dateDisplay = (startDateStr === endDateStr) ? 
+                    new Date(startDateStr).toLocaleDateString('ru-RU') : 
+                    `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
+                    
+                if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${dateDisplay})`;
 
                 renderMetrics(data);
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
-                renderCharts(data); // Теперь эта функция определена
+                renderCharts(data); 
                 
                 updateChartTheme();
 
@@ -816,7 +857,7 @@
                 showToast('Ошибка загрузки данных', 'error');
             } finally {
                 document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
-                    setTimeout(() => el.classList.add('fade-in'), index * 100);
+                    setTimeout(() => el.classList.add('fade-in'), index * 50);
                 });
             }
         }
@@ -849,8 +890,11 @@
             let y = 25;
             const venues = filter === 'year-round' ? dataCache.year_round : filter === 'seasonal' ? dataCache.seasonal : { ...dataCache.year_round, ...dataCache.seasonal };
             
-            Object.entries(venues || {}).forEach(([v, s]) => {
-                const text = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
+            // Сортировка по выручке
+            const sortedVenues = Object.entries(venues || {}).sort((a, b) => b[1].total_revenue - a[1].total_revenue);
+
+            sortedVenues.forEach(([v, s]) => {
+                const text = `${v}: Выручка ${fmt.format(s.total_revenue.toFixed(0))} ₽, Заказы ${s.total_orders}`;
                 doc.text(escapeText(text), 10, y);
                 y += 7;
                 if (y > 280) {
@@ -859,7 +903,7 @@
                 }
             });
 
-            doc.save(`chifan_report_${dataCache.date.split(' ')[0] || 'today'}_${filter}.pdf`);
+            doc.save(`chifan_report_${new Date(currentStartDate).toLocaleDateString('ru-RU').replace(/\./g, '_')}_${filter}.pdf`);
             showToast('PDF экспортирован!');
         }
 
@@ -869,10 +913,10 @@
         
         // Устанавливаем сегодняшнюю дату по умолчанию
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('start-date').value = '2025-10-05';
-        document.getElementById('end-date').value = '2025-10-05';
+        document.getElementById('start-date').value = today;
+        document.getElementById('end-date').value = today;
         
-        load('2025-10-05', '2025-10-05'); 
+        load(today, today); 
         
     </script>
 </body>
