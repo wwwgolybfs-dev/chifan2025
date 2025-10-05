@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
       --primary-color: #3b82f6;
@@ -309,9 +310,9 @@
     <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
     
     <div class="export-buttons">
-      <button class="export-btn" onclick="exportCSV('all')"><i class="fas fa-download"></i> Экспорт Все</button>
-      <button class="export-btn" onclick="exportCSV('year-round')"><i class="fas fa-download"></i> Круглогодичные</button>
-      <button class="export-btn" onclick="exportCSV('seasonal')"><i class="fas fa-download"></i> Сезонные</button>
+      <button class="export-btn" onclick="exportPDF('all')"><i class="fas fa-file-pdf"></i> Экспорт PDF (Все)</button>
+      <button class="export-btn" onclick="exportPDF('year-round')"><i class="fas fa-file-pdf"></i> PDF Круглогодичные</button>
+      <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
     </div>
 
     <div class="metrics-grid" id="metrics"></div>
@@ -424,7 +425,8 @@
     }
 
     function renderVenueCard(venue, stats, type = 'year-round') {
-      const avgPlanPerVenue = dataCache.data.plan.total_revenue / (Object.keys(dataCache.data.year_round).length + Object.keys(dataCache.data.seasonal).length);
+      const totalVenues = Object.keys(dataCache.data.year_round).length + Object.keys(dataCache.data.seasonal).length;
+      const avgPlanPerVenue = dataCache.data.plan.total_revenue / totalVenues;
       const fulfill = stats.total_revenue / avgPlanPerVenue * 100;
       const statusClass = getStatusClass(fulfill);
 
@@ -541,23 +543,657 @@
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    function exportCSV(filter = 'all') {
-      console.log('Exporting CSV with filter:', filter);  // Debug
+    function exportPDF(filter = 'all') {
+      console.log('Exporting PDF with filter:', filter);  // Debug
       if (!dataCache.data) {
         showToast('Нет данных для экспорта', 'error');
         return;
       }
-      let csv = 'Филиал,Заказы,Выручка,Доставка,Кафе,Самовывоз\n';
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('Чи-Фань Выручка', 10, 10);
+      doc.text(`Дата: ${dataCache.data.date} ${dataCache.data.time}`, 10, 20);
+      
+      let y = 30;
       const venues = filter === 'year-round' ? dataCache.data.year_round : filter === 'seasonal' ? dataCache.data.seasonal : { ...dataCache.data.year_round, ...dataCache.data.seasonal };
       Object.entries(venues || {}).forEach(([v, s]) => {
-        csv += `"${v}",${s.total_orders},${s.total_revenue},${s.delivery_revenue},${s.cafe_revenue},${s.pickup_revenue}\n`;
+        doc.text(`${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`, 10, y);
+        y += 10;
       });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `chifan_${dataCache.data.date || 'today'}.csv`; a.click();
-      URL.revokeObjectURL(url);
-      showToast('CSV экспортирован!');
+      
+      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
+      showToast('PDF экспортирован!');
+    }
+
+    async function load() {
+      const updateEl = document.getElementById('last-update');
+      if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+      
+      try {
+        const response = await fetch('data/revenue.json', { cache: 'no-cache' });  // No cache for fresh data
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const data = await response.json();
+        console.log('Loaded data:', data);  // Debug full JSON
+        dataCache.data = data;
+        
+        if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
+        
+        renderMetrics(data);
+        renderVenues(data, 'year-round');
+        renderVenues(data, 'seasonal');
+        renderCharts(data);
+        renderHeatmap(data);
+        showToast('Данные обновлены!');
+      } catch (e) {
+        console.error("Ошибка загрузки:", e);
+        if (updateEl) updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+        document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
+        document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+        document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+        showToast('Ошибка загрузки данных', 'error');
+      } finally {
+        // Fade-in animation for cards
+        document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
+          setTimeout(() => el.classList.add('fade-in'), index * 100);
+        });
+        window.scrollTo(0, 0);  // Scroll to top on update
+      }
+    }
+
+    // Инициализация
+    if (localStorage.getItem('theme') === 'dark') toggleTheme();
+    load();
+    setInterval(load, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
+``````html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чи-Фань — Выручка в реальном времени</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+
+    .theme-toggle {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: #2563eb;
+    }
+
+    #last-update {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .export-btn {
+      background: var(--success-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .export-btn:hover {
+      background: #059669;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: slideIn 0.5s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .metric-card.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .metric-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 5px;
+    }
+
+    .metric-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .progress-container {
+      margin: 20px 0;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background: var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      transition: width 1s ease;
+      border-radius: 10px;
+    }
+
+    .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #059669); }
+    .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
+    .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
+
+    .progress-text {
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .venues-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .venue-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .venue-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .venue-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .venue-metric {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .venue-metric-value {
+      font-weight: 500;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .heatmap {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+
+    .heatmap-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .heatmap-cell {
+      padding: 8px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      transition: background 0.3s ease;
+    }
+
+    .heatmap-cell:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .export-btn {
+      background: var(--success-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .export-btn:hover {
+      background: #059669;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .venues-grid { grid-template-columns: 1fr; }
+      body { padding: 10px; }
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .error-msg {
+      color: var(--danger-color);
+      text-align: center;
+      padding: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-utensils"></i> Чи-Фань — Выручка в реальном времени</h1>
+      <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+    </header>
+    <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
+    
+    <div class="export-buttons">
+      <button class="export-btn" onclick="exportPDF('all')"><i class="fas fa-file-pdf"></i> Экспорт PDF (Все)</button>
+      <button class="export-btn" onclick="exportPDF('year-round')"><i class="fas fa-file-pdf"></i> PDF Круглогодичные</button>
+      <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
+    </div>
+
+    <div class="metrics-grid" id="metrics"></div>
+
+    <div class="progress-container">
+      <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
+      <div class="progress-bar">
+        <div id="plan-bar" class="progress-fill"></div>
+      </div>
+      <div id="progress-text" class="progress-text">0%</div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-container">
+        <h4>Доля выручки по филиалам</h4>
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h4>Выручка по типам</h4>
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-building"></i> Круглогодичные филиалы</h3>
+      <div class="venues-grid" id="year-round"></div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-leaf"></i> Сезонные филиалы</h3>
+      <div class="venues-grid" id="seasonal"></div>
+    </div>
+
+    <div class="heatmap">
+      <h3><i class="fas fa-clock"></i> Heatmap по часам (сегодня)</h3>
+      <table class="heatmap-table" id="heatmap"></table>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script>
+    let pieChart, barChart;
+    let dataCache = {};  // Кэш данных
+
+    const fmt = new Intl.NumberFormat('ru-RU');
+
+    function toggleTheme() {
+      const body = document.body;
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      const icon = document.querySelector('.theme-toggle i');
+      icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    function getStatusClass(fulfill) {
+      if (fulfill >= 100) return 'good';
+      if (fulfill >= 80) return 'warn';
+      return 'bad';
+    }
+
+    function renderMetrics(data) {
+      const total = data.total || { total_revenue: 0, total_orders: 0 };
+      const plan = data.plan || { total_revenue: 0, total_orders: 0 };
+      const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
+      const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
+
+      console.log('Metrics data:', { total, plan, revenueFulfill, ordersFulfill });  // Debug
+
+      const metrics = document.getElementById('metrics');
+      if (!metrics) return;
+      metrics.innerHTML = `
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
+          <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
+          <div class="metric-label">Выручка сегодня</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="metric-value">${total.total_orders}</div>
+          <div class="metric-label">Заказы</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="metric-value">${revenueFulfill.toFixed(1)}%</div>
+          <div class="metric-label">Прогресс по выручке</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-percentage"></i></div>
+          <div class="metric-value">${ordersFulfill.toFixed(1)}%</div>
+          <div class="metric-label">Прогресс по заказам</div>
+        </div>
+      `;
+
+      // Прогресс-бар
+      const bar = document.getElementById('plan-bar');
+      const progressText = document.getElementById('progress-text');
+      if (bar && progressText) {
+        bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
+        bar.style.width = Math.min(revenueFulfill, 100) + '%';
+        progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+      }
+
+      // Confetti если >100%
+      if (revenueFulfill > 100) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+
+    function renderVenueCard(venue, stats, type = 'year-round') {
+      const totalVenues = Object.keys(dataCache.data.year_round || {}).length + Object.keys(dataCache.data.seasonal || {}).length;
+      const avgPlanPerVenue = dataCache.data.plan.total_revenue / (totalVenues || 1);
+      const fulfill = stats.total_revenue / avgPlanPerVenue * 100;
+      const statusClass = getStatusClass(fulfill);
+
+      return `
+        <div class="venue-card fade-in">
+          <div class="venue-name">${venue}</div>
+          <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(stats.total_revenue)} ₽</span></div>
+          <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders}</span></div>
+          <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format(stats.delivery_revenue)} ₽</span></div>
+          <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format(stats.cafe_revenue)} ₽</span></div>
+          <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format(stats.pickup_revenue)} ₽</span></div>
+          <div style="margin-top: 10px;">
+            <div class="progress-bar" style="height: 8px;">
+              <div class="progress-fill ${statusClass}" style="width: ${Math.min(fulfill, 100)}%;"></div>
+            </div>
+            <small>${fulfill.toFixed(1)}% от плана</small>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVenues(data, containerId) {
+      console.log(`Rendering ${containerId}:`, data);  // Debug
+      const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
+      const venues = data[key] || {};
+      const container = document.getElementById(containerId);
+      if (!container) {
+        console.error('Container not found:', containerId);
+        return;
+      }
+      if (Object.keys(venues).length === 0) {
+        container.innerHTML = '<div class="error-msg">Нет данных по филиалам</div>';
+        console.warn('No venues data for', key);
+        return;
+      }
+      const sortedVenues = Object.entries(venues).sort((a, b) => b[1].total_revenue - a[1].total_revenue);
+      container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, containerId)).join('');
+    }
+
+    function renderCharts(data) {
+      console.log('Rendering charts with data:', data);  // Debug
+      const allVenues = { ...data.year_round, ...data.seasonal };
+      const labels = Object.keys(allVenues);
+      const revenues = labels.map(l => allVenues[l].total_revenue || 0);
+      
+      // Pie
+      const ctxPie = document.getElementById('pieChart')?.getContext('2d');
+      if (ctxPie && labels.length > 0) {
+        if (pieChart) pieChart.destroy();
+        pieChart = new Chart(ctxPie, {
+          type: 'pie',
+          data: { labels, datasets: [{ data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
+          options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+      } else {
+        console.warn('No data for pie chart');
+      }
+
+      // Bar
+      const types = ['delivery_revenue', 'cafe_revenue', 'pickup_revenue'];
+      const typeData = types.map(t => {
+        let sum = 0;
+        Object.values(allVenues).forEach(s => sum += s[t] || 0);
+        return sum;
+      });
+      const ctxBar = document.getElementById('barChart')?.getContext('2d');
+      if (ctxBar && typeData.some(d => d > 0)) {
+        if (barChart) barChart.destroy();
+        barChart = new Chart(ctxBar, {
+          type: 'bar',
+          data: { labels: ['Доставка', 'Кафе', 'Самовывоз'], datasets: [{ label: 'Выручка ₽', data: typeData, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'] }] },
+          options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+      } else {
+        console.warn('No data for bar chart');
+      }
+    }
+
+    function renderHeatmap(data) {
+      console.log('Rendering heatmap with data:', data);  // Debug
+      const table = document.getElementById('heatmap');
+      if (!table) return;
+      const allVenues = { ...data.year_round, ...data.seasonal };
+      const venues = Object.keys(allVenues);
+      let html = '<tr><th>Час</th>' + venues.map(v => `<th>${v}</th>`).join('') + '</tr>';
+      const hourlyData = {};
+      // Агрегация по HourClose (предполагая raw data; если нет — mock)
+      // Для реального: если JSON имеет "raw_rows": [ { "HourClose": 10, "RestorauntGroup": "Красота", "DishDiscountSumInt": 500 } ]
+      (data.raw_rows || []).forEach(row => {
+        const hour = row.HourClose || Math.floor(Math.random() * 24);
+        const venue = rename_venue(row.RestorauntGroup);
+        if (!hourlyData[hour]) hourlyData[hour] = {};
+        hourlyData[hour][venue] = (hourlyData[hour][venue] || 0) + row.DishDiscountSumInt;
+      });
+      for (let hour = 0; hour < 24; hour++) {
+        html += `<tr><td>${hour}:00</td>`;
+        venues.forEach(venue => {
+          const revenue = hourlyData[hour]?.[venue] || Math.random() * 5000;  // Fallback mock
+          const maxRevenue = 5000;  // Adjust based on data
+          const intensity = revenue / maxRevenue;
+          const color = `hsl(${120 * (1 - intensity)}, 70%, ${50 + intensity * 30}%)`;  // Green to red gradient
+          html += `<td class="heatmap-cell" style="background: ${color}; color: ${intensity > 0.5 ? 'white' : 'black'};">${fmt.format(revenue)}</td>`;
+        });
+        html += '</tr>';
+      }
+      table.innerHTML = html;
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = type === 'error' ? 'var(--danger-color)' : 'var(--success-color)';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function exportPDF(filter = 'all') {
+      console.log('Exporting PDF with filter:', filter);  // Debug
+      if (!dataCache.data) {
+        showToast('Нет данных для экспорта', 'error');
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('Чи-Фань Выручка', 10, 10);
+      doc.text(`Дата: ${dataCache.data.date} ${dataCache.data.time}`, 10, 20);
+      
+      let y = 30;
+      const venues = filter === 'year-round' ? dataCache.data.year_round : filter === 'seasonal' ? dataCache.data.seasonal : { ...dataCache.data.year_round, ...dataCache.data.seasonal };
+      Object.entries(venues || {}).forEach(([v, s]) => {
+        doc.text(`${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`, 10, y);
+        y += 10;
+      });
+      
+      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
+      showToast('PDF экспортирован!');
     }
 
     async function load() {
