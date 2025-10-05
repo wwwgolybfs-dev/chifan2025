@@ -1,0 +1,86 @@
+{
+  "date": "10.05.2024",
+  "time": "00:00",
+  "year_round": {
+    "Тобольская": {
+      "total_orders": 111,
+      "delivery_orders": 23,
+      "pickup_orders": 20,
+      "cafe_orders": 68,
+      "total_revenue": 70880.54000000001,
+      "delivery_revenue": 29173.34,
+      "pickup_revenue": 12672.71,
+      "cafe_revenue": 29034.489999999998
+    },
+    "Красота": {
+      "total_orders": 119,
+      "delivery_orders": 50,
+      "pickup_orders": 30,
+      "cafe_orders": 39,
+      "total_revenue": 103386.40999999999,
+      "delivery_revenue": 61989.05,
+      "pickup_revenue": 18030.36,
+      "cafe_revenue": 23367.0
+    },
+    "Луговая": {
+      "total_orders": 96,
+      "delivery_orders": 28,
+      "pickup_orders": 17,
+      "cafe_orders": 51,
+      "total_revenue": 71574.04999999999,
+      "delivery_revenue": 34117.770000000004,
+      "pickup_revenue": 12438.83,
+      "cafe_revenue": 25017.45
+    },
+    "Светланская": {
+      "total_orders": 141,
+      "delivery_orders": 12,
+      "pickup_orders": 15,
+      "cafe_orders": 114,
+      "total_revenue": 77814.24,
+      "delivery_revenue": 14518.34,
+      "pickup_revenue": 5944.900000000001,
+      "cafe_revenue": 57351.0
+    },
+    "Чуркин": {
+      "total_orders": 172,
+      "delivery_orders": 11,
+      "pickup_orders": 20,
+      "cafe_orders": 141,
+      "total_revenue": 101575.97,
+      "delivery_revenue": 11303.640000000001,
+      "pickup_revenue": 13420.86,
+      "cafe_revenue": 76851.47
+    },
+    "татарка": {
+      "total_orders": 99,
+      "delivery_orders": 0,
+      "pickup_orders": 3,
+      "cafe_orders": 96,
+      "total_revenue": 51607.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 2846.0,
+      "cafe_revenue": 48761.0
+    }
+  },
+  "seasonal": {
+    "МГУ": {
+      "total_orders": 56,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 56,
+      "total_revenue": 25882.78,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 25882.78
+    }
+  },
+  "total": {
+    "total_orders": 794,
+    "total_revenue": 502720.99
+  },
+  "plan": {
+    "total_revenue": 13265239.68028,
+    "total_orders": 22039.84
+  }
+}

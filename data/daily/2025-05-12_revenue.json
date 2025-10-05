@@ -1,0 +1,116 @@
+{
+  "date": "12.05.2025",
+  "time": "00:00",
+  "year_round": {
+    "Красота": {
+      "total_orders": 103,
+      "delivery_orders": 34,
+      "pickup_orders": 19,
+      "cafe_orders": 50,
+      "total_revenue": 90018.0,
+      "delivery_revenue": 46912.0,
+      "pickup_revenue": 12751.0,
+      "cafe_revenue": 30355.0
+    },
+    "Луговая": {
+      "total_orders": 78,
+      "delivery_orders": 18,
+      "pickup_orders": 23,
+      "cafe_orders": 37,
+      "total_revenue": 59452.0,
+      "delivery_revenue": 23321.0,
+      "pickup_revenue": 12936.0,
+      "cafe_revenue": 23195.0
+    },
+    "Тобольская": {
+      "total_orders": 103,
+      "delivery_orders": 20,
+      "pickup_orders": 16,
+      "cafe_orders": 67,
+      "total_revenue": 68678.0,
+      "delivery_revenue": 28436.0,
+      "pickup_revenue": 7764.0,
+      "cafe_revenue": 32478.0
+    },
+    "Тихая": {
+      "total_orders": 86,
+      "delivery_orders": 12,
+      "pickup_orders": 17,
+      "cafe_orders": 57,
+      "total_revenue": 60987.880000000005,
+      "delivery_revenue": 18942.0,
+      "pickup_revenue": 9094.0,
+      "cafe_revenue": 32951.880000000005
+    },
+    "Чуркин": {
+      "total_orders": 114,
+      "delivery_orders": 2,
+      "pickup_orders": 30,
+      "cafe_orders": 82,
+      "total_revenue": 63554.26,
+      "delivery_revenue": 2399.0,
+      "pickup_revenue": 17128.0,
+      "cafe_revenue": 44027.26
+    },
+    "Светланская": {
+      "total_orders": 101,
+      "delivery_orders": 11,
+      "pickup_orders": 17,
+      "cafe_orders": 73,
+      "total_revenue": 62500.0,
+      "delivery_revenue": 14994.0,
+      "pickup_revenue": 8265.0,
+      "cafe_revenue": 39241.0
+    },
+    "Парк": {
+      "total_orders": 56,
+      "delivery_orders": 0,
+      "pickup_orders": 5,
+      "cafe_orders": 51,
+      "total_revenue": 26862.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 3072.0,
+      "cafe_revenue": 23790.0
+    }
+  },
+  "seasonal": {
+    "Юбилейный": {
+      "total_orders": 182,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 182,
+      "total_revenue": 81936.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 81936.0
+    },
+    "Кунгас": {
+      "total_orders": 79,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 79,
+      "total_revenue": 38355.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 38355.0
+    },
+    "МГУ": {
+      "total_orders": 32,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 32,
+      "total_revenue": 14088.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 14088.0
+    }
+  },
+  "total": {
+    "total_orders": 934,
+    "total_revenue": 566431.14
+  },
+  "plan": {
+    "total_revenue": 16516544.37066,
+    "total_orders": 23865.262
+  }
+}

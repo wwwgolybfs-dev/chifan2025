@@ -1,0 +1,106 @@
+{
+  "date": "15.09.2024",
+  "time": "00:00",
+  "year_round": {
+    "Красота": {
+      "total_orders": 126,
+      "delivery_orders": 44,
+      "pickup_orders": 34,
+      "cafe_orders": 48,
+      "total_revenue": 109075.5,
+      "delivery_revenue": 56256.770000000004,
+      "pickup_revenue": 21407.730000000003,
+      "cafe_revenue": 31411.0
+    },
+    "Тихая": {
+      "total_orders": 178,
+      "delivery_orders": 15,
+      "pickup_orders": 23,
+      "cafe_orders": 140,
+      "total_revenue": 111459.48999999999,
+      "delivery_revenue": 17798.52,
+      "pickup_revenue": 17758.97,
+      "cafe_revenue": 75902.0
+    },
+    "Луговая": {
+      "total_orders": 70,
+      "delivery_orders": 18,
+      "pickup_orders": 8,
+      "cafe_orders": 44,
+      "total_revenue": 50840.42,
+      "delivery_revenue": 21711.0,
+      "pickup_revenue": 5599.42,
+      "cafe_revenue": 23530.0
+    },
+    "Тобольская": {
+      "total_orders": 107,
+      "delivery_orders": 30,
+      "pickup_orders": 23,
+      "cafe_orders": 54,
+      "total_revenue": 80884.73999999999,
+      "delivery_revenue": 39602.5,
+      "pickup_revenue": 14832.239999999998,
+      "cafe_revenue": 26450.0
+    },
+    "Светланская": {
+      "total_orders": 157,
+      "delivery_orders": 22,
+      "pickup_orders": 17,
+      "cafe_orders": 118,
+      "total_revenue": 87751.14,
+      "delivery_revenue": 23232.35,
+      "pickup_revenue": 6256.79,
+      "cafe_revenue": 58262.0
+    },
+    "Чуркин": {
+      "total_orders": 187,
+      "delivery_orders": 14,
+      "pickup_orders": 12,
+      "cafe_orders": 161,
+      "total_revenue": 125180.67,
+      "delivery_revenue": 15264.46,
+      "pickup_revenue": 7698.71,
+      "cafe_revenue": 102217.5
+    },
+    "татарка": {
+      "total_orders": 155,
+      "delivery_orders": 0,
+      "pickup_orders": 1,
+      "cafe_orders": 154,
+      "total_revenue": 78550.85,
+      "delivery_revenue": 0,
+      "pickup_revenue": 1178.85,
+      "cafe_revenue": 77372.0
+    },
+    "Фонтантая ": {
+      "total_orders": 50,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 50,
+      "total_revenue": 18630.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 18630.0
+    }
+  },
+  "seasonal": {
+    "МГУ": {
+      "total_orders": 140,
+      "delivery_orders": 0,
+      "pickup_orders": 7,
+      "cafe_orders": 133,
+      "total_revenue": 60476.47,
+      "delivery_revenue": 0,
+      "pickup_revenue": 4046.4700000000003,
+      "cafe_revenue": 56430.0
+    }
+  },
+  "total": {
+    "total_orders": 1170,
+    "total_revenue": 722849.28
+  },
+  "plan": {
+    "total_revenue": 15529666.19732,
+    "total_orders": 24499.502
+  }
+}

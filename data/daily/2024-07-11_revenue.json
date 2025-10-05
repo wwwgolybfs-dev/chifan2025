@@ -1,0 +1,96 @@
+{
+  "date": "11.07.2024",
+  "time": "00:00",
+  "year_round": {
+    "Красота": {
+      "total_orders": 117,
+      "delivery_orders": 29,
+      "pickup_orders": 30,
+      "cafe_orders": 58,
+      "total_revenue": 83577.52,
+      "delivery_revenue": 36503.31,
+      "pickup_revenue": 16722.21,
+      "cafe_revenue": 30352.0
+    },
+    "Луговая": {
+      "total_orders": 107,
+      "delivery_orders": 26,
+      "pickup_orders": 17,
+      "cafe_orders": 64,
+      "total_revenue": 74150.37,
+      "delivery_revenue": 30679.269999999997,
+      "pickup_revenue": 9118.63,
+      "cafe_revenue": 34352.47
+    },
+    "Тобольская": {
+      "total_orders": 120,
+      "delivery_orders": 16,
+      "pickup_orders": 30,
+      "cafe_orders": 74,
+      "total_revenue": 70217.46,
+      "delivery_revenue": 21103.789999999997,
+      "pickup_revenue": 13087.18,
+      "cafe_revenue": 36026.49
+    },
+    "Светланская": {
+      "total_orders": 168,
+      "delivery_orders": 19,
+      "pickup_orders": 17,
+      "cafe_orders": 132,
+      "total_revenue": 96395.14,
+      "delivery_revenue": 23943.34,
+      "pickup_revenue": 9030.8,
+      "cafe_revenue": 63421.0
+    },
+    "Чуркин": {
+      "total_orders": 199,
+      "delivery_orders": 10,
+      "pickup_orders": 27,
+      "cafe_orders": 162,
+      "total_revenue": 103746.21,
+      "delivery_revenue": 13552.8,
+      "pickup_revenue": 16673.41,
+      "cafe_revenue": 73520.0
+    },
+    "татарка": {
+      "total_orders": 291,
+      "delivery_orders": 0,
+      "pickup_orders": 7,
+      "cafe_orders": 284,
+      "total_revenue": 141874.9,
+      "delivery_revenue": 0,
+      "pickup_revenue": 9270.9,
+      "cafe_revenue": 132604.0
+    },
+    "Фонтантая ": {
+      "total_orders": 61,
+      "delivery_orders": 0,
+      "pickup_orders": 1,
+      "cafe_orders": 60,
+      "total_revenue": 22390.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 295.0,
+      "cafe_revenue": 22095.0
+    }
+  },
+  "seasonal": {
+    "МГУ": {
+      "total_orders": 193,
+      "delivery_orders": 0,
+      "pickup_orders": 8,
+      "cafe_orders": 185,
+      "total_revenue": 90793.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 5525.0,
+      "cafe_revenue": 85268.0
+    }
+  },
+  "total": {
+    "total_orders": 1256,
+    "total_revenue": 683144.6
+  },
+  "plan": {
+    "total_revenue": 14324598.25577,
+    "total_orders": 23644.269
+  }
+}

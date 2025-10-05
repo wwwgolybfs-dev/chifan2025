@@ -1,0 +1,75 @@
+{
+  "date": "07.03.2024",
+  "time": "00:00",
+  "year_round": {
+    "Луговая": {
+      "total_orders": 88,
+      "delivery_orders": 27,
+      "pickup_orders": 15,
+      "cafe_orders": 46,
+      "total_revenue": 62988.1,
+      "delivery_revenue": 31113.37,
+      "pickup_revenue": 7806.73,
+      "cafe_revenue": 24068.0
+    },
+    "Красота": {
+      "total_orders": 114,
+      "delivery_orders": 33,
+      "pickup_orders": 25,
+      "cafe_orders": 56,
+      "total_revenue": 87309.16,
+      "delivery_revenue": 47268.14,
+      "pickup_revenue": 13807.02,
+      "cafe_revenue": 26234.0
+    },
+    "Тобольская": {
+      "total_orders": 123,
+      "delivery_orders": 24,
+      "pickup_orders": 22,
+      "cafe_orders": 77,
+      "total_revenue": 87193.87000000001,
+      "delivery_revenue": 37211.24,
+      "pickup_revenue": 15100.630000000001,
+      "cafe_revenue": 34882.0
+    },
+    "Светланская": {
+      "total_orders": 143,
+      "delivery_orders": 17,
+      "pickup_orders": 18,
+      "cafe_orders": 108,
+      "total_revenue": 68333.47,
+      "delivery_revenue": 21720.98,
+      "pickup_revenue": 8030.49,
+      "cafe_revenue": 38582.0
+    },
+    "Чуркин": {
+      "total_orders": 184,
+      "delivery_orders": 3,
+      "pickup_orders": 23,
+      "cafe_orders": 158,
+      "total_revenue": 94446.12999999999,
+      "delivery_revenue": 2288.0,
+      "pickup_revenue": 12492.92,
+      "cafe_revenue": 79665.20999999999
+    },
+    "татарка": {
+      "total_orders": 1,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 1,
+      "total_revenue": 0.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 0.0
+    }
+  },
+  "seasonal": {},
+  "total": {
+    "total_orders": 653,
+    "total_revenue": 400270.73
+  },
+  "plan": {
+    "total_revenue": 10762309.8473,
+    "total_orders": 16849.972999999998
+  }
+}
