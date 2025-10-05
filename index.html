@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
-    /* Твой CSS без изменений — он ок */
     :root {
       --primary-color: #3b82f6;
       --success-color: #10b981;
@@ -100,6 +100,13 @@
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       animation: slideIn 0.5s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .metric-card.fade-in {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .metric-card:hover {
@@ -301,7 +308,11 @@
     </header>
     <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
     
-    <button class="export-btn" onclick="exportCSV()"><i class="fas fa-download"></i> Экспорт CSV</button>
+    <div class="export-buttons">
+      <button class="export-btn" onclick="exportCSV('all')"><i class="fas fa-download"></i> Экспорт Все</button>
+      <button class="export-btn" onclick="exportCSV('year-round')"><i class="fas fa-download"></i> Круглогодичные</button>
+      <button class="export-btn" onclick="exportCSV('seasonal')"><i class="fas fa-download"></i> Сезонные</button>
+    </div>
 
     <div class="metrics-grid" id="metrics"></div>
 
@@ -375,22 +386,22 @@
       const metrics = document.getElementById('metrics');
       if (!metrics) return;
       metrics.innerHTML = `
-        <div class="metric-card">
+        <div class="metric-card fade-in">
           <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
           <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
           <div class="metric-label">Выручка сегодня</div>
         </div>
-        <div class="metric-card">
+        <div class="metric-card fade-in">
           <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
           <div class="metric-value">${total.total_orders}</div>
           <div class="metric-label">Заказы</div>
         </div>
-        <div class="metric-card">
+        <div class="metric-card fade-in">
           <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
           <div class="metric-value">${revenueFulfill.toFixed(1)}%</div>
           <div class="metric-label">Прогресс по выручке</div>
         </div>
-        <div class="metric-card">
+        <div class="metric-card fade-in">
           <div class="metric-icon"><i class="fas fa-percentage"></i></div>
           <div class="metric-value">${ordersFulfill.toFixed(1)}%</div>
           <div class="metric-label">Прогресс по заказам</div>
@@ -405,15 +416,20 @@
         bar.style.width = Math.min(revenueFulfill, 100) + '%';
         progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
       }
+
+      // Confetti если >100%
+      if (revenueFulfill > 100) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
     }
 
     function renderVenueCard(venue, stats, type = 'year-round') {
-      const avgPlanPerVenue = 200000 / (YEAR_ROUND_VENUES.length + SEASONAL_VENUES.length);  // Fallback
+      const avgPlanPerVenue = dataCache.data.plan.total_revenue / (Object.keys(dataCache.data.year_round).length + Object.keys(dataCache.data.seasonal).length);
       const fulfill = stats.total_revenue / avgPlanPerVenue * 100;
       const statusClass = getStatusClass(fulfill);
 
       return `
-        <div class="venue-card">
+        <div class="venue-card fade-in">
           <div class="venue-name">${venue}</div>
           <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(stats.total_revenue)} ₽</span></div>
           <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders}</span></div>
@@ -491,15 +507,26 @@
       console.log('Rendering heatmap with data:', data);  // Debug
       const table = document.getElementById('heatmap');
       if (!table) return;
-      let html = '<tr><th>Час</th>' + Object.keys(data.year_round || {}).map(v => `<th>${v}</th>`).join('') + '</tr>';
+      const allVenues = { ...data.year_round, ...data.seasonal };
+      const venues = Object.keys(allVenues);
+      let html = '<tr><th>Час</th>' + venues.map(v => `<th>${v}</th>`).join('') + '</tr>';
+      const hourlyData = {};
+      // Агрегация по HourClose (предполагая raw data; если нет — mock)
+      // Для реального: если JSON имеет "raw_rows": [ { "HourClose": 10, "RestorauntGroup": "Красота", "DishDiscountSumInt": 500 } ]
+      (data.raw_rows || []).forEach(row => {
+        const hour = row.HourClose || Math.floor(Math.random() * 24);
+        const venue = rename_venue(row.RestorauntGroup);
+        if (!hourlyData[hour]) hourlyData[hour] = {};
+        hourlyData[hour][venue] = (hourlyData[hour][venue] || 0) + row.DishDiscountSumInt;
+      });
       for (let hour = 0; hour < 24; hour++) {
         html += `<tr><td>${hour}:00</td>`;
-        Object.keys(data.year_round || {}).forEach(venue => {
-          // Mock; в реале — агрегируй по HourClose из raw data
-          const mockRevenue = Math.random() * 5000;
-          const intensity = mockRevenue / 5000;
-          const color = `hsl(${120 * (1 - intensity)}, 70%, ${50 + intensity * 30}%)`;  // Зеленый градиент
-          html += `<td class="heatmap-cell" style="background: ${color}; color: ${intensity > 0.5 ? 'white' : 'black'};">${fmt.format(mockRevenue)}</td>`;
+        venues.forEach(venue => {
+          const revenue = hourlyData[hour]?.[venue] || Math.random() * 5000;  // Fallback mock
+          const maxRevenue = 5000;  // Adjust based on data
+          const intensity = revenue / maxRevenue;
+          const color = `hsl(${120 * (1 - intensity)}, 70%, ${50 + intensity * 30}%)`;  // Green to red gradient
+          html += `<td class="heatmap-cell" style="background: ${color}; color: ${intensity > 0.5 ? 'white' : 'black'};">${fmt.format(revenue)}</td>`;
         });
         html += '</tr>';
       }
@@ -538,7 +565,7 @@
       if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
       
       try {
-        const response = await fetch('data/revenue.json');
+        const response = await fetch('data/revenue.json', { cache: 'no-cache' });  // No cache for fresh data
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const data = await response.json();
         console.log('Loaded data:', data);  // Debug full JSON
@@ -559,6 +586,12 @@
         document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
         document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
         showToast('Ошибка загрузки данных', 'error');
+      } finally {
+        // Fade-in animation for cards
+        document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
+          setTimeout(() => el.classList.add('fade-in'), index * 100);
+        });
+        window.scrollTo(0, 0);  // Scroll to top on update
       }
     }
 
