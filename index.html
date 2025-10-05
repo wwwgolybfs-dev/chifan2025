@@ -158,14 +158,26 @@
 
     .progress-container {
       margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      font-weight: 500;
     }
 
     .progress-bar {
+      width: 100%;
       height: 20px;
       background: var(--border-color);
       border-radius: 10px;
       overflow: hidden;
-      margin-bottom: 10px;
     }
 
     .progress-fill {
@@ -181,13 +193,7 @@
     .progress-text {
       text-align: center;
       font-weight: 500;
-    }
-
-    .progress-info {
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-top: 5px;
+      margin-top: 10px;
     }
 
     .section {
@@ -316,11 +322,14 @@
 
     <div class="progress-container">
       <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
+      <div class="progress-header">
+        <span>Текущее: <span id="current-value">0 ₽</span></span>
+        <span>План: <span id="plan-value">0 ₽</span></span>
+      </div>
       <div class="progress-bar">
         <div id="plan-bar" class="progress-fill"></div>
       </div>
       <div id="progress-text" class="progress-text">0%</div>
-      <div id="progress-info" class="progress-info">Текущее: 0 ₽ | План: 0 ₽</div>
     </div>
 
     <div class="charts-grid">
@@ -425,12 +434,14 @@
       // Прогресс-бар
       const bar = document.getElementById('plan-bar');
       const progressText = document.getElementById('progress-text');
-      const progressInfo = document.getElementById('progress-info');
-      if (bar && progressText && progressInfo) {
+      const currentValue = document.getElementById('current-value');
+      const planValue = document.getElementById('plan-value');
+      if (bar && progressText && currentValue && planValue) {
         bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
         bar.style.width = Math.min(revenueFulfill, 100) + '%';
         progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
-        progressInfo.textContent = `Текущее: ${fmt.format(total.total_revenue)} ₽ | План: ${fmt.format(plan.total_revenue)} ₽`;
+        currentValue.textContent = `${fmt.format(total.total_revenue)} ₽`;
+        planValue.textContent = `${fmt.format(plan.total_revenue)} ₽`;
       }
 
       // Confetti если >100%
