@@ -1,687 +1,333 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Чи-Фань — Выручка в реальном времени</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi-Fan — Ежедневный отчёт</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
-      --primary-color: #3b82f6;
-      --success-color: #10b981;
-      --warning-color: #f59e0b;
-      --danger-color: #ef4444;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-primary: #1e293b;
-      --text-secondary: #64748b;
-      --border-color: #e2e8f0;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --bg: #f9fafb;
+      --text: #1e1e1e;
+      --card: #fff;
+      --accent: #f44336;
+      --border: #ddd;
+      --good: #43a047;
+      --warn: #ffa000;
     }
-
-    [data-theme="dark"] {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --border-color: #334155;
+    body.dark {
+      --bg: #121212;
+      --text: #e0e0e0;
+      --card: #1e1e1e;
+      --accent: #ff5252;
+      --border: #333;
+      --good: #81c784;
+      --warn: #ffd54f;
     }
-
+    * {
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s;
+    }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
       margin: 0;
-      padding: 20px;
-      background: var(--bg-color);
-      color: var(--text-primary);
-      line-height: 1.6;
-      transition: background 0.9s ease, color 0.9s ease;
     }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
     header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      margin: 0;
-      color: var(--primary-color);
-      font-weight: 700;
-      font-size: 2.5rem;
-    }
-
-    .theme-toggle {
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background 0.9s ease;
-    }
-
-    .theme-toggle:hover {
-      background: #2563eb;
-    }
-
-    #last-update {
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .export-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
       flex-wrap: wrap;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-
-    .export-btn {
-      background: var(--success-color);
-      color: white;
-      border: none;
-      padding: 10px 20px;
+    header h1 {
+      font-size: 1.3rem;
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    select, button {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
       border-radius: 8px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: background 0.9s ease;
-      font-size: 0.9rem;
     }
-
-    .export-btn:hover {
-      background: #059669;
+    select:hover, button:hover {
+      border-color: var(--accent);
     }
-
-    .metrics-grid {
+    main {
+      padding: 1.5rem;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     }
-
-    .metric-card {
-      background: var(--card-bg);
-      padding: 20px;
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      box-shadow: var(--shadow);
-      text-align: center;
-      transition: transform 0.9s ease, box-shadow 0.9s ease;
-      animation: slideIn 0.5s ease;
-      opacity: 0;
-      transform: translateY(20px);
+      padding: 1rem 1.2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      transition: transform .2s;
     }
-
-    .metric-card.fade-in {
-      opacity: 1;
-      transform: translateY(0);
+    .card:hover {
+      transform: translateY(-2px);
     }
-
-    .metric-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-hover);
-    }
-
-    .metric-icon {
-      font-size: 2rem;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
-
-    .metric-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 5px;
-    }
-
-    .metric-label {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-    }
-
-    .progress-container {
-      margin: 20px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      margin-bottom: 10px;
+    h2 {
       font-size: 1rem;
-      font-weight: 500;
+      margin-top: 0;
+      margin-bottom: 0.6rem;
     }
-
-    .progress-bar {
-      width: 100%;
-      height: 20px;
-      background: var(--border-color);
-      border-radius: 10px;
-      overflow: hidden;
+    #last-update {
+      font-size: 0.9rem;
+      opacity: 0.75;
+      margin-top: 0.4rem;
     }
-
-    .progress-fill {
-      height: 100%;
-      transition: width 1s ease;
-      border-radius: 10px;
-    }
-
-    .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #059669); }
-    .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
-    .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
-
-    .progress-text {
-      text-align: center;
-      font-weight: 500;
-      margin-top: 10px;
-    }
-
-    .section {
-      margin-bottom: 40px;
-    }
-
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 20px;
+    .metrics-grid {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 0.8rem;
     }
-
-    .venues-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+    .metric {
+      flex: 1;
+      min-width: 120px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem;
+      text-align: center;
     }
-
-    .venue-card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.9s ease;
-      cursor: pointer;
+    .metric h3 {
+      font-size: 1rem;
+      margin: 0.2rem 0;
     }
-
-    .venue-card:hover {
-      box-shadow: var(--shadow-hover);
+    .metric span {
+      font-size: 0.85rem;
+      opacity: 0.8;
     }
-
-    .venue-name {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .venue-metric {
+    .venue-item {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 5px;
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed var(--border);
       font-size: 0.9rem;
     }
-
-    .venue-metric-value {
-      font-weight: 500;
-    }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .chart-container {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
-
-    .chart-container canvas {
-      color: var(--text-primary);
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 768px) {
-      .charts-grid { grid-template-columns: 1fr; }
-      .venues-grid { grid-template-columns: 1fr; }
-      body { padding: 10px; }
-    }
-
+    .venue-item:last-child { border-bottom: none; }
+    .venue-revenue { font-weight: 600; }
     .toast {
       position: fixed;
-      top: 20px;
+      bottom: 20px;
       right: 20px;
-      background: var(--success-color);
+      background: var(--accent);
       color: white;
-      padding: 10px 20px;
+      padding: 12px 18px;
       border-radius: 8px;
       opacity: 0;
-      transition: opacity 0.9s ease;
-    }
-
-    .toast.show {
-      opacity: 1;
-    }
-
-    .error-msg {
-      color: var(--danger-color);
-      text-align: center;
-      padding: 10px;
-      background: rgba(239, 68, 68, 0.1);
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-
-    .data-selector {
-      margin-bottom: 10px;
-      padding: 5px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      background: var(--card-bg);
-      color: var(--text-primary);
+      transition: opacity 0.3s;
+      z-index: 100;
     }
   </style>
 </head>
-<body data-theme="light">
-  <div class="container">
-    <header>
-      <h1><i class="fas fa-utensils"></i> Чи-Фань — Выручка в реальном времени</h1>
-      <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
-    </header>
-    <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
-    
-    <div class="metrics-grid" id="metrics"></div>
+<body>
+  <header>
+    <h1>🍜 Chi-Fan — ежедневный отчёт</h1>
+    <div class="controls">
+      <select id="dateSelector">
+        <option>Загрузка дат...</option>
+      </select>
+      <button id="themeBtn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+    </div>
+  </header>
 
-    <div class="progress-container">
-      <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
-      <div class="progress-header">
-        <span>Текущее: <span id="current-value">0 ₽</span></span>
-        <span>План: <span id="plan-value">0 ₽</span></span>
-      </div>
-      <div class="progress-bar">
-        <div id="plan-bar" class="progress-fill"></div>
-      </div>
-      <div id="progress-text" class="progress-text">0%</div>
+  <main>
+    <div class="card">
+      <h2>Основные показатели</h2>
+      <div class="metrics-grid" id="metrics"></div>
+      <div id="last-update"></div>
     </div>
 
-    <div class="charts-grid">
-      <div class="chart-container">
-        <h4>Выручка по филиалам</h4>
-        <canvas id="barChart1"></canvas>
-      </div>
-      <div class="chart-container">
-        <h4>Статистика по типам</h4>
-        <select class="data-selector" id="dataType" onchange="updateBarChart2()">
-          <option value="revenue">Выручка</option>
-          <option value="orders">Заказы</option>
-          <option value="delivery">Доставка</option>
-          <option value="cafe">Кафе</option>
-          <option value="pickup">Самовывоз</option>
-        </select>
-        <canvas id="barChart2"></canvas>
-      </div>
+    <div class="card">
+      <h2>Филиалы (постоянные)</h2>
+      <div id="venues-year-round">Загрузка...</div>
     </div>
 
-    <div class="section">
-      <h3 class="section-title"><i class="fas fa-building"></i> Круглогодичные филиалы</h3>
-      <div class="venues-grid" id="year-round"></div>
+    <div class="card">
+      <h2>Филиалы (сезонные)</h2>
+      <div id="venues-seasonal">Загрузка...</div>
     </div>
 
-    <div class="section">
-      <h3 class="section-title"><i class="fas fa-leaf"></i> Сезонные филиалы</h3>
-      <div class="venues-grid" id="seasonal"></div>
+    <div class="card">
+      <h2>Выручка по филиалам</h2>
+      <canvas id="chartRevenue" height="180"></canvas>
     </div>
 
-    <div class="export-buttons">
-      <button class="export-btn" onclick="exportPDF('all')"><i class="fas fa-file-pdf"></i> Экспорт PDF (Все)</button>
-      <button class="export-btn" onclick="exportPDF('year-round')"><i class="fas fa-file-pdf"></i> PDF Круглогодичные</button>
-      <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
+    <div class="card">
+      <h2>Средний чек по филиалам</h2>
+      <canvas id="chartCheck" height="180"></canvas>
     </div>
+  </main>
 
-    <div id="toast" class="toast"></div>
-  </div>
+  <div class="toast" id="toast"></div>
 
   <script>
-    let barChart1, barChart2;
-    let dataCache = {}; // Кэш данных
-
     const fmt = new Intl.NumberFormat('ru-RU');
+    const REPO_API = 'https://api.github.com/repos/wwwgolybfs-dev/chifan2025/contents/data/daily';
+    const RAW_DAILY = 'https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/daily/';
+    const RAW_TODAY = 'https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/revenue.json';
+    let chartRevenue, chartCheck;
+
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
 
     function toggleTheme() {
-      const body = document.body;
-      const currentTheme = body.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      body.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      const icon = document.querySelector('.theme-toggle i');
-      icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-      if (barChart1) {
-        barChart1.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart1.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart1.options.scales.x.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart1.options.scales.y.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart1.update();
-      }
-      if (barChart2) {
-        barChart2.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart2.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart2.options.scales.x.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart2.options.scales.y.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-        barChart2.update();
-      }
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      document.getElementById('themeBtn').innerHTML = document.body.classList.contains('dark')
+        ? '<i class="fas fa-sun"></i>'
+        : '<i class="fas fa-moon"></i>';
     }
 
-    function getStatusClass(fulfill) {
-      if (fulfill >= 100) return 'good';
-      if (fulfill >= 80) return 'warn';
-      return 'bad';
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.style.opacity = '1';
+      setTimeout(() => (t.style.opacity = '0'), 3000);
     }
 
-    function renderMetrics(data) {
-      const total = data.total || { total_revenue: 0, total_orders: 0 };
-      const plan = data.plan || { total_revenue: 0, total_orders: 0 };
-      const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
-      const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
-
-      console.log('Metrics data:', { total, plan, revenueFulfill, ordersFulfill });
-
-      const metrics = document.getElementById('metrics');
-      if (!metrics) return;
-      metrics.innerHTML = `
-        <div class="metric-card fade-in">
-          <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
-          <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
-          <div class="metric-label">Выручка сегодня</div>
-        </div>
-        <div class="metric-card fade-in">
-          <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
-          <div class="metric-value">${total.total_orders}</div>
-          <div class="metric-label">Заказы</div>
-        </div>
-        <div class="metric-card fade-in">
-          <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
-          <div class="metric-value">${revenueFulfill.toFixed(1)}%</div>
-          <div class="metric-label">Прогресс по выручке</div>
-        </div>
-        <div class="metric-card fade-in">
-          <div class="metric-icon"><i class="fas fa-percentage"></i></div>
-          <div class="metric-value">${ordersFulfill.toFixed(1)}%</div>
-          <div class="metric-label">Прогресс по заказам</div>
-        </div>
-      `;
-
-      const bar = document.getElementById('plan-bar');
-      const progressText = document.getElementById('progress-text');
-      const currentValue = document.getElementById('current-value');
-      const planValue = document.getElementById('plan-value');
-      if (bar && progressText && currentValue && planValue) {
-        bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
-        bar.style.width = Math.min(revenueFulfill, 100) + '%';
-        progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
-        currentValue.textContent = `${fmt.format(total.total_revenue)} ₽`;
-        planValue.textContent = `${fmt.format(plan.total_revenue)} ₽`;
-      }
-
-      if (revenueFulfill > 100) {
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      }
+    async function listAvailableFiles() {
+      const res = await fetch(REPO_API);
+      const files = await res.json();
+      return files
+        .filter(f => f.name.endsWith('_revenue.json'))
+        .sort((a,b) => new Date(b.name.split('_')[0]) - new Date(a.name.split('_')[0]))
+        .map(f => f.name);
     }
 
-    function renderVenueCard(venue, stats, type = 'year-round') {
-      const fixedPlans = {
-        "Тобольская": 3500000,
-        "Тихая": 2100000
-      };
-      const planRevenue = fixedPlans[venue] || (dataCache.plan.total_revenue / (Object.keys(dataCache.year_round || {}).length + Object.keys(dataCache.seasonal || {}).length));
-      const fulfill = stats.total_revenue / planRevenue * 100;
-      const statusClass = getStatusClass(fulfill);
-
-      return `
-        <div class="venue-card fade-in">
-          <div class="venue-name">${venue}</div>
-          <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(stats.total_revenue)} ₽</span></div>
-          <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders}</span></div>
-          <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format(stats.delivery_revenue)} ₽</span></div>
-          <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format(stats.cafe_revenue)} ₽</span></div>
-          <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format(stats.pickup_revenue)} ₽</span></div>
-          <div style="margin-top: 10px;">
-            <div class="progress-bar" style="height: 8px;">
-              <div class="progress-fill ${statusClass}" style="width: ${Math.min(fulfill, 100)}%;"></div>
-            </div>
-            <small>${fulfill.toFixed(1)}% от плана (${fmt.format(planRevenue)} ₽)</small>
-          </div>
-        </div>
-      `;
+    async function fetchData(file) {
+      const url = file === 'today' ? RAW_TODAY : RAW_DAILY + file;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Ошибка загрузки ${url}`);
+      return await res.json();
     }
 
-    function renderVenues(data, containerId) {
-      console.log(`Rendering ${containerId}:`, data);
-      const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
-      const venues = data[key] || {};
-      const container = document.getElementById(containerId);
-      if (!container) {
-        console.error('Container not found:', containerId);
-        return;
-      }
-      if (Object.keys(venues).length === 0) {
-        container.innerHTML = '<div class="error-msg">Нет данных по филиалам</div>';
-        console.warn('No venues data for', key);
-        return;
-      }
-      const sortedVenues = Object.entries(venues).sort((a, b) => b[1].total_revenue - a[1].total_revenue);
-      container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, containerId)).join('');
-    }
-
-    function renderCharts(data) {
-      console.log('Rendering charts with data:', data);
-      const allVenues = { ...data.year_round, ...data.seasonal };
-      const labels = Object.keys(allVenues);
-      const revenues = labels.map(l => allVenues[l].total_revenue || 0);
-
-      const ctxBar1 = document.getElementById('barChart1')?.getContext('2d');
-      if (ctxBar1 && labels.length > 0) {
-        if (barChart1) barChart1.destroy();
-        barChart1 = new Chart(ctxBar1, {
-          type: 'bar',
-          data: { labels, datasets: [{ label: 'Выручка ₽', data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
-          options: {
-            responsive: true,
-            scales: {
-              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
-                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
-              y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
-                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
-            },
-            plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } } }
-          }
-        });
-      } else {
-        console.warn('No data for bar chart 1');
-      }
-
-      updateBarChart2();
-    }
-
-    function updateBarChart2() {
-      const dataType = document.getElementById('dataType').value;
-      const allVenues = { ...dataCache.year_round, ...dataCache.seasonal };
-      const labels = Object.keys(allVenues);
-      const ctxBar2 = document.getElementById('barChart2')?.getContext('2d');
-      let dataValues;
-
-      switch(dataType) {
-        case 'orders':
-          dataValues = labels.map(l => allVenues[l].total_orders || 0);
-          break;
-        case 'delivery':
-          dataValues = labels.map(l => allVenues[l].delivery_revenue || 0);
-          break;
-        case 'cafe':
-          dataValues = labels.map(l => allVenues[l].cafe_revenue || 0);
-          break;
-        case 'pickup':
-          dataValues = labels.map(l => allVenues[l].pickup_revenue || 0);
-          break;
-        default: // revenue
-          dataValues = labels.map(l => allVenues[l].total_revenue || 0);
-      }
-
-      if (ctxBar2 && labels.length > 0) {
-        if (barChart2) barChart2.destroy();
-        barChart2 = new Chart(ctxBar2, {
-          type: 'bar',
-          data: { labels, datasets: [{ label: `${dataType === 'orders' ? 'Заказы' : dataType === 'delivery' ? 'Доставка ₽' : dataType === 'cafe' ? 'Кафе ₽' : dataType === 'pickup' ? 'Самовывоз ₽' : 'Выручка ₽'}`, data: dataValues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
-          options: {
-            responsive: true,
-            scales: {
-              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
-                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
-              y: { beginAtZero: true, title: { display: true, text: dataType === 'orders' ? 'Количество заказов' : 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
-                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
-            },
-            plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } } }
-          }
-        });
-      } else {
-        console.warn('No data for bar chart 2');
-      }
-    }
-
-    function showToast(message, type = 'success') {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.style.background = type === 'error' ? 'var(--danger-color)' : 'var(--success-color)';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    function exportPDF(filter = 'all') {
-      console.log('Exporting PDF with filter:', filter);
-      if (!dataCache) {
-        showToast('Нет данных для экспорта', 'error');
-        return;
-      }
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({
-        putOnlyUsedFonts: true,
-        floatPrecision: 16,
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      doc.setFont("helvetica");
-      doc.setFontSize(12);
-      doc.setProperties({
-        title: 'Чи-Фань Выручка',
-        subject: 'Отчет по выручке',
-        author: 'Чи-Фань',
-        keywords: 'выручка, отчет, pdf',
-        creator: 'Grok 3 by xAI'
-      });
-
-      function escapeText(text) {
-        return text.normalize('NFKD').replace(/[^\x00-\x7F]/g, '');
-      }
-
-      doc.setTextColor(0, 0, 0);
-      doc.text('Чи-Фань Выручка', 10, 10);
-      doc.setFontSize(10);
-      const dateText = `Дата: ${dataCache.date} ${dataCache.time}`;
-      doc.text(dateText, 10, 20);
-
-      let y = 30;
-      const venues = filter === 'year-round' ? dataCache.year_round : filter === 'seasonal' ? dataCache.seasonal : { ...dataCache.year_round, ...dataCache.seasonal };
-      Object.entries(venues || {}).forEach(([v, s]) => {
-        const text = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
-        console.log('Exporting text:', text);
-        doc.text(escapeText(text), 10, y);
-        y += 10;
-        if (y > 280) {
-          doc.addPage();
-          y = 20;
-        }
-      });
-
-      doc.save(`chifan_${dataCache.date || 'today'}.pdf`);
-      showToast('PDF экспортирован!');
-    }
-
-    async function fetchLatestData() {
-      const response = await fetch('https://api.github.com/repos/wwwgolybfs-dev/chifan2025/contents/data/daily');
-      const files = await response.json();
-      const latestFile = files
-        .filter(file => file.name.endsWith('_revenue.json'))
-        .sort((a, b) => new Date(b.name.split('_')[0]) - new Date(a.name.split('_')[0]))[0];
-      if (!latestFile) throw new Error('No revenue files found');
-      const fileResponse = await fetch(latestFile.download_url);
-      return await fileResponse.json();
-    }
-
-    async function load() {
-      console.log('Starting load function...');
-      const updateEl = document.getElementById('last-update');
-      if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
-
+    async function initDateSelector() {
+      const selector = document.getElementById('dateSelector');
+      selector.innerHTML = '<option>Загрузка...</option>';
       try {
-        console.log('Fetching latest data from GitHub...');
-        const data = await fetchLatestData();
-        console.log('Loaded data:', data);
-        dataCache = data; // Обновляем кэш данными
+        const files = await listAvailableFiles();
+        let options = `<option value="today">Сегодня</option>`;
+        options += files.map(f => `<option value="${f}">${f.replace('_revenue.json','')}</option>`).join('');
+        selector.innerHTML = options;
 
-        if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
+        const saved = localStorage.getItem('selectedDate');
+        selector.value = saved && [...selector.options].some(o=>o.value===saved) ? saved : 'today';
 
+        selector.onchange = () => {
+          localStorage.setItem('selectedDate', selector.value);
+          loadData(selector.value);
+        };
+
+        await loadData(selector.value);
+      } catch (err) {
+        console.error(err);
+        selector.innerHTML = '<option>Ошибка загрузки дат</option>';
+      }
+    }
+
+    async function loadData(file) {
+      const last = document.getElementById('last-update');
+      last.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+      try {
+        const data = await fetchData(file);
         renderMetrics(data);
         renderVenues(data, 'year-round');
         renderVenues(data, 'seasonal');
         renderCharts(data);
-        showToast('Данные обновлены!');
-      } catch (e) {
-        console.error('Ошибка загрузки:', e);
-        if (updateEl) updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
-        document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
-        document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
-        document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
-        showToast('Ошибка загрузки данных', 'error');
-      } finally {
-        document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
-          setTimeout(() => el.classList.add('fade-in'), index * 100);
-        });
-        window.scrollTo(0, 0);
+        last.innerHTML = `<i class="fas fa-check-circle"></i> Загружено: ${data.date || file}`;
+        showToast('Данные обновлены');
+      } catch (err) {
+        console.error(err);
+        last.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+        showToast('Ошибка загрузки данных');
       }
     }
 
-    if (localStorage.getItem('theme') === 'dark') toggleTheme();
-    load();
-    setInterval(load, 5 * 60 * 1000); // Обновление каждые 5 минут
+    function renderMetrics(data) {
+      const el = document.getElementById('metrics');
+      if (!data.metrics) {
+        el.textContent = 'Нет данных';
+        return;
+      }
+      el.innerHTML = `
+        <div class="metric">
+          <span>💰 Выручка</span>
+          <h3>${fmt.format(data.metrics.total_revenue || 0)} ₽</h3>
+        </div>
+        <div class="metric">
+          <span>🧾 Средний чек</span>
+          <h3>${fmt.format(data.metrics.avg_check || 0)} ₽</h3>
+        </div>
+        <div class="metric">
+          <span>🍱 Заказы</span>
+          <h3>${fmt.format(data.metrics.orders || 0)}</h3>
+        </div>
+      `;
+    }
+
+    function renderVenues(data, type) {
+      const el = document.getElementById('venues-' + type);
+      const venues = (data.venues || []).filter(v => v.type === type);
+      if (!venues.length) {
+        el.textContent = 'Нет данных';
+        return;
+      }
+      el.innerHTML = venues
+        .map(v => `
+          <div class="venue-item">
+            <span>${v.name}</span>
+            <span class="venue-revenue">${fmt.format(v.revenue)} ₽</span>
+          </div>`)
+        .join('');
+    }
+
+    function renderCharts(data) {
+      const venues = data.venues || [];
+      const labels = venues.map(v => v.name);
+      const revenues = venues.map(v => v.revenue);
+      const checks = venues.map(v => v.avg_check);
+      const ctxR = document.getElementById('chartRevenue');
+      const ctxC = document.getElementById('chartCheck');
+      if (chartRevenue) chartRevenue.destroy();
+      if (chartCheck) chartCheck.destroy();
+      chartRevenue = new Chart(ctxR, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Выручка (₽)', data: revenues, backgroundColor: '#f44336aa' }] },
+        options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'var(--text)' } }, y: { ticks: { color: 'var(--text)' } } } }
+      });
+      chartCheck = new Chart(ctxC, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Средний чек (₽)', data: checks, backgroundColor: '#43a047aa' }] },
+        options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'var(--text)' } }, y: { ticks: { color: 'var(--text)' } } } }
+      });
+    }
+
+    initDateSelector();
+    setInterval(() => {
+      const sel = document.getElementById('dateSelector');
+      if (sel && sel.value) loadData(sel.value);
+    }, 5 * 60 * 1000);
   </script>
 </body>
 </html>
