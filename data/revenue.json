@@ -1,6 +1,6 @@
 {
   "date": "05.10.2025",
-  "time": "15:20",
+  "time": "15:25",
   "year_round": {
     "Красота": {
       "total_orders": 65,
@@ -53,14 +53,14 @@
       "cafe_revenue": 16036.0
     },
     "Чуркин": {
-      "total_orders": 46,
+      "total_orders": 51,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 45,
-      "total_revenue": 30447.0,
+      "cafe_orders": 50,
+      "total_revenue": 33069.0,
       "delivery_revenue": 0,
       "pickup_revenue": 289.0,
-      "cafe_revenue": 30158.0
+      "cafe_revenue": 32780.0
     }
   },
   "seasonal": {
@@ -85,19 +85,19 @@
       "cafe_revenue": 3883.0
     },
     "Юбилейный": {
-      "total_orders": 83,
+      "total_orders": 89,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 83,
-      "total_revenue": 45845.0,
+      "cafe_orders": 89,
+      "total_revenue": 47959.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 45845.0
+      "cafe_revenue": 47959.0
     }
   },
   "total": {
-    "total_orders": 406,
-    "total_revenue": 309205.0
+    "total_orders": 417,
+    "total_revenue": 313941.0
   },
   "plan": {
     "total_revenue": 20944728.513,
