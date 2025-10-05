@@ -89,8 +89,9 @@
     .export-buttons {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-top: 20px;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .export-btn {
@@ -182,6 +183,13 @@
       font-weight: 500;
     }
 
+    .progress-info {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
     .section {
       margin-bottom: 40px;
     }
@@ -246,43 +254,8 @@
       box-shadow: var(--shadow);
     }
 
-    .heatmap {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      overflow-x: auto;
-    }
-
-    .heatmap-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .heatmap-cell {
-      padding: 8px;
-      text-align: center;
-      border: 1px solid var(--border-color);
-      transition: background 0.3s ease;
-    }
-
-    .heatmap-cell:hover {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .export-btn {
-      background: var(--success-color);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .export-btn:hover {
-      background: #059669;
+    .chart-container canvas {
+      color: var(--text-primary); /* Цвет текста диаграммы адаптируется под тему */
     }
 
     @keyframes slideIn {
@@ -320,6 +293,15 @@
       border-radius: 8px;
       margin: 10px 0;
     }
+
+    .data-selector {
+      margin-bottom: 10px;
+      padding: 5px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -330,12 +312,6 @@
     </header>
     <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
     
-    <div class="export-buttons">
-      <button class="export-btn" onclick="exportPDF('all')"><i class="fas fa-file-pdf"></i> Экспорт PDF (Все)</button>
-      <button class="export-btn" onclick="exportPDF('year-round')"><i class="fas fa-file-pdf"></i> PDF Круглогодичные</button>
-      <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
-    </div>
-
     <div class="metrics-grid" id="metrics"></div>
 
     <div class="progress-container">
@@ -344,16 +320,24 @@
         <div id="plan-bar" class="progress-fill"></div>
       </div>
       <div id="progress-text" class="progress-text">0%</div>
+      <div id="progress-info" class="progress-info">Текущее: 0 ₽ | План: 0 ₽</div>
     </div>
 
     <div class="charts-grid">
       <div class="chart-container">
-        <h4>Доля выручки по филиалам</h4>
-        <canvas id="pieChart"></canvas>
+        <h4>Выручка по филиалам</h4>
+        <canvas id="barChart1"></canvas>
       </div>
       <div class="chart-container">
-        <h4>Выручка по типам</h4>
-        <canvas id="barChart"></canvas>
+        <h4>Статистика по типам</h4>
+        <select class="data-selector" id="dataType" onchange="updateBarChart2()">
+          <option value="revenue">Выручка</option>
+          <option value="orders">Заказы</option>
+          <option value="delivery">Доставка</option>
+          <option value="cafe">Кафе</option>
+          <option value="pickup">Самовывоз</option>
+        </select>
+        <canvas id="barChart2"></canvas>
       </div>
     </div>
 
@@ -367,16 +351,17 @@
       <div class="venues-grid" id="seasonal"></div>
     </div>
 
-    <div class="heatmap">
-      <h3><i class="fas fa-clock"></i> Heatmap по часам (сегодня)</h3>
-      <table class="heatmap-table" id="heatmap"></table>
+    <div class="export-buttons">
+      <button class="export-btn" onclick="exportPDF('all')"><i class="fas fa-file-pdf"></i> Экспорт PDF (Все)</button>
+      <button class="export-btn" onclick="exportPDF('year-round')"><i class="fas fa-file-pdf"></i> PDF Круглогодичные</button>
+      <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
     </div>
 
     <div id="toast" class="toast"></div>
   </div>
 
   <script>
-    let pieChart, barChart;
+    let barChart1, barChart2;
     let dataCache = {};  // Кэш данных
 
     const fmt = new Intl.NumberFormat('ru-RU');
@@ -389,6 +374,13 @@
       localStorage.setItem('theme', newTheme);
       const icon = document.querySelector('.theme-toggle i');
       icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      // Обновляем цвета шрифта и диаграмм при смене темы
+      if (barChart1) barChart1.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+      if (barChart1) barChart1.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+      if (barChart2) barChart2.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+      if (barChart2) barChart2.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+      if (barChart1) barChart1.update();
+      if (barChart2) barChart2.update();
     }
 
     function getStatusClass(fulfill) {
@@ -433,10 +425,12 @@
       // Прогресс-бар
       const bar = document.getElementById('plan-bar');
       const progressText = document.getElementById('progress-text');
-      if (bar && progressText) {
+      const progressInfo = document.getElementById('progress-info');
+      if (bar && progressText && progressInfo) {
         bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
         bar.style.width = Math.min(revenueFulfill, 100) + '%';
         progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+        progressInfo.textContent = `Текущее: ${fmt.format(total.total_revenue)} ₽ | План: ${fmt.format(plan.total_revenue)} ₽`;
       }
 
       // Confetti если >100%
@@ -497,66 +491,71 @@
       const labels = Object.keys(allVenues);
       const revenues = labels.map(l => allVenues[l].total_revenue || 0);
       
-      // Pie
-      const ctxPie = document.getElementById('pieChart')?.getContext('2d');
-      if (ctxPie && labels.length > 0) {
-        if (pieChart) pieChart.destroy();
-        pieChart = new Chart(ctxPie, {
-          type: 'pie',
-          data: { labels, datasets: [{ data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
-          options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      // Bar Chart 1: Выручка по филиалам
+      const ctxBar1 = document.getElementById('barChart1')?.getContext('2d');
+      if (ctxBar1 && labels.length > 0) {
+        if (barChart1) barChart1.destroy();
+        barChart1 = new Chart(ctxBar1, {
+          type: 'bar',
+          data: { labels, datasets: [{ label: 'Выручка ₽', data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
+          options: { 
+            responsive: true, 
+            scales: { 
+              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
+              y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
+            },
+            plugins: { legend: { position: 'bottom' } }
+          }
         });
       } else {
-        console.warn('No data for pie chart');
+        console.warn('No data for bar chart 1');
       }
 
-      // Bar
-      const types = ['delivery_revenue', 'cafe_revenue', 'pickup_revenue'];
-      const typeData = types.map(t => {
-        let sum = 0;
-        Object.values(allVenues).forEach(s => sum += s[t] || 0);
-        return sum;
-      });
-      const ctxBar = document.getElementById('barChart')?.getContext('2d');
-      if (ctxBar && typeData.some(d => d > 0)) {
-        if (barChart) barChart.destroy();
-        barChart = new Chart(ctxBar, {
-          type: 'bar',
-          data: { labels: ['Доставка', 'Кафе', 'Самовывоз'], datasets: [{ label: 'Выручка ₽', data: typeData, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'] }] },
-          options: { responsive: true, scales: { y: { beginAtZero: true } } }
-        });
-      } else {
-        console.warn('No data for bar chart');
-      }
+      // Initial render for Bar Chart 2
+      updateBarChart2();
     }
 
-    function renderHeatmap(data) {
-      console.log('Rendering heatmap with data:', data);  // Debug
-      const table = document.getElementById('heatmap');
-      if (!table) return;
-      const allVenues = { ...data.year_round, ...data.seasonal };
-      const venues = Object.keys(allVenues);
-      let html = '<tr><th>Час</th>' + venues.map(v => `<th>${v}</th>`).join('') + '</tr>';
-      const hourlyData = {};
-      // Агрегация по HourClose (предполагая raw data; если нет — mock)
-      (data.raw_rows || []).forEach(row => {
-        const hour = row.HourClose || Math.floor(Math.random() * 24);
-        const venue = rename_venue(row.RestorauntGroup);
-        if (!hourlyData[hour]) hourlyData[hour] = {};
-        hourlyData[hour][venue] = (hourlyData[hour][venue] || 0) + row.DishDiscountSumInt;
-      });
-      for (let hour = 0; hour < 24; hour++) {
-        html += `<tr><td>${hour}:00</td>`;
-        venues.forEach(venue => {
-          const revenue = hourlyData[hour]?.[venue] || Math.random() * 5000;  // Fallback mock
-          const maxRevenue = 5000;  // Adjust based on data
-          const intensity = revenue / maxRevenue;
-          const color = `hsl(${120 * (1 - intensity)}, 70%, ${50 + intensity * 30}%)`;  // Green to red gradient
-          html += `<td class="heatmap-cell" style="background: ${color}; color: ${intensity > 0.5 ? 'white' : 'black'};">${fmt.format(revenue)}</td>`;
-        });
-        html += '</tr>';
+    function updateBarChart2() {
+      const dataType = document.getElementById('dataType').value;
+      const allVenues = { ...dataCache.data.year_round, ...dataCache.data.seasonal };
+      const labels = Object.keys(allVenues);
+      const ctxBar2 = document.getElementById('barChart2')?.getContext('2d');
+      let dataValues;
+
+      switch(dataType) {
+        case 'orders':
+          dataValues = labels.map(l => allVenues[l].total_orders || 0);
+          break;
+        case 'delivery':
+          dataValues = labels.map(l => allVenues[l].delivery_revenue || 0);
+          break;
+        case 'cafe':
+          dataValues = labels.map(l => allVenues[l].cafe_revenue || 0);
+          break;
+        case 'pickup':
+          dataValues = labels.map(l => allVenues[l].pickup_revenue || 0);
+          break;
+        default: // revenue
+          dataValues = labels.map(l => allVenues[l].total_revenue || 0);
       }
-      table.innerHTML = html;
+
+      if (ctxBar2 && labels.length > 0) {
+        if (barChart2) barChart2.destroy();
+        barChart2 = new Chart(ctxBar2, {
+          type: 'bar',
+          data: { labels, datasets: [{ label: `${dataType === 'orders' ? 'Заказы' : dataType === 'delivery' ? 'Доставка ₽' : dataType === 'cafe' ? 'Кафе ₽' : dataType === 'pickup' ? 'Самовывоз ₽' : 'Выручка ₽'}`, data: dataValues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
+          options: { 
+            responsive: true, 
+            scales: { 
+              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
+              y: { beginAtZero: true, title: { display: true, text: dataType === 'orders' ? 'Количество заказов' : 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
+            },
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      } else {
+        console.warn('No data for bar chart 2');
+      }
     }
 
     function showToast(message, type = 'success') {
@@ -574,7 +573,9 @@
         return;
       }
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+      const doc = new jsPDF({ putOnlyUsedFonts: true, floatPrecision: 16 }); // Исправление проблем с символами
+      doc.setFont("helvetica"); // Установка надежного шрифта
+      doc.setFontSize(12);
       doc.text('Чи-Фань Выручка', 10, 10);
       doc.text(`Дата: ${dataCache.data.date} ${dataCache.data.time}`, 10, 20);
       
@@ -583,6 +584,10 @@
       Object.entries(venues || {}).forEach(([v, s]) => {
         doc.text(`${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`, 10, y);
         y += 10;
+        if (y > 280) { // Новая страница, если текст выходит за пределы
+          doc.addPage();
+          y = 20;
+        }
       });
       
       doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
@@ -606,7 +611,6 @@
         renderVenues(data, 'year-round');
         renderVenues(data, 'seasonal');
         renderCharts(data);
-        renderHeatmap(data);
         showToast('Данные обновлены!');
       } catch (e) {
         console.error("Ошибка загрузки:", e);
