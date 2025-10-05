@@ -4,47 +4,248 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Чи-Фань — Выручка в реальном времени</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
-    .card { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
-    .good { color: #22c55e; }
-    .warn { color: #f59e0b; }
-    .bad { color: #ef4444; }
+    :root {
+      --primary-color: #3b82f6;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+
+    #last-update {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      margin: 10px 0;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    #plan-progress {
+      text-align: center;
+    }
+
+    #plan-progress h3 {
+      margin-top: 0;
+      color: var(--text-primary);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    #plan-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .progress-container {
+      position: relative;
+      height: 20px;
+      background: #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success-color), #059669);
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .refresh-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 10px auto;
+      display: block;
+      transition: background 0.3s ease;
+    }
+
+    .refresh-btn:hover {
+      background: #2563eb;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 20px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .year-round-icon { color: var(--primary-color); }
+    .seasonal-icon { color: var(--warning-color); }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th {
+      background: #f1f5f9;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s ease;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    .revenue-cell {
+      font-weight: 500;
+    }
+
+    .status-good { color: var(--success-color); }
+    .status-warn { color: var(--warning-color); }
+    .status-bad { color: var(--danger-color); }
+
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      h1 { font-size: 2rem; }
+      table { font-size: 0.9rem; }
+      th, td { padding: 8px; }
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
-  <h1>Выручка по филиалам</h1>
-  <div id="last-update">Загрузка...</div>
-  <div id="plan-progress" class="card">
-    <h3>Прогресс по плану</h3>
-    <div id="plan-text">—</div>
-    <div id="plan-bar">[...]</div>
-  </div>
-  <div id="venues-data">
-    <h3>Круглогодичные филиалы</h3>
-    <div id="year-round"></div>
-    <h3>Сезонные филиалы</h3>
-    <div id="seasonal"></div>
+  <div class="container">
+    <h1><i class="fas fa-utensils"></i> Чи-Фань — Выручка в реальном времени</h1>
+    <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
+    
+    <button class="refresh-btn" onclick="load()"><i class="fas fa-sync-alt"></i> Обновить</button>
+
+    <div id="plan-progress" class="card">
+      <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
+      <div id="plan-text">—</div>
+      <div class="progress-container">
+        <div id="plan-bar" class="progress-bar"></div>
+      </div>
+      <div id="progress-text" class="progress-text">0%</div>
+    </div>
+
+    <div id="venues-data">
+      <h3 class="section-title"><i class="fas fa-building year-round-icon"></i> Круглогодичные филиалы</h3>
+      <div id="year-round" class="table-wrapper loading"></div>
+      
+      <h3 class="section-title"><i class="fas fa-leaf seasonal-icon"></i> Сезонные филиалы</h3>
+      <div id="seasonal" class="table-wrapper loading"></div>
+    </div>
   </div>
 
   <script>
     const fmt = new Intl.NumberFormat('ru-RU');
 
+    function getStatusClass(value, plan, totalPlan) {
+      if (!plan || !totalPlan) return '';
+      const fulfill = (value / totalPlan) * 100;
+      if (fulfill >= 100) return 'status-good';
+      if (fulfill >= 80) return 'status-warn';
+      return 'status-bad';
+    }
+
     function renderVenueTable(venues, containerId) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
+      if (Object.keys(venues).length === 0) {
+        container.innerHTML = '<p class="loading">Нет данных</p>';
+        return;
+      }
       const table = document.createElement('table');
       const header = `<tr><th>Филиал</th><th>Заказы</th><th>Выручка</th><th>Доставка</th><th>Кафе</th><th>Самовывоз</th></tr>`;
       table.innerHTML = header;
 
       for (const [name, data] of Object.entries(venues)) {
         const row = document.createElement('tr');
+        const totalRevenueClass = getStatusClass(data.total_revenue, 200000 / Object.keys(venues).length, 200000); // Примерный план на филиал
         row.innerHTML = `
-          <td>${name}</td>
+          <td><strong>${name}</strong></td>
           <td>${data.total_orders}</td>
-          <td>${fmt.format(data.total_revenue)} ₽</td>
+          <td class="revenue-cell ${totalRevenueClass}">${fmt.format(data.total_revenue)} ₽</td>
           <td>${fmt.format(data.delivery_revenue)} ₽</td>
           <td>${fmt.format(data.cafe_revenue)} ₽</td>
           <td>${fmt.format(data.pickup_revenue)} ₽</td>
@@ -61,19 +262,37 @@
       const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
 
       document.getElementById('plan-text').textContent = `${fmt.format(total.total_revenue)} ₽ / ${fmt.format(plan.total_revenue)} ₽`;
-      document.getElementById('plan-bar').textContent = `[${'█'.repeat(Math.floor(revenueFulfill / 5))}${'░'.repeat(20 - Math.floor(revenueFulfill / 5))}] ${revenueFulfill.toFixed(1)}%`;
+      document.getElementById('plan-bar').style.width = Math.min(revenueFulfill, 100) + '%';
+      document.getElementById('progress-text').textContent = `${revenueFulfill.toFixed(1)}%`;
+      
+      // Цвет бара на основе прогресса
+      const bar = document.getElementById('plan-bar');
+      if (revenueFulfill >= 100) {
+        bar.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+      } else if (revenueFulfill >= 80) {
+        bar.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
+      } else {
+        bar.style.background = 'linear-gradient(90deg, #ef4444, #dc2626)';
+      }
     }
 
     async function load() {
+      const container = document.getElementById('last-update');
+      container.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+      
       try {
         const response = await fetch('data/revenue.json');
+        if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        document.getElementById('last-update').textContent = `Последнее обновление: ${data.time} (${data.date})`;
+        document.getElementById('last-update').innerHTML = `<i class="fas fa-check-circle"></i> Последнее обновление: ${data.time} (${data.date})`;
         renderPlanProgress(data);
         renderVenueTable(data.year_round, 'year-round');
         renderVenueTable(data.seasonal, 'seasonal');
       } catch (e) {
         console.error("Ошибка загрузки данных:", e);
+        document.getElementById('last-update').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+        document.getElementById('year-round').innerHTML = '<p class="loading">Ошибка загрузки данных</p>';
+        document.getElementById('seasonal').innerHTML = '<p class="loading">Ошибка загрузки данных</p>';
       }
     }
 
