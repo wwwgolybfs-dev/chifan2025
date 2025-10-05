@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    /* Твой CSS без изменений — он ок */
     :root {
       --primary-color: #3b82f6;
       --success-color: #10b981;
@@ -177,6 +178,7 @@
       border-radius: 12px;
       box-shadow: var(--shadow);
       transition: box-shadow 0.3s ease;
+      cursor: pointer;
     }
 
     .venue-card:hover {
@@ -280,6 +282,15 @@
     .toast.show {
       opacity: 1;
     }
+
+    .error-msg {
+      color: var(--danger-color);
+      text-align: center;
+      padding: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 8px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body data-theme="light">
@@ -333,7 +344,7 @@
 
   <script>
     let pieChart, barChart;
-    const dataCache = {};  // Кэш для heatmap
+    let dataCache = {};  // Кэш данных
 
     const fmt = new Intl.NumberFormat('ru-RU');
 
@@ -354,12 +365,15 @@
     }
 
     function renderMetrics(data) {
-      const total = data.total || {};
-      const plan = data.plan || {};
+      const total = data.total || { total_revenue: 0, total_orders: 0 };
+      const plan = data.plan || { total_revenue: 0, total_orders: 0 };
       const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
       const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
 
+      console.log('Metrics data:', { total, plan, revenueFulfill, ordersFulfill });  // Debug
+
       const metrics = document.getElementById('metrics');
+      if (!metrics) return;
       metrics.innerHTML = `
         <div class="metric-card">
           <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
@@ -386,19 +400,21 @@
       // Прогресс-бар
       const bar = document.getElementById('plan-bar');
       const progressText = document.getElementById('progress-text');
-      bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
-      bar.style.width = Math.min(revenueFulfill, 100) + '%';
-      progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+      if (bar && progressText) {
+        bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
+        bar.style.width = Math.min(revenueFulfill, 100) + '%';
+        progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+      }
     }
 
     function renderVenueCard(venue, stats, type = 'year-round') {
-      const revenueFulfill = 200000 / (YEAR_ROUND_VENUES.length + SEASONAL_VENUES.length);  // Примерный план на филиал
-      const fulfill = stats.total_revenue / revenueFulfill * 100;
+      const avgPlanPerVenue = 200000 / (YEAR_ROUND_VENUES.length + SEASONAL_VENUES.length);  // Fallback
+      const fulfill = stats.total_revenue / avgPlanPerVenue * 100;
       const statusClass = getStatusClass(fulfill);
 
       return `
-        <div class="venue-card" onclick="sortVenues('${type}')">
-          <div class="venue-name">${venue} <i class="fas fa-sort" style="float: right; cursor: pointer;"></i></div>
+        <div class="venue-card">
+          <div class="venue-name">${venue}</div>
           <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(stats.total_revenue)} ₽</span></div>
           <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders}</span></div>
           <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format(stats.delivery_revenue)} ₽</span></div>
@@ -415,10 +431,17 @@
     }
 
     function renderVenues(data, containerId) {
-      const venues = data[containerId === 'year-round' ? 'year_round' : 'seasonal'] || {};
+      console.log(`Rendering ${containerId}:`, data);  // Debug
+      const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
+      const venues = data[key] || {};
       const container = document.getElementById(containerId);
+      if (!container) {
+        console.error('Container not found:', containerId);
+        return;
+      }
       if (Object.keys(venues).length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Нет данных</p>';
+        container.innerHTML = '<div class="error-msg">Нет данных по филиалам</div>';
+        console.warn('No venues data for', key);
         return;
       }
       const sortedVenues = Object.entries(venues).sort((a, b) => b[1].total_revenue - a[1].total_revenue);
@@ -426,81 +449,102 @@
     }
 
     function renderCharts(data) {
-      // Pie chart: Доля по филиалам
-      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      console.log('Rendering charts with data:', data);  // Debug
       const allVenues = { ...data.year_round, ...data.seasonal };
       const labels = Object.keys(allVenues);
-      const revenues = labels.map(l => allVenues[l].total_revenue);
-      if (pieChart) pieChart.destroy();
-      pieChart = new Chart(ctxPie, {
-        type: 'pie',
-        data: { labels, datasets: [{ data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-      });
+      const revenues = labels.map(l => allVenues[l].total_revenue || 0);
+      
+      // Pie
+      const ctxPie = document.getElementById('pieChart')?.getContext('2d');
+      if (ctxPie && labels.length > 0) {
+        if (pieChart) pieChart.destroy();
+        pieChart = new Chart(ctxPie, {
+          type: 'pie',
+          data: { labels, datasets: [{ data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
+          options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+      } else {
+        console.warn('No data for pie chart');
+      }
 
-      // Bar chart: По типам
-      const ctxBar = document.getElementById('barChart').getContext('2d');
+      // Bar
       const types = ['delivery_revenue', 'cafe_revenue', 'pickup_revenue'];
       const typeData = types.map(t => {
         let sum = 0;
-        Object.values({ ...data.year_round, ...data.seasonal }).forEach(s => sum += s[t.replace('_revenue', '') + '_revenue'] || 0);
+        Object.values(allVenues).forEach(s => sum += s[t] || 0);
         return sum;
       });
-      if (barChart) barChart.destroy();
-      barChart = new Chart(ctxBar, {
-        type: 'bar',
-        data: { labels: ['Доставка', 'Кафе', 'Самовывоз'], datasets: [{ label: 'Выручка ₽', data: typeData, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'] }] },
-        options: { responsive: true, scales: { y: { beginAtZero: true } } }
-      });
+      const ctxBar = document.getElementById('barChart')?.getContext('2d');
+      if (ctxBar && typeData.some(d => d > 0)) {
+        if (barChart) barChart.destroy();
+        barChart = new Chart(ctxBar, {
+          type: 'bar',
+          data: { labels: ['Доставка', 'Кафе', 'Самовывоз'], datasets: [{ label: 'Выручка ₽', data: typeData, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'] }] },
+          options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+      } else {
+        console.warn('No data for bar chart');
+      }
     }
 
     function renderHeatmap(data) {
-      // Упрощенный heatmap: часы vs филиалы (используем HourClose из raw data, если доступно; иначе mock)
+      console.log('Rendering heatmap with data:', data);  // Debug
       const table = document.getElementById('heatmap');
-      let html = '<tr><th>Час</th>' + Object.keys(data.year_round).map(v => `<th>${v}</th>`).join('') + '</tr>';
+      if (!table) return;
+      let html = '<tr><th>Час</th>' + Object.keys(data.year_round || {}).map(v => `<th>${v}</th>`).join('') + '</tr>';
       for (let hour = 0; hour < 24; hour++) {
         html += `<tr><td>${hour}:00</td>`;
-        Object.keys(data.year_round).forEach(venue => {
-          // Mock revenue по часу; в реале — агрегируй из data с HourClose
+        Object.keys(data.year_round || {}).forEach(venue => {
+          // Mock; в реале — агрегируй по HourClose из raw data
           const mockRevenue = Math.random() * 5000;
-          const color = mockRevenue > 2000 ? '#10b981' : mockRevenue > 1000 ? '#f59e0b' : '#ef4444';
-          html += `<td class="heatmap-cell" style="background: ${color};">${fmt.format(mockRevenue)}</td>`;
+          const intensity = mockRevenue / 5000;
+          const color = `hsl(${120 * (1 - intensity)}, 70%, ${50 + intensity * 30}%)`;  // Зеленый градиент
+          html += `<td class="heatmap-cell" style="background: ${color}; color: ${intensity > 0.5 ? 'white' : 'black'};">${fmt.format(mockRevenue)}</td>`;
         });
         html += '</tr>';
       }
       table.innerHTML = html;
     }
 
-    function showToast(message) {
+    function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
       toast.textContent = message;
+      toast.style.background = type === 'error' ? 'var(--danger-color)' : 'var(--success-color)';
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    function exportCSV() {
-      // Mock data из global data
+    function exportCSV(filter = 'all') {
+      console.log('Exporting CSV with filter:', filter);  // Debug
+      if (!dataCache.data) {
+        showToast('Нет данных для экспорта', 'error');
+        return;
+      }
       let csv = 'Филиал,Заказы,Выручка,Доставка,Кафе,Самовывоз\n';
-      // Добавь строки из data
+      const venues = filter === 'year-round' ? dataCache.data.year_round : filter === 'seasonal' ? dataCache.data.seasonal : { ...dataCache.data.year_round, ...dataCache.data.seasonal };
+      Object.entries(venues || {}).forEach(([v, s]) => {
+        csv += `"${v}",${s.total_orders},${s.total_revenue},${s.delivery_revenue},${s.cafe_revenue},${s.pickup_revenue}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `chifan_${dataCache.data.date || 'today'}.csv`; a.click();
+      URL.revokeObjectURL(url);
       showToast('CSV экспортирован!');
-      // Реальный download: const blob = new Blob([csv], {type: 'text/csv'}); ...
-    }
-
-    function sortVenues(type) {
-      // Toggle sort (revenue desc/asc)
-      showToast(`Сортировка ${type} обновлена`);
     }
 
     async function load() {
       const updateEl = document.getElementById('last-update');
-      updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+      if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
       
       try {
         const response = await fetch('data/revenue.json');
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const data = await response.json();
-        dataCache.data = data;  // Global for export/heatmap
-        updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
+        console.log('Loaded data:', data);  // Debug full JSON
+        dataCache.data = data;
+        
+        if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
         
         renderMetrics(data);
         renderVenues(data, 'year-round');
@@ -509,9 +553,12 @@
         renderHeatmap(data);
         showToast('Данные обновлены!');
       } catch (e) {
-        console.error("Ошибка:", e);
-        updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
-        showToast('Ошибка загрузки');
+        console.error("Ошибка загрузки:", e);
+        if (updateEl) updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+        document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
+        document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+        document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+        showToast('Ошибка загрузки данных', 'error');
       }
     }
 
