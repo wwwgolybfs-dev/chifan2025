@@ -27,7 +27,7 @@
     [data-theme="dark"] {
       --bg-color: #0f172a;
       --card-bg: #1e293b;
-      --text-primary: #f1f5f9; /* Светлый текст для темной темы */
+      --text-primary: #f1f5f9;
       --text-secondary: #94a3b8;
       --border-color: #334155;
     }
@@ -39,7 +39,7 @@
       background: var(--bg-color);
       color: var(--text-primary);
       line-height: 1.6;
-      transition: background 0.3s ease, color 0.3s ease;
+      transition: background 0.9s ease, color 0.9s ease;
     }
 
     .container {
@@ -68,7 +68,7 @@
       padding: 10px;
       border-radius: 50%;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.9s ease;
     }
 
     .theme-toggle:hover {
@@ -101,7 +101,7 @@
       padding: 10px 20px;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.9s ease;
       font-size: 0.9rem;
     }
 
@@ -122,7 +122,7 @@
       border-radius: 12px;
       box-shadow: var(--shadow);
       text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.9s ease, box-shadow 0.9s ease;
       animation: slideIn 0.5s ease;
       opacity: 0;
       transform: translateY(20px);
@@ -221,7 +221,7 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: var(--shadow);
-      transition: box-shadow 0.3s ease;
+      transition: box-shadow 0.9s ease;
       cursor: pointer;
     }
 
@@ -261,7 +261,7 @@
     }
 
     .chart-container canvas {
-      color: var(--text-primary); /* Цвет текста диаграммы адаптируется под тему */
+      color: var(--text-primary);
     }
 
     @keyframes slideIn {
@@ -284,7 +284,7 @@
       padding: 10px 20px;
       border-radius: 8px;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.9s ease;
     }
 
     .toast.show {
@@ -632,16 +632,19 @@
         }
       });
 
-      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf');
+      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
       showToast('PDF экспортирован!');
     }
 
     async function load() {
+      console.log('Starting load function...');
       const updateEl = document.getElementById('last-update');
       if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
 
       try {
+        console.log('Fetching data from data/revenue.json...');
         const response = await fetch('data/revenue.json', { cache: 'no-cache' });
+        console.log('Fetch response status:', response.status);
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const data = await response.json();
         console.log('Loaded data:', data);
