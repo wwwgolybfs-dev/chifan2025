@@ -1,24 +1,24 @@
 {
   "date": "05.10.2025",
-  "time": "10:28",
+  "time": "10:29",
   "year_round": {
     "Красота": {
-      "total_orders": 36,
+      "total_orders": 37,
       "delivery_orders": 28,
       "pickup_orders": 3,
-      "cafe_orders": 5,
-      "total_revenue": 54532.0,
+      "cafe_orders": 6,
+      "total_revenue": 55250.0,
       "delivery_revenue": 48292.0,
       "pickup_revenue": 3395.0,
-      "cafe_revenue": 2845.0
+      "cafe_revenue": 3563.0
     },
     "Тобольская": {
-      "total_orders": 1,
-      "delivery_orders": 0,
+      "total_orders": 2,
+      "delivery_orders": 1,
       "pickup_orders": 0,
       "cafe_orders": 1,
-      "total_revenue": 165.0,
-      "delivery_revenue": 0,
+      "total_revenue": 1720.0,
+      "delivery_revenue": 1555.0,
       "pickup_revenue": 0,
       "cafe_revenue": 165.0
     },
@@ -35,8 +35,8 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 41,
-    "total_revenue": 56337.0
+    "total_orders": 43,
+    "total_revenue": 58610.0
   },
   "plan": {
     "total_revenue": 200000,
