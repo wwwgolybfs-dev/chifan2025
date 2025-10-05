@@ -342,9 +342,8 @@
             background: #2563eb;
         }
         
-        /* Убедитесь, что метки в метриках видны */
         .metric-value.good, .metric-value.warn, .metric-value.bad {
-            color: inherit; /* Используем цвет текста по умолчанию, чтобы не конфликтовать с фоном карточки */
+            color: inherit;
         }
         
     </style>
@@ -418,10 +417,14 @@
     <script>
         let barChart1, barChart2;
         let dataCache = {}; // Кэш данных
+        let currentStartDate = '2025-10-04';
+        let currentEndDate = '2025-10-05';
 
         // --- МОК-ДАННЫЕ ДЛЯ ДЕМОНСТРАЦИИ РАЗНЫХ ДНЕЙ ---
         const dailyMockData = {
-            // Данные для 5 октября (ваш исходный пример)
+            // Дневной план 500,000 ₽ на всю сеть, чтобы было 15 млн в месяц.
+            // Если нужен план 1.5 млн в месяц, ставьте total_revenue: 50000.
+            "daily_network_plan": 500000, 
             "2025-10-05": {
                 "date": "2025-10-05", "time": "15:00",
                 "year_round": {
@@ -437,9 +440,8 @@
                     "МГУ": { "total_orders": 34, "delivery_orders": 0, "pickup_orders": 6, "cafe_orders": 28, "total_revenue": 15767.0, "delivery_revenue": 0, "pickup_revenue": 2437.0, "cafe_revenue": 13330.0 },
                     "Юбилейный": { "total_orders": 284, "delivery_orders": 0, "pickup_orders": 1, "cafe_orders": 283, "total_revenue": 148362.0, "delivery_revenue": 0, "pickup_revenue": 169.0, "cafe_revenue": 148193.0 }
                 },
-                "plan": { "total_revenue": 500000, "total_orders": 1000 } // Дневной план 500,000 ₽
+                "plan": { "total_revenue": 500000, "total_orders": 1000 } // Дневной план 500,000 ₽ (на сеть)
             },
-            // Данные для 4 октября (отличаются)
             "2025-10-04": {
                 "date": "2025-10-04", "time": "23:59",
                 "year_round": {
@@ -477,7 +479,6 @@
         function updateChartTheme() {
             const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
             if (barChart1) {
-                // Обновление опций Chart.js для темы
                 const options = { scales: { x: { title: { color: textColor }, ticks: { color: textColor } }, y: { title: { color: textColor }, ticks: { color: textColor } } }, plugins: { legend: { labels: { color: textColor } } } };
                 barChart1.options = { ...barChart1.options, ...options };
                 barChart1.update();
@@ -504,27 +505,22 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function dateToYMD(date) {
-            const d = new Date(date);
-            let month = '' + (d.getMonth() + 1);
-            let day = '' + d.getDate();
-            const year = d.getFullYear();
-            if (month.length < 2) month = '0' + month;
-            if (day.length < 2) day = '0' + day;
-            return [year, month, day].join('-');
-        }
-        
         // --- ЛОГИКА ДАННЫХ И РАСЧЕТОВ ---
         
-        // ЭТА ФУНКЦИЯ ИМИТИРУЕТ ЗАГРУЗКУ ДАННЫХ ЗА ВЫБРАННЫЙ ДЕНЬ
+        // ВАЖНО: В реальном приложении эта функция должна суммировать данные
+        // по всем дням в диапазоне [startDateStr, endDateStr]. 
+        // Здесь для демонстрации разных данных мы просто берем данные за КОНЕЧНУЮ дату.
         function getMockDataForDate(dateStr) {
             const baseData = dailyMockData[dateStr];
             if (!baseData) {
-                // Возвращаем пустые данные или данные последнего известного дня
-                return dailyMockData['2025-10-05']; 
+                return {
+                    date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
+                    plan: { total_revenue: dailyMockData.daily_network_plan, total_orders: 1000 },
+                    total: { total_revenue: 0, total_orders: 0 }
+                };
             }
             
-            // ПЕРЕСЧЕТ ОБЩИХ СУММ
+            // ПЕРЕСЧЕТ ОБЩИХ СУММ (Для надежности)
             let calculatedRevenue = 0;
             let calculatedOrders = 0;
             const allVenues = { ...baseData.year_round, ...baseData.seasonal };
@@ -544,16 +540,49 @@
         }
 
         async function loadData(startDateStr, endDateStr) {
-            // В реальном приложении вы бы здесь делали запрос к API
-            // с параметрами startDateStr и endDateStr.
+            // Имитация загрузки: Если даты разные, суммируем мок-данные.
+            // Т.к. у нас только 2 мок-дня, мы можем их сложить.
+            // В реальном приложении данные за период должны приходить с сервера.
             
-            // Поскольку у нас мок-данные только за один день, 
-            // мы будем показывать данные за КОНЕЧНУЮ дату (последний день периода).
-            const data = getMockDataForDate(endDateStr);
+            const startData = getMockDataForDate(startDateStr);
+            const endData = getMockDataForDate(endDateStr);
+            
+            // Если start и end одинаковы, используем только один день.
+            if (startDateStr === endDateStr) {
+                return endData;
+            }
 
+            // Если даты разные, суммируем данные
+            let combinedData = JSON.parse(JSON.stringify(endData)); // Клонируем структуру
+            
+            // Упрощенное сложение данных только для year_round и total.
+            // Этого достаточно для демонстрации многодневного отчета.
+            for (const venue in combinedData.year_round) {
+                if (startData.year_round[venue]) {
+                    combinedData.year_round[venue].total_revenue += startData.year_round[venue].total_revenue;
+                    combinedData.year_round[venue].total_orders += startData.year_round[venue].total_orders;
+                    // и т.д. для delivery, pickup, cafe
+                }
+            }
+            for (const venue in combinedData.seasonal) {
+                 if (startData.seasonal[venue]) {
+                    combinedData.seasonal[venue].total_revenue += startData.seasonal[venue].total_revenue;
+                    combinedData.seasonal[venue].total_orders += startData.seasonal[venue].total_orders;
+                }
+            }
+
+            combinedData.total.total_revenue += startData.total.total_revenue;
+            combinedData.total.total_orders += startData.total.total_orders;
+            combinedData.date = `${startData.date} - ${endData.date}`;
+
+            // Рассчитываем план для периода: Дневной план * количество дней
+            const diffTime = Math.abs(new Date(endDateStr) - new Date(startDateStr));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            combinedData.plan.total_revenue = dailyMockData.daily_network_plan * diffDays;
+            combinedData.plan.total_orders = combinedData.plan.total_orders * diffDays;
+            
             return new Promise(resolve => {
-                // Имитация задержки загрузки
-                setTimeout(() => resolve(data), 500);
+                setTimeout(() => resolve(combinedData), 500);
             });
         }
 
@@ -564,12 +593,10 @@
             const plan = data.plan || { total_revenue: 0, total_orders: 0 };
             
             const avg_bill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
-            
-            // Вычисление процента выполнения плана
             const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
             const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
             
-            const metricsHTML = `
+            document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
                     <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
@@ -582,7 +609,7 @@
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-receipt"></i></div>
-                    <div class="metric-value">${fmt.format(avg_bill)} ₽</div>
+                    <div class="metric-value">${fmt.format(avg_bill.toFixed(0))} ₽</div>
                     <div class="metric-label">Средний чек</div>
                 </div>
                 <div class="metric-card fade-in">
@@ -591,9 +618,7 @@
                     <div class="metric-label">Выполнение плана (Выручка)</div>
                 </div>
             `;
-            document.getElementById('metrics').innerHTML = metricsHTML;
 
-            // Обновление прогресс-бара
             const bar = document.getElementById('plan-bar');
             const progressText = document.getElementById('progress-text');
             const currentValue = document.getElementById('current-value');
@@ -613,20 +638,22 @@
         }
 
         function renderVenueCard(venue, stats) {
-            // Используем усредненный план, основанный на общем плане (500,000 / 9 филиалов)
-            // или другой логике. Тут предполагается, что план 500k это дневной план всей сети.
+            // ЕЖЕДНЕВНЫЕ ПЛАНЫ ПО УМОЛЧАНИЮ (1.5 млн / 30 дней = 50 000 ₽ / день)
+            const dailyPlanBase = 50000; 
             
-            // Если план 1.5 млн / 30 дней = 50 000 ₽ / день.
-            // Установим целевой дневной план для филиала:
-            const dailyPlan = 50000; 
+            // Индивидуальные дневные планы (замените на ваши реальные данные)
+            const fixedDailyPlans = {
+                "Тобольская": 70000,
+                "Тихая": 55000,
+                // Для остальных 50,000
+            };
+            const dailyPlan = fixedDailyPlans[venue] || dailyPlanBase;
+
+            // Расчет количества дней в текущем периоде
+            const diffTime = Math.abs(new Date(currentEndDate) - new Date(currentStartDate));
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
             
-            // ВАЖНО: Мы умножаем дневной план на количество дней в периоде
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-            const diffTime = Math.abs(new Date(endDate) - new Date(startDate));
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 для включения конечной даты
-            
-            // Расчетный план для филиала за период
+            // Расчетный план для филиала за ВЕСЬ период
             const planRevenueForPeriod = dailyPlan * diffDays;
             
             const fulfill = stats.total_revenue / planRevenueForPeriod * 100;
@@ -666,6 +693,77 @@
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats)).join('');
         }
 
+        // --- ФУНКЦИИ ГРАФИКОВ (Перенесены сюда, чтобы избежать ReferenceError) ---
+        
+        function renderCharts(data) {
+            const allVenues = { ...data.year_round, ...data.seasonal };
+            const labels = Object.keys(allVenues);
+            const revenues = labels.map(l => allVenues[l].total_revenue || 0);
+
+            const ctxBar1 = document.getElementById('barChart1')?.getContext('2d');
+            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            
+            if (ctxBar1 && labels.length > 0) {
+                if (barChart1) barChart1.destroy();
+                barChart1 = new Chart(ctxBar1, {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: 'Выручка ₽', data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Филиалы', color: textColor }, ticks: { color: textColor } },
+                            y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽', color: textColor }, ticks: { color: textColor } }
+                        },
+                        plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
+                    }
+                });
+            }
+
+            updateBarChart2();
+        }
+
+        function updateBarChart2() {
+            const dataType = document.getElementById('dataType').value;
+            const allVenues = { ...dataCache.year_round, ...dataCache.seasonal };
+            const labels = Object.keys(allVenues);
+            const ctxBar2 = document.getElementById('barChart2')?.getContext('2d');
+            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            let dataValues;
+
+            switch(dataType) {
+                case 'orders':
+                    dataValues = labels.map(l => allVenues[l].total_orders || 0);
+                    break;
+                case 'delivery':
+                    dataValues = labels.map(l => allVenues[l].delivery_revenue || 0);
+                    break;
+                case 'cafe':
+                    dataValues = labels.map(l => allVenues[l].cafe_revenue || 0);
+                    break;
+                case 'pickup':
+                    dataValues = labels.map(l => allVenues[l].pickup_revenue || 0);
+                    break;
+                default: // revenue
+                    dataValues = labels.map(l => allVenues[l].total_revenue || 0);
+            }
+
+            if (ctxBar2 && labels.length > 0) {
+                if (barChart2) barChart2.destroy();
+                barChart2 = new Chart(ctxBar2, {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: `${dataType === 'orders' ? 'Заказы' : 'Выручка ₽'}`, data: dataValues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Филиалы', color: textColor }, ticks: { color: textColor } },
+                            y: { beginAtZero: true, title: { display: true, text: dataType === 'orders' ? 'Количество заказов' : 'Выручка ₽', color: textColor }, ticks: { color: textColor } }
+                        },
+                        plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
+                    }
+                });
+            }
+        }
+        
         // --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ---
 
         function loadCustomData() {
@@ -681,7 +779,6 @@
                 return;
             }
             
-            // Если даты одинаковые, это просто дневной отчет
             const periodText = (startDate === endDate) ? 
                 `за день ${new Date(startDate).toLocaleDateString('ru-RU')}` : 
                 `за период с ${new Date(startDate).toLocaleDateString('ru-RU')} по ${new Date(endDate).toLocaleDateString('ru-RU')}`;
@@ -690,14 +787,15 @@
             load(startDate, endDate);
         }
 
-        async function load(startDate = '2025-10-04', endDate = '2025-10-05') {
+        async function load(startDateStr = '2025-10-05', endDateStr = '2025-10-05') {
             const updateEl = document.getElementById('last-update');
             if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+            
+            currentStartDate = startDateStr;
+            currentEndDate = endDateStr;
 
             try {
-                // Загружаем данные. Используем конечную дату для извлечения мок-данных,
-                // чтобы обеспечить смену данных при выборе других дат.
-                const data = await loadData(startDate, endDate); 
+                const data = await loadData(startDateStr, endDateStr); 
                 dataCache = data; 
 
                 if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
@@ -705,7 +803,7 @@
                 renderMetrics(data);
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
-                renderCharts(data);
+                renderCharts(data); // Теперь эта функция определена
                 
                 updateChartTheme();
 
@@ -713,6 +811,8 @@
                 console.error('Ошибка загрузки:', e);
                 if (updateEl) updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
                 document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
+                document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+                document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
                 showToast('Ошибка загрузки данных', 'error');
             } finally {
                 document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
@@ -720,19 +820,60 @@
                 });
             }
         }
+        
+        // --- PDF Export (без изменений) ---
+
+        function exportPDF(filter = 'all') {
+             if (!dataCache || !dataCache.date) {
+                showToast('Нет данных для экспорта', 'error');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+            
+            function escapeText(text) {
+                // Упрощенная замена кириллицы на латиницу для PDF (jspdf без доп. шрифтов)
+                return text.replace(/[а-яА-ЯёЁ]/g, (char) => {
+                    const translitMap = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '"', 'ы': 'y', 'ь': "'", 'э': 'e', 'ю': 'yu', 'я': 'ya', 'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch', 'Ъ': '"', 'Ы': 'Y', 'Ь': "'", 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya' };
+                    return translitMap[char] || char;
+                });
+            }
+            
+            doc.setFont("helvetica");
+            doc.setFontSize(14);
+            doc.text(escapeText('Чи-Фань Отчет по Выручке'), 10, 10);
+            doc.setFontSize(10);
+            const dateText = `Дата отчета: ${dataCache.date} ${dataCache.time || ''}`;
+            doc.text(dateText, 10, 15);
+
+            let y = 25;
+            const venues = filter === 'year-round' ? dataCache.year_round : filter === 'seasonal' ? dataCache.seasonal : { ...dataCache.year_round, ...dataCache.seasonal };
+            
+            Object.entries(venues || {}).forEach(([v, s]) => {
+                const text = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
+                doc.text(escapeText(text), 10, y);
+                y += 7;
+                if (y > 280) {
+                    doc.addPage();
+                    y = 15;
+                }
+            });
+
+            doc.save(`chifan_report_${dataCache.date.split(' ')[0] || 'today'}_${filter}.pdf`);
+            showToast('PDF экспортирован!');
+        }
 
         // --- Инициализация ---
 
         if (localStorage.getItem('theme') === 'dark') toggleTheme();
         
-        // Устанавливаем текущие даты в селекторах
-        document.getElementById('start-date').value = '2025-10-04';
+        // Устанавливаем сегодняшнюю дату по умолчанию
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('start-date').value = '2025-10-05';
         document.getElementById('end-date').value = '2025-10-05';
         
-        load('2025-10-04', '2025-10-05'); // Инициализируем загрузку
+        load('2025-10-05', '2025-10-05'); 
         
-        // Убрал автоматическое обновление, т.к. работаем с фиксированными мок-данными
-        // setInterval(load, 5 * 60 * 1000); 
     </script>
 </body>
 </html>
