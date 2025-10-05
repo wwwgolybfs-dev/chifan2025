@@ -584,23 +584,41 @@
         return;
       }
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ putOnlyUsedFonts: true, floatPrecision: 16 }); // Исправление проблем с символами
-      doc.setFont("helvetica"); // Установка надежного шрифта
+      const doc = new jsPDF({
+        putOnlyUsedFonts: true,
+        floatPrecision: 16,
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      doc.setFont("helvetica"); // Используем надежный шрифт
       doc.setFontSize(12);
+      doc.setProperties({
+        title: 'Чи-Фань Выручка',
+        subject: 'Отчет по выручке',
+        author: 'Чи-Фань',
+        keywords: 'выручка, отчет, pdf',
+        creator: 'Grok 3 by xAI'
+      });
+
+      // Установка UTF-8 кодировки
+      doc.setTextColor(0, 0, 0); // Черный цвет текста
       doc.text('Чи-Фань Выручка', 10, 10);
+      doc.setFontSize(10);
       doc.text(`Дата: ${dataCache.data.date} ${dataCache.data.time}`, 10, 20);
-      
+
       let y = 30;
       const venues = filter === 'year-round' ? dataCache.data.year_round : filter === 'seasonal' ? dataCache.data.seasonal : { ...dataCache.data.year_round, ...dataCache.data.seasonal };
       Object.entries(venues || {}).forEach(([v, s]) => {
-        doc.text(`${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`, 10, y);
+        const text = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
+        doc.text(text, 10, y);
         y += 10;
         if (y > 280) { // Новая страница, если текст выходит за пределы
           doc.addPage();
           y = 20;
         }
       });
-      
+
       doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
       showToast('PDF экспортирован!');
     }
@@ -608,16 +626,16 @@
     async function load() {
       const updateEl = document.getElementById('last-update');
       if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
-      
+
       try {
         const response = await fetch('data/revenue.json', { cache: 'no-cache' });  // No cache for fresh data
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const data = await response.json();
         console.log('Loaded data:', data);  // Debug full JSON
         dataCache.data = data;
-        
+
         if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
-        
+
         renderMetrics(data);
         renderVenues(data, 'year-round');
         renderVenues(data, 'seasonal');
