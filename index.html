@@ -27,7 +27,7 @@
     [data-theme="dark"] {
       --bg-color: #0f172a;
       --card-bg: #1e293b;
-      --text-primary: #f1f5f9;
+      --text-primary: #f1f5f9; /* Светлый текст для темной темы */
       --text-secondary: #94a3b8;
       --border-color: #334155;
     }
@@ -384,12 +384,20 @@
       const icon = document.querySelector('.theme-toggle i');
       icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
       // Обновляем цвета шрифта и диаграмм при смене темы
-      if (barChart1) barChart1.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-      if (barChart1) barChart1.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-      if (barChart2) barChart2.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-      if (barChart2) barChart2.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
-      if (barChart1) barChart1.update();
-      if (barChart2) barChart2.update();
+      if (barChart1) {
+        barChart1.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart1.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart1.options.scales.x.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart1.options.scales.y.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart1.update();
+      }
+      if (barChart2) {
+        barChart2.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart2.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart2.options.scales.x.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart2.options.scales.y.ticks.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
+        barChart2.update();
+      }
     }
 
     function getStatusClass(fulfill) {
@@ -404,7 +412,7 @@
       const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
       const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
 
-      console.log('Metrics data:', { total, plan, revenueFulfill, ordersFulfill });  // Debug
+      console.log('Metrics data:', { total, plan, revenueFulfill, ordersFulfill });
 
       const metrics = document.getElementById('metrics');
       if (!metrics) return;
@@ -431,7 +439,6 @@
         </div>
       `;
 
-      // Прогресс-бар
       const bar = document.getElementById('plan-bar');
       const progressText = document.getElementById('progress-text');
       const currentValue = document.getElementById('current-value');
@@ -444,14 +451,12 @@
         planValue.textContent = `${fmt.format(plan.total_revenue)} ₽`;
       }
 
-      // Confetti если >100%
       if (revenueFulfill > 100) {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
     }
 
     function renderVenueCard(venue, stats, type = 'year-round') {
-      // Фиксированные планы для Тобольская и Тихая
       const fixedPlans = {
         "Тобольская": 3500000,
         "Тихая": 2100000
@@ -479,7 +484,7 @@
     }
 
     function renderVenues(data, containerId) {
-      console.log(`Rendering ${containerId}:`, data);  // Debug
+      console.log(`Rendering ${containerId}:`, data);
       const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
       const venues = data[key] || {};
       const container = document.getElementById(containerId);
@@ -497,32 +502,32 @@
     }
 
     function renderCharts(data) {
-      console.log('Rendering charts with data:', data);  // Debug
+      console.log('Rendering charts with data:', data);
       const allVenues = { ...data.year_round, ...data.seasonal };
       const labels = Object.keys(allVenues);
       const revenues = labels.map(l => allVenues[l].total_revenue || 0);
-      
-      // Bar Chart 1: Выручка по филиалам
+
       const ctxBar1 = document.getElementById('barChart1')?.getContext('2d');
       if (ctxBar1 && labels.length > 0) {
         if (barChart1) barChart1.destroy();
         barChart1 = new Chart(ctxBar1, {
           type: 'bar',
           data: { labels, datasets: [{ label: 'Выручка ₽', data: revenues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
-          options: { 
-            responsive: true, 
-            scales: { 
-              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
-              y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
+          options: {
+            responsive: true,
+            scales: {
+              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
+                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
+              y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
+                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
             },
-            plugins: { legend: { position: 'bottom' } }
+            plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } } }
           }
         });
       } else {
         console.warn('No data for bar chart 1');
       }
 
-      // Initial render for Bar Chart 2
       updateBarChart2();
     }
 
@@ -555,13 +560,15 @@
         barChart2 = new Chart(ctxBar2, {
           type: 'bar',
           data: { labels, datasets: [{ label: `${dataType === 'orders' ? 'Заказы' : dataType === 'delivery' ? 'Доставка ₽' : dataType === 'cafe' ? 'Кафе ₽' : dataType === 'pickup' ? 'Самовывоз ₽' : 'Выручка ₽'}`, data: dataValues, backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] }] },
-          options: { 
-            responsive: true, 
-            scales: { 
-              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
-              y: { beginAtZero: true, title: { display: true, text: dataType === 'orders' ? 'Количество заказов' : 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
+          options: {
+            responsive: true,
+            scales: {
+              x: { title: { display: true, text: 'Филиалы', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
+                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } },
+              y: { beginAtZero: true, title: { display: true, text: dataType === 'orders' ? 'Количество заказов' : 'Выручка ₽', color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() },
+                   ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } }
             },
-            plugins: { legend: { position: 'bottom' } }
+            plugins: { legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary').trim() } } }
           }
         });
       } else {
@@ -578,7 +585,7 @@
     }
 
     function exportPDF(filter = 'all') {
-      console.log('Exporting PDF with filter:', filter);  // Debug
+      console.log('Exporting PDF with filter:', filter);
       if (!dataCache.data) {
         showToast('Нет данных для экспорта', 'error');
         return;
@@ -591,7 +598,8 @@
         unit: 'mm',
         format: 'a4'
       });
-      doc.setFont("helvetica"); // Используем надежный шрифт
+
+      doc.setFont("helvetica");
       doc.setFontSize(12);
       doc.setProperties({
         title: 'Чи-Фань Выручка',
@@ -601,25 +609,30 @@
         creator: 'Grok 3 by xAI'
       });
 
-      // Установка UTF-8 кодировки
-      doc.setTextColor(0, 0, 0); // Черный цвет текста
+      function escapeText(text) {
+        return text.normalize('NFKD').replace(/[^\x00-\x7F]/g, '');
+      }
+
+      doc.setTextColor(0, 0, 0);
       doc.text('Чи-Фань Выручка', 10, 10);
       doc.setFontSize(10);
-      doc.text(`Дата: ${dataCache.data.date} ${dataCache.data.time}`, 10, 20);
+      const dateText = `Дата: ${dataCache.data.date} ${dataCache.data.time}`;
+      doc.text(dateText, 10, 20);
 
       let y = 30;
       const venues = filter === 'year-round' ? dataCache.data.year_round : filter === 'seasonal' ? dataCache.data.seasonal : { ...dataCache.data.year_round, ...dataCache.data.seasonal };
       Object.entries(venues || {}).forEach(([v, s]) => {
         const text = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
-        doc.text(text, 10, y);
+        console.log('Exporting text:', text);
+        doc.text(escapeText(text), 10, y);
         y += 10;
-        if (y > 280) { // Новая страница, если текст выходит за пределы
+        if (y > 280) {
           doc.addPage();
           y = 20;
         }
       });
 
-      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
+      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf');
       showToast('PDF экспортирован!');
     }
 
@@ -628,10 +641,10 @@
       if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
 
       try {
-        const response = await fetch('data/revenue.json', { cache: 'no-cache' });  // No cache for fresh data
+        const response = await fetch('data/revenue.json', { cache: 'no-cache' });
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         const data = await response.json();
-        console.log('Loaded data:', data);  // Debug full JSON
+        console.log('Loaded data:', data);
         dataCache.data = data;
 
         if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
@@ -649,15 +662,13 @@
         document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
         showToast('Ошибка загрузки данных', 'error');
       } finally {
-        // Fade-in animation for cards
         document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
           setTimeout(() => el.classList.add('fade-in'), index * 100);
         });
-        window.scrollTo(0, 0);  // Scroll to top on update
+        window.scrollTo(0, 0);
       }
     }
 
-    // Инициализация
     if (localStorage.getItem('theme') === 'dark') toggleTheme();
     load();
     setInterval(load, 5 * 60 * 1000);
