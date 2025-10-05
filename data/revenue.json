@@ -1,6 +1,6 @@
 {
   "date": "05.10.2025",
-  "time": "10:30",
+  "time": "10:31",
   "year_round": {
     "Красота": {
       "total_orders": 37,
@@ -23,20 +23,20 @@
       "cafe_revenue": 165.0
     },
     "Тихая": {
-      "total_orders": 4,
-      "delivery_orders": 0,
+      "total_orders": 5,
+      "delivery_orders": 1,
       "pickup_orders": 0,
       "cafe_orders": 4,
-      "total_revenue": 1640.0,
-      "delivery_revenue": 0,
+      "total_revenue": 3728.0,
+      "delivery_revenue": 2088.0,
       "pickup_revenue": 0,
       "cafe_revenue": 1640.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 43,
-    "total_revenue": 58610.0
+    "total_orders": 44,
+    "total_revenue": 60698.0
   },
   "plan": {
     "total_revenue": 200000,
