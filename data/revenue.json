@@ -1,6 +1,6 @@
 {
   "date": "2025-10-05",
-  "time": "23:19",
+  "time": "23:27",
   "year_round": {
     "Светланская": {
       "total_orders": 83,
@@ -100,7 +100,7 @@
     "total_revenue": 678194.0
   },
   "plan": {
-    "revenue": 20944728.513,
-    "orders": 34869.326
+    "total_revenue": 20944728.513,
+    "total_orders": 34869.326
   }
 }
