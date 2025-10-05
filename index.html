@@ -1,171 +1,930 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Выручка Чи-Фань</title>
-<style>
-body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; }
-h1 { color: #333; }
-.container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-label { display: block; margin-top: 10px; }
-input, select { margin-top: 5px; padding: 5px; }
-button { margin-top: 15px; padding: 10px 15px; background: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-button:hover { background: #218838; }
-#results { margin-top: 20px; }
-.progress-bar { width: 100%; background: #eee; height: 25px; border-radius: 5px; overflow: hidden; margin-top: 10px; }
-.progress { height: 100%; background: #28a745; width: 0%; text-align: center; color: #fff; line-height: 25px; }
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-th { background: #28a745; color: #fff; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Чи-Фань — Выручка и аналитика</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #3b82f6;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: var(--bg-color);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    .theme-toggle {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: #2563eb;
+    }
+
+    .data-selector, .period-selector, input[type="date"] {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--card-bg);
+      color: var(--text-primary);
+    }
+
+    .export-buttons, .period-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .export-btn, .action-btn {
+      background: var(--success-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .export-btn:hover, .action-btn:hover {
+      background: #059669;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .metric-card.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .metric-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 5px;
+    }
+
+    .metric-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .progress-container {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+      border-radius: 10px;
+    }
+
+    .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #059669); }
+    .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
+    .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
+
+    .progress-text {
+      text-align: center;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .venues-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .venue-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .venue-card:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    .venue-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .venue-metric {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .venue-metric-value {
+      font-weight: 500;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-container canvas {
+      color: var(--text-primary);
+    }
+
+    .period-controls {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .date-inputs label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .venues-grid { grid-template-columns: 1fr; }
+      body { padding: 10px; }
+      .header-left { flex-direction: column; align-items: flex-start; }
+      .date-inputs { flex-direction: column; }
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .error-msg {
+      color: var(--danger-color);
+      text-align: center;
+      padding: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
 </head>
-<body>
-<div class="container">
-    <h1>Выручка Чи-Фань</h1>
-    
-    <label>Выберите период:
-        <select id="periodType">
-            <option value="day">День</option>
-            <option value="week">Неделя</option>
-            <option value="month">Месяц</option>
-            <option value="custom">Произвольный</option>
+<body data-theme="light">
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1><i class="fas fa-utensils"></i> Чи-Фань — Выручка и аналитика</h1>
+        <select id="dateSelector" class="data-selector">
+          <option>Загрузка дат...</option>
         </select>
-    </label>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+      </button>
+    </header>
 
-    <div id="dateInputs">
-        <label>Дата начала: <input type="date" id="startDate"></label>
-        <label>Дата окончания: <input type="date" id="endDate"></label>
+    <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
+
+    <!-- Период анализа -->
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-calendar-alt"></i> Анализ за период</h3>
+      <div class="period-controls">
+        <select id="periodType" class="period-selector">
+          <option value="day">День</option>
+          <option value="week">Неделя</option>
+          <option value="month">Месяц</option>
+          <option value="custom">Произвольный</option>
+        </select>
+        <div class="date-inputs">
+          <label>Начало: <input type="date" id="startDate" /></label>
+          <label>Конец: <input type="date" id="endDate" /></label>
+        </div>
+        <button class="action-btn" onclick="loadPeriodData()">
+          <i class="fas fa-chart-bar"></i> Показать аналитику
+        </button>
+      </div>
     </div>
 
-    <button onclick="loadRevenue()">Показать выручку</button>
+    <!-- Метрики -->
+    <div class="metrics-grid" id="metrics"></div>
 
-    <div id="results">
-        <h2>Результаты</h2>
-        <p>Общая выручка: <span id="totalRevenue">0</span> ₽</p>
-        <p>Количество заказов: <span id="totalOrders">0</span></p>
-        <p>Выполнение плана: <span id="planProgress">0%</span></p>
-        <div class="progress-bar"><div class="progress" id="progressBar">0%</div></div>
-
-        <h3>Выручка по филиалам</h3>
-        <table id="venueTable">
-            <thead>
-                <tr>
-                    <th>Филиал</th>
-                    <th>Всего заказов</th>
-                    <th>Выручка</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <!-- Прогресс по плану -->
+    <div class="progress-container">
+      <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
+      <div class="progress-header">
+        <span>Текущее: <span id="current-value">0 ₽</span></span>
+        <span>План: <span id="plan-value">0 ₽</span></span>
+      </div>
+      <div class="progress-bar">
+        <div id="plan-bar" class="progress-fill"></div>
+      </div>
+      <div id="progress-text" class="progress-text">0%</div>
     </div>
-</div>
 
-<script>
-const YEAR_ROUND_VENUES = ["Красота", "Парк", "Светланская", "Чуркин", "Тихая", "Тобольская"];
-const SEASONAL_VENUES = ["Юбилейный", "Кунгас", "МГУ"];
+    <!-- Графики -->
+    <div class="charts-grid">
+      <div class="chart-container">
+        <h4>Выручка по филиалам</h4>
+        <canvas id="barChart1"></canvas>
+      </div>
+      <div class="chart-container">
+        <h4>Статистика по типам</h4>
+        <select class="data-selector" id="dataType" onchange="updateBarChart2()">
+          <option value="revenue">Выручка</option>
+          <option value="orders">Заказы</option>
+          <option value="delivery">Доставка</option>
+          <option value="cafe">Кафе</option>
+          <option value="pickup">Самовывоз</option>
+        </select>
+        <canvas id="barChart2"></canvas>
+      </div>
+    </div>
 
-// === Генерация массива дат между start и end ===
-function getDatesArray(start, end) {
-    let arr = [];
-    let dt = new Date(start);
-    while (dt <= new Date(end)) {
+    <!-- Динамика по дням -->
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-history"></i> Динамика выручки по дням</h3>
+      <div class="chart-container">
+        <canvas id="revenueTrendChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Таблица филиалов -->
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-table"></i> Сводка по филиалам</h3>
+      <table id="venueTable">
+        <thead>
+          <tr>
+            <th>Филиал</th>
+            <th>Заказы</th>
+            <th>Выручка (₽)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Филиалы -->
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-building"></i> Круглогодичные филиалы</h3>
+      <div class="venues-grid" id="year-round"></div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title"><i class="fas fa-leaf"></i> Сезонные филиалы</h3>
+      <div class="venues-grid" id="seasonal"></div>
+    </div>
+
+    <!-- Экспорт -->
+    <div class="export-buttons">
+      <button class="export-btn" onclick="exportPDF('all')">
+        <i class="fas fa-file-pdf"></i> Экспорт PDF (Все)
+      </button>
+      <button class="export-btn" onclick="exportPDF('year-round')">
+        <i class="fas fa-file-pdf"></i> PDF Круглогодичные
+      </button>
+      <button class="export-btn" onclick="exportPDF('seasonal')">
+        <i class="fas fa-file-pdf"></i> PDF Сезонные
+      </button>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script>
+    // === Глобальные переменные ===
+    let barChart1, barChart2, trendChart;
+    let dataCache = {};
+    const fmt = new Intl.NumberFormat('ru-RU');
+    const DAILY_API = 'https://api.github.com/repos/wwwgolybfs-dev/chifan2025/contents/data/daily';
+    const RAW_DAILY = 'https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/daily/';
+    const RAW_TODAY = 'https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/revenue.json';
+
+    const YEAR_ROUND_VENUES = ["Красота", "Парк", "Светланская", "Чуркин", "Тихая", "Тобольская"];
+    const SEASONAL_VENUES = ["Юбилейный", "Кунгас", "МГУ"];
+
+    // === Тема ===
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      body.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      const icon = document.querySelector('.theme-toggle i');
+      icon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      [barChart1, barChart2, trendChart].forEach(c => c && c.update());
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.setAttribute('data-theme', 'dark');
+      document.querySelector('.theme-toggle i').className = 'fas fa-sun';
+    }
+
+    // === Вспомогательные функции ===
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = type === 'error' ? 'var(--danger-color)' : 'var(--success-color)';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function getStatusClass(fulfill) {
+      if (fulfill >= 100) return 'good';
+      if (fulfill >= 80) return 'warn';
+      return 'bad';
+    }
+
+    // === Работа с датами ===
+    function getDatesArray(start, end) {
+      let arr = [];
+      let dt = new Date(start);
+      const endDt = new Date(end);
+      while (dt <= endDt) {
         let yyyy = dt.getFullYear();
-        let mm = String(dt.getMonth()+1).padStart(2,'0');
-        let dd = String(dt.getDate()).padStart(2,'0');
+        let mm = String(dt.getMonth() + 1).padStart(2, '0');
+        let dd = String(dt.getDate()).padStart(2, '0');
         arr.push(`${yyyy}-${mm}-${dd}`);
-        dt.setDate(dt.getDate()+1);
+        dt.setDate(dt.getDate() + 1);
+      }
+      return arr;
     }
-    return arr;
-}
 
-// === Загрузка JSON файлов и суммирование ===
-async function loadRevenue() {
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-    const periodType = document.getElementById("periodType").value;
+    // === Загрузка данных за период ===
+    async function loadPeriodData() {
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
 
-    if (!startDate || !endDate) {
-        alert("Выберите даты начала и окончания!");
+      if (!startDate || !endDate) {
+        showToast("Выберите даты!", "error");
         return;
-    }
+      }
 
-    let dates = getDatesArray(startDate, endDate);
-    let totalRevenue = 0;
-    let totalOrders = 0;
-    let planRevenue = 0;
+      const dates = getDatesArray(startDate, endDate);
+      let totalRevenue = 0, totalOrders = 0, planRevenue = 0;
+      let venueStats = {};
+      let revenueTrend = [];
 
-    let venueStats = {};
-
-    for (const date of dates) {
-        const filePath = `data/daily/${date}_revenue.json`;
+      for (const date of dates) {
+        const filePath = `${RAW_DAILY}${date}_revenue.json`;
         try {
-            const res = await fetch(filePath);
-            const data = await res.json();
+          const res = await fetch(filePath);
+          if (!res.ok) continue;
+          const data = await res.json();
 
-            totalRevenue += data.total.total_revenue;
-            totalOrders += data.total.total_orders;
-            planRevenue += data.plan.total_revenue || 0;
+          totalRevenue += data.total?.total_revenue || 0;
+          totalOrders += data.total?.total_orders || 0;
+          planRevenue += data.plan?.total_revenue || 0;
+          revenueTrend.push({ date, revenue: data.total?.total_revenue || 0 });
 
-            // Суммируем по филиалам
-            const mergeStats = (src) => {
-                for (const [venue, stats] of Object.entries(src)) {
-                    if (!venueStats[venue]) {
-                        venueStats[venue] = { total_orders: 0, total_revenue: 0 };
-                    }
-                    venueStats[venue].total_orders += stats.total_orders || 0;
-                    venueStats[venue].total_revenue += stats.total_revenue || 0;
-                }
-            };
-            mergeStats(data.year_round || {});
-            mergeStats(data.seasonal || {});
-
-        } catch(e) {
-            console.warn(`Нет данных за ${date}`);
+          const mergeStats = (src) => {
+            for (const [venue, stats] of Object.entries(src || {})) {
+              if (!venueStats[venue]) venueStats[venue] = { total_orders: 0, total_revenue: 0 };
+              venueStats[venue].total_orders += stats.total_orders || 0;
+              venueStats[venue].total_revenue += stats.total_revenue || 0;
+            }
+          };
+          mergeStats(data.year_round);
+          mergeStats(data.seasonal);
+        } catch (e) {
+          console.warn(`Нет данных за ${date}`);
         }
-    }
+      }
 
-    // === Обновляем итоги ===
-    document.getElementById("totalRevenue").textContent = totalRevenue.toLocaleString();
-    document.getElementById("totalOrders").textContent = totalOrders;
+      // Обновляем метрики
+      const revenueFulfill = planRevenue ? (totalRevenue / planRevenue) * 100 : 0;
+      document.getElementById("metrics").innerHTML = `
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
+          <div class="metric-value">${fmt.format(totalRevenue)} ₽</div>
+          <div class="metric-label">Выручка за период</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="metric-value">${totalOrders}</div>
+          <div class="metric-label">Заказы</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="metric-value">${revenueFulfill.toFixed(1)}%</div>
+          <div class="metric-label">Выполнение плана</div>
+        </div>
+      `;
 
-    let progress = planRevenue ? Math.min(100, (totalRevenue / planRevenue * 100).toFixed(1)) : 0;
-    document.getElementById("planProgress").textContent = progress + '%';
-    document.getElementById("progressBar").style.width = progress + '%';
-    document.getElementById("progressBar").textContent = progress + '%';
+      // Прогресс
+      const bar = document.getElementById('plan-bar');
+      const progressText = document.getElementById('progress-text');
+      const curEl = document.getElementById('current-value');
+      const planEl = document.getElementById('plan-value');
+      if (bar && progressText && curEl && planEl) {
+        bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
+        bar.style.width = Math.min(revenueFulfill, 100) + '%';
+        progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+        curEl.textContent = `${fmt.format(totalRevenue)} ₽`;
+        planEl.textContent = `${fmt.format(planRevenue)} ₽`;
+      }
 
-    // === Обновляем таблицу филиалов ===
-    const tbody = document.querySelector("#venueTable tbody");
-    tbody.innerHTML = "";
-    for (const venue of [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES]) {
+      // Таблица филиалов
+      const tbody = document.querySelector("#venueTable tbody");
+      tbody.innerHTML = "";
+      for (const venue of [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES]) {
         const stats = venueStats[venue] || { total_orders: 0, total_revenue: 0 };
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${venue}</td><td>${stats.total_orders}</td><td>${stats.total_revenue.toLocaleString()}</td>`;
+        tr.innerHTML = `<td>${venue}</td><td>${stats.total_orders}</td><td>${fmt.format(stats.total_revenue)}</td>`;
         tbody.appendChild(tr);
+      }
+
+      // График динамики
+      const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+      const labels = revenueTrend.map(r => r.date);
+      const revenues = revenueTrend.map(r => r.revenue);
+      if (trendChart) trendChart.destroy();
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Выручка по дням',
+            data: revenues,
+            fill: false,
+            borderColor: '#10b981',
+            tension: 0.2,
+            pointBackgroundColor: '#10b981'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + " ₽" } }
+          }
+        }
+      });
+
+      showToast("Аналитика за период загружена!");
     }
-}
 
-// === Авто-установка дат при смене типа периода ===
-document.getElementById("periodType").addEventListener("change", function() {
-    const today = new Date();
-    const startInput = document.getElementById("startDate");
-    const endInput = document.getElementById("endDate");
+    // === Автоустановка дат ===
+    document.getElementById("periodType").addEventListener("change", function () {
+      const today = new Date();
+      const startInput = document.getElementById("startDate");
+      const endInput = document.getElementById("endDate");
 
-    if (this.value === "day") {
-        startInput.value = today.toISOString().slice(0,10);
-        endInput.value = today.toISOString().slice(0,10);
-    } else if (this.value === "week") {
-        let firstDay = new Date(today.setDate(today.getDate() - today.getDay()));
+      if (this.value === "day") {
+        startInput.value = endInput.value = today.toISOString().slice(0, 10);
+      } else if (this.value === "week") {
+        let firstDay = new Date(today);
+        firstDay.setDate(today.getDate() - today.getDay());
         let lastDay = new Date(firstDay);
         lastDay.setDate(firstDay.getDate() + 6);
-        startInput.value = firstDay.toISOString().slice(0,10);
-        endInput.value = lastDay.toISOString().slice(0,10);
-    } else if (this.value === "month") {
+        startInput.value = firstDay.toISOString().slice(0, 10);
+        endInput.value = lastDay.toISOString().slice(0, 10);
+      } else if (this.value === "month") {
         let firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        let lastDay = new Date(today.getFullYear(), today.getMonth()+1, 0);
-        startInput.value = firstDay.toISOString().slice(0,10);
-        endInput.value = lastDay.toISOString().slice(0,10);
+        let lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        startInput.value = firstDay.toISOString().slice(0, 10);
+        endInput.value = lastDay.toISOString().slice(0, 10);
+      }
+    });
+
+    // === Загрузка списка дат ===
+    async function listFiles() {
+      const resp = await fetch(DAILY_API);
+      const arr = await resp.json();
+      return arr
+        .filter(f => f.name.endsWith('_revenue.json'))
+        .sort((a, b) => new Date(b.name.split('_')[0]) - new Date(a.name.split('_')[0]))
+        .map(f => f.name);
     }
-});
-</script>
+
+    async function fetchJSON(file) {
+      const url = file === 'today' ? RAW_TODAY : RAW_DAILY + file;
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error('Ошибка загрузки ' + url);
+      return await resp.json();
+    }
+
+    async function initDateSelector() {
+      const sel = document.getElementById('dateSelector');
+      sel.innerHTML = '<option>Загрузка...</option>';
+      try {
+        const files = await listFiles();
+        let opts = `<option value="today">Сегодня</option>`;
+        opts += files.map(f => `<option value="${f}">${f.replace('_revenue.json', '')}</option>`).join('');
+        sel.innerHTML = opts;
+
+        const saved = localStorage.getItem('selectedDate');
+        sel.value = saved && [...sel.options].some(o => o.value === saved) ? saved : 'today';
+
+        sel.onchange = () => {
+          localStorage.setItem('selectedDate', sel.value);
+          loadFor(sel.value);
+        };
+
+        // Инициализация периода "сегодня"
+        const todayStr = new Date().toISOString().slice(0, 10);
+        document.getElementById("startDate").value = todayStr;
+        document.getElementById("endDate").value = todayStr;
+
+        await loadFor(sel.value);
+      } catch (e) {
+        console.error(e);
+        sel.innerHTML = '<option>Ошибка загрузки дат</option>';
+      }
+    }
+
+    async function loadFor(fileKey) {
+      const upd = document.getElementById('last-update');
+      upd.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+      try {
+        const data = await fetchJSON(fileKey);
+        dataCache = data;
+        upd.innerHTML = `<i class="fas fa-check-circle"></i> Загружено: ${data.date || ''} ${data.time || ''}`;
+        renderMetrics(data);
+        renderVenues(data, 'year-round');
+        renderVenues(data, 'seasonal');
+        renderCharts(data);
+        showToast('Данные обновлены');
+      } catch (e) {
+        console.error(e);
+        upd.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+        showToast('Ошибка загрузки данных', 'error');
+      }
+    }
+
+    function renderMetrics(data) {
+      const total = data.total || { total_revenue: 0, total_orders: 0 };
+      const plan = data.plan || { total_revenue: 0, total_orders: 0 };
+      const revenueFulfill = plan.total_revenue ? (total.total_revenue / plan.total_revenue) * 100 : 0;
+      const ordersFulfill = plan.total_orders ? (total.total_orders / plan.total_orders) * 100 : 0;
+
+      const metrics = document.getElementById('metrics');
+      if (!metrics) return;
+      metrics.innerHTML = `
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
+          <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
+          <div class="metric-label">Выручка</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="metric-value">${total.total_orders}</div>
+          <div class="metric-label">Заказы</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="metric-value">${revenueFulfill.toFixed(1)}%</div>
+          <div class="metric-label">Прогноз выручки</div>
+        </div>
+        <div class="metric-card fade-in">
+          <div class="metric-icon"><i class="fas fa-percentage"></i></div>
+          <div class="metric-value">${ordersFulfill.toFixed(1)}%</div>
+          <div class="metric-label">Прогноз заказов</div>
+        </div>
+      `;
+
+      const bar = document.getElementById('plan-bar');
+      const progressText = document.getElementById('progress-text');
+      const curEl = document.getElementById('current-value');
+      const planEl = document.getElementById('plan-value');
+      if (bar && progressText && curEl && planEl) {
+        bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
+        bar.style.width = Math.min(revenueFulfill, 100) + '%';
+        progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+        curEl.textContent = `${fmt.format(total.total_revenue)} ₽`;
+        planEl.textContent = `${fmt.format(plan.total_revenue)} ₽`;
+      }
+
+      if (revenueFulfill > 100) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+
+    function renderVenueCard(venue, stats) {
+      const fixedPlans = { "Тобольская": 3500000, "Тихая": 2100000 };
+      const totalBranches = (dataCache.year_round ? Object.keys(dataCache.year_round).length : 0)
+                          + (dataCache.seasonal ? Object.keys(dataCache.seasonal).length : 0);
+      const defaultPlan = totalBranches ? (dataCache.plan.total_revenue / totalBranches) : 0;
+      const planRevenue = fixedPlans[venue] || defaultPlan;
+      const fulfill = planRevenue ? (stats.total_revenue / planRevenue) * 100 : 0;
+      const status = getStatusClass(fulfill);
+
+      return `
+        <div class="venue-card fade-in">
+          <div class="venue-name">${venue}</div>
+          <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${status}">${fmt.format(stats.total_revenue)} ₽</span></div>
+          <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders}</span></div>
+          <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format(stats.delivery_revenue || 0)} ₽</span></div>
+          <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format(stats.cafe_revenue || 0)} ₽</span></div>
+          <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format(stats.pickup_revenue || 0)} ₽</span></div>
+          <div style="margin-top:10px;">
+            <div class="progress-bar" style="height:8px;">
+              <div class="progress-fill ${status}" style="width: ${Math.min(fulfill,100)}%;"></div>
+            </div>
+            <small>${fulfill.toFixed(1)}% от плана (${fmt.format(planRevenue)} ₽)</small>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderVenues(data, containerId) {
+      const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
+      const venues = data[key] || {};
+      const cont = document.getElementById(containerId);
+      if (!cont) return;
+      if (Object.keys(venues).length === 0) {
+        cont.innerHTML = '<div class="error-msg">Нет данных</div>';
+        return;
+      }
+      const sorted = Object.entries(venues).sort((a,b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
+      cont.innerHTML = sorted.map(([v, s]) => renderVenueCard(v, s)).join('');
+    }
+
+    function renderCharts(data) {
+      const all = { ...(data.year_round || {}), ...(data.seasonal || {}) };
+      const labels = Object.keys(all);
+      const revenues = labels.map(l => all[l].total_revenue || 0);
+
+      const ctx1 = document.getElementById('barChart1')?.getContext('2d');
+      if (ctx1 && labels.length > 0) {
+        if (barChart1) barChart1.destroy();
+        barChart1 = new Chart(ctx1, {
+          type: 'bar',
+          data: { labels, datasets: [{ label: 'Выручка ₽', data: revenues, backgroundColor: labels.map((_, i) => `hsl(${i*40 % 360},70%,50%)`) }] },
+          options: {
+            responsive: true,
+            scales: {
+              x: { title: { display: true, text: 'Филиалы' } },
+              y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽' } }
+            }
+          }
+        });
+      }
+
+      updateBarChart2();
+    }
+
+    function updateBarChart2() {
+      const dtype = document.getElementById('dataType')?.value;
+      const all = { ...(dataCache.year_round || {}), ...(dataCache.seasonal || {}) };
+      const labels = Object.keys(all);
+      let dataArr;
+      switch (dtype) {
+        case 'orders': dataArr = labels.map(l => all[l].total_orders || 0); break;
+        case 'delivery': dataArr = labels.map(l => all[l].delivery_revenue || 0); break;
+        case 'cafe': dataArr = labels.map(l => all[l].cafe_revenue || 0); break;
+        case 'pickup': dataArr = labels.map(l => all[l].pickup_revenue || 0); break;
+        default: dataArr = labels.map(l => all[l].total_revenue || 0);
+      }
+
+      const ctx2 = document.getElementById('barChart2')?.getContext('2d');
+      if (ctx2 && labels.length > 0) {
+        if (barChart2) barChart2.destroy();
+        barChart2 = new Chart(ctx2, {
+          type: 'bar',
+          data: { labels, datasets: [{ label: dtype === 'orders' ? 'Заказы' : '₽ ' + dtype, data: dataArr, backgroundColor: labels.map((_,i)=>`hsl(${i*40+100 % 360},60%,45%)`) }] },
+          options: {
+            responsive: true,
+            scales: {
+              x: { title: { display: true, text: 'Филиалы' } },
+              y: { beginAtZero: true, title: { display: true, text: dtype === 'orders' ? 'Количество' : 'Выручка ₽' } }
+            }
+          }
+        });
+      }
+    }
+
+    function exportPDF(filter = 'all') {
+      if (!dataCache) {
+        showToast('Нет данных для экспорта', 'error');
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      doc.setFont("helvetica");
+      doc.setFontSize(12);
+      doc.text('Чи-Фань Выручка', 10, 10);
+      doc.setFontSize(10);
+      const dt = `Дата: ${dataCache.date || ''} ${dataCache.time || ''}`;
+      doc.text(dt, 10, 20);
+
+      let y = 30;
+      const venues = (filter === 'year-round') ? dataCache.year_round :
+                     (filter === 'seasonal') ? dataCache.seasonal :
+                     { ...(dataCache.year_round || {}), ...(dataCache.seasonal || {}) };
+
+      Object.entries(venues).forEach(([v, s]) => {
+        const txt = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
+        doc.text(txt, 10, y);
+        y += 10;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+
+      doc.save(`chifan_${dataCache.date || 'today'}.pdf`);
+      showToast('PDF экспортирован!');
+    }
+
+    // === Инициализация ===
+    document.addEventListener("DOMContentLoaded", () => {
+      initDateSelector();
+      document.getElementById("periodType").dispatchEvent(new Event('change'));
+    });
+
+    setInterval(() => {
+      const sel = document.getElementById('dateSelector');
+      if (sel && sel.value) loadFor(sel.value);
+    }, 5 * 60 * 1000);
+  </script>
 </body>
 </html>
