@@ -1,6 +1,6 @@
 {
   "date": "05.10.2025",
-  "time": "11:54",
+  "time": "11:55",
   "year_round": {
     "Красота": {
       "total_orders": 43,
@@ -83,11 +83,21 @@
       "delivery_revenue": 0,
       "pickup_revenue": 515.0,
       "cafe_revenue": 1053.0
+    },
+    "Юбилейный": {
+      "total_orders": 2,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 2,
+      "total_revenue": 1073.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 1073.0
     }
   },
   "total": {
-    "total_orders": 85,
-    "total_revenue": 96447.0
+    "total_orders": 87,
+    "total_revenue": 97520.0
   },
   "plan": {
     "total_revenue": 200000,
