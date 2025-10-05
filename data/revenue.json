@@ -1,6 +1,6 @@
 {
   "date": "05.10.2025",
-  "time": "11:15",
+  "time": "11:16",
   "year_round": {
     "Красота": {
       "total_orders": 41,
@@ -33,14 +33,14 @@
       "cafe_revenue": 859.0
     },
     "Тихая": {
-      "total_orders": 8,
+      "total_orders": 10,
       "delivery_orders": 4,
       "pickup_orders": 0,
-      "cafe_orders": 4,
-      "total_revenue": 9530.0,
+      "cafe_orders": 6,
+      "total_revenue": 10188.0,
       "delivery_revenue": 7890.0,
       "pickup_revenue": 0,
-      "cafe_revenue": 1640.0
+      "cafe_revenue": 2298.0
     },
     "Парк": {
       "total_orders": 1,
@@ -53,10 +53,21 @@
       "cafe_revenue": 278.0
     }
   },
-  "seasonal": {},
+  "seasonal": {
+    "Кунгас": {
+      "total_orders": 1,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 1,
+      "total_revenue": 355.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 355.0
+    }
+  },
   "total": {
-    "total_orders": 57,
-    "total_revenue": 76667.0
+    "total_orders": 60,
+    "total_revenue": 77680.0
   },
   "plan": {
     "total_revenue": 200000,
