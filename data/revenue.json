@@ -1,6 +1,6 @@
 {
   "date": "05.10.2025",
-  "time": "18:30",
+  "time": "18:35",
   "year_round": {
     "Красота": {
       "total_orders": 96,
@@ -23,24 +23,24 @@
       "cafe_revenue": 22853.0
     },
     "Светланская": {
-      "total_orders": 58,
+      "total_orders": 59,
       "delivery_orders": 0,
-      "pickup_orders": 13,
+      "pickup_orders": 14,
       "cafe_orders": 45,
-      "total_revenue": 37520.0,
+      "total_revenue": 37772.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 8082.0,
+      "pickup_revenue": 8334.0,
       "cafe_revenue": 29438.0
     },
     "Тихая": {
-      "total_orders": 78,
+      "total_orders": 80,
       "delivery_orders": 15,
       "pickup_orders": 17,
-      "cafe_orders": 46,
-      "total_revenue": 63231.0,
+      "cafe_orders": 48,
+      "total_revenue": 63705.0,
       "delivery_revenue": 23328.0,
       "pickup_revenue": 11217.0,
-      "cafe_revenue": 28686.0
+      "cafe_revenue": 29160.0
     },
     "Парк": {
       "total_orders": 55,
@@ -65,24 +65,24 @@
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 80,
+      "total_orders": 82,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 79,
-      "total_revenue": 41814.0,
+      "cafe_orders": 81,
+      "total_revenue": 42879.0,
       "delivery_revenue": 0,
       "pickup_revenue": 588.0,
-      "cafe_revenue": 41226.0
+      "cafe_revenue": 42291.0
     },
     "МГУ": {
-      "total_orders": 23,
+      "total_orders": 25,
       "delivery_orders": 0,
       "pickup_orders": 6,
-      "cafe_orders": 17,
-      "total_revenue": 9657.0,
+      "cafe_orders": 19,
+      "total_revenue": 11061.0,
       "delivery_revenue": 0,
       "pickup_revenue": 2437.0,
-      "cafe_revenue": 7220.0
+      "cafe_revenue": 8624.0
     },
     "Юбилейный": {
       "total_orders": 192,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 739,
-    "total_revenue": 522980.0
+    "total_orders": 746,
+    "total_revenue": 526175.0
   },
   "plan": {
     "total_revenue": 20944728.513,
