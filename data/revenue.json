@@ -1,6 +1,6 @@
 {
   "date": "05.10.2025",
-  "time": "18:45",
+  "time": "18:50",
   "year_round": {
     "Красота": {
       "total_orders": 98,
@@ -23,24 +23,24 @@
       "cafe_revenue": 23581.0
     },
     "Светланская": {
-      "total_orders": 59,
+      "total_orders": 61,
       "delivery_orders": 0,
       "pickup_orders": 14,
-      "cafe_orders": 45,
-      "total_revenue": 37772.0,
+      "cafe_orders": 47,
+      "total_revenue": 38370.0,
       "delivery_revenue": 0,
       "pickup_revenue": 8334.0,
-      "cafe_revenue": 29438.0
+      "cafe_revenue": 30036.0
     },
     "Тихая": {
-      "total_orders": 80,
+      "total_orders": 83,
       "delivery_orders": 15,
       "pickup_orders": 17,
-      "cafe_orders": 48,
-      "total_revenue": 63705.0,
+      "cafe_orders": 51,
+      "total_revenue": 66113.0,
       "delivery_revenue": 23328.0,
       "pickup_revenue": 11217.0,
-      "cafe_revenue": 29160.0
+      "cafe_revenue": 31568.0
     },
     "Парк": {
       "total_orders": 55,
@@ -65,24 +65,24 @@
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 82,
+      "total_orders": 83,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 81,
-      "total_revenue": 42879.0,
+      "cafe_orders": 82,
+      "total_revenue": 43234.0,
       "delivery_revenue": 0,
       "pickup_revenue": 588.0,
-      "cafe_revenue": 42291.0
+      "cafe_revenue": 42646.0
     },
     "МГУ": {
-      "total_orders": 25,
+      "total_orders": 27,
       "delivery_orders": 0,
       "pickup_orders": 6,
-      "cafe_orders": 19,
-      "total_revenue": 11061.0,
+      "cafe_orders": 21,
+      "total_revenue": 11779.0,
       "delivery_revenue": 0,
       "pickup_revenue": 2437.0,
-      "cafe_revenue": 8624.0
+      "cafe_revenue": 9342.0
     },
     "Юбилейный": {
       "total_orders": 198,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 758,
-    "total_revenue": 533510.0
+    "total_orders": 766,
+    "total_revenue": 537589.0
   },
   "plan": {
     "total_revenue": 20944728.513,
