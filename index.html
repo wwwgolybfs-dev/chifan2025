@@ -371,7 +371,7 @@
 
   <script>
     let barChart1, barChart2;
-    let dataCache = {};  // Кэш данных
+    let dataCache = {}; // Кэш данных
 
     const fmt = new Intl.NumberFormat('ru-RU');
 
@@ -383,7 +383,6 @@
       localStorage.setItem('theme', newTheme);
       const icon = document.querySelector('.theme-toggle i');
       icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-      // Обновляем цвета шрифта и диаграмм при смене темы
       if (barChart1) {
         barChart1.options.scales.x.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
         barChart1.options.scales.y.title.color = getComputedStyle(body).getPropertyValue('--text-primary').trim();
@@ -461,7 +460,7 @@
         "Тобольская": 3500000,
         "Тихая": 2100000
       };
-      const planRevenue = fixedPlans[venue] || (dataCache.data.plan.total_revenue / (Object.keys(dataCache.data.year_round || {}).length + Object.keys(dataCache.data.seasonal || {}).length));
+      const planRevenue = fixedPlans[venue] || (dataCache.plan.total_revenue / (Object.keys(dataCache.year_round || {}).length + Object.keys(dataCache.seasonal || {}).length));
       const fulfill = stats.total_revenue / planRevenue * 100;
       const statusClass = getStatusClass(fulfill);
 
@@ -533,7 +532,7 @@
 
     function updateBarChart2() {
       const dataType = document.getElementById('dataType').value;
-      const allVenues = { ...dataCache.data.year_round, ...dataCache.data.seasonal };
+      const allVenues = { ...dataCache.year_round, ...dataCache.seasonal };
       const labels = Object.keys(allVenues);
       const ctxBar2 = document.getElementById('barChart2')?.getContext('2d');
       let dataValues;
@@ -586,7 +585,7 @@
 
     function exportPDF(filter = 'all') {
       console.log('Exporting PDF with filter:', filter);
-      if (!dataCache.data) {
+      if (!dataCache) {
         showToast('Нет данных для экспорта', 'error');
         return;
       }
@@ -616,11 +615,11 @@
       doc.setTextColor(0, 0, 0);
       doc.text('Чи-Фань Выручка', 10, 10);
       doc.setFontSize(10);
-      const dateText = `Дата: ${dataCache.data.date} ${dataCache.data.time}`;
+      const dateText = `Дата: ${dataCache.date} ${dataCache.time}`;
       doc.text(dateText, 10, 20);
 
       let y = 30;
-      const venues = filter === 'year-round' ? dataCache.data.year_round : filter === 'seasonal' ? dataCache.data.seasonal : { ...dataCache.data.year_round, ...dataCache.data.seasonal };
+      const venues = filter === 'year-round' ? dataCache.year_round : filter === 'seasonal' ? dataCache.seasonal : { ...dataCache.year_round, ...dataCache.seasonal };
       Object.entries(venues || {}).forEach(([v, s]) => {
         const text = `${v}: Выручка ${fmt.format(s.total_revenue)} ₽, Заказы ${s.total_orders}`;
         console.log('Exporting text:', text);
@@ -632,8 +631,19 @@
         }
       });
 
-      doc.save(`chifan_${dataCache.data.date || 'today'}.pdf`);
+      doc.save(`chifan_${dataCache.date || 'today'}.pdf`);
       showToast('PDF экспортирован!');
+    }
+
+    async function fetchLatestData() {
+      const response = await fetch('https://api.github.com/repos/wwwgolybfs-dev/chifan2025/contents/data/daily');
+      const files = await response.json();
+      const latestFile = files
+        .filter(file => file.name.endsWith('_revenue.json'))
+        .sort((a, b) => new Date(b.name.split('_')[0]) - new Date(a.name.split('_')[0]))[0];
+      if (!latestFile) throw new Error('No revenue files found');
+      const fileResponse = await fetch(latestFile.download_url);
+      return await fileResponse.json();
     }
 
     async function load() {
@@ -642,13 +652,10 @@
       if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
 
       try {
-        console.log('Fetching data from data/revenue.json...');
-        const response = await fetch('data/revenue.json', { cache: 'no-cache' });
-        console.log('Fetch response status:', response.status);
-        if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        const data = await response.json();
+        console.log('Fetching latest data from GitHub...');
+        const data = await fetchLatestData();
         console.log('Loaded data:', data);
-        dataCache.data = data;
+        dataCache = data; // Обновляем кэш данными
 
         if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${data.date})`;
 
@@ -658,7 +665,7 @@
         renderCharts(data);
         showToast('Данные обновлены!');
       } catch (e) {
-        console.error("Ошибка загрузки:", e);
+        console.error('Ошибка загрузки:', e);
         if (updateEl) updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
         document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
         document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
@@ -674,5 +681,7 @@
 
     if (localStorage.getItem('theme') === 'dark') toggleTheme();
     load();
-    setInterval(load, 5 * 60 * 1000);
+    setInterval(load, 5 * 60 * 1000); // Обновление каждые 5 минут
   </script>
+</body>
+</html>
