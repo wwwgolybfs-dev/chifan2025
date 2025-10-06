@@ -1,6 +1,6 @@
 {
   "date": "2025-10-06",
-  "time": "15:36",
+  "time": "15:40",
   "year_round": {
     "Светланская": {
       "total_orders": 20,
@@ -53,14 +53,14 @@
       "cafe_revenue": 7934.0
     },
     "Чуркин": {
-      "total_orders": 67,
+      "total_orders": 69,
       "delivery_orders": 0,
       "pickup_orders": 13,
-      "cafe_orders": 54,
-      "total_revenue": 32109.0,
+      "cafe_orders": 56,
+      "total_revenue": 33994.0,
       "delivery_revenue": 0,
       "pickup_revenue": 7584.0,
-      "cafe_revenue": 24525.0
+      "cafe_revenue": 26410.0
     }
   },
   "seasonal": {
@@ -85,19 +85,19 @@
       "cafe_revenue": 7919.0
     },
     "Юбилейный": {
-      "total_orders": 19,
+      "total_orders": 20,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 19,
-      "total_revenue": 8459.0,
+      "cafe_orders": 20,
+      "total_revenue": 9169.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 8459.0
+      "cafe_revenue": 9169.0
     }
   },
   "total": {
-    "total_orders": 243,
-    "total_revenue": 170425.0
+    "total_orders": 246,
+    "total_revenue": 173020.0
   },
   "plan": {
     "total_revenue": 20944728.513,
