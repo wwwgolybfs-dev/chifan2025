@@ -1,16 +1,16 @@
 {
   "date": "2025-10-06",
-  "time": "13:32",
+  "time": "13:36",
   "year_round": {
     "Светланская": {
-      "total_orders": 5,
+      "total_orders": 7,
       "delivery_orders": 0,
-      "pickup_orders": 3,
-      "cafe_orders": 2,
-      "total_revenue": 3390.0,
+      "pickup_orders": 4,
+      "cafe_orders": 3,
+      "total_revenue": 5191.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 2321.0,
-      "cafe_revenue": 1069.0
+      "pickup_revenue": 2995.0,
+      "cafe_revenue": 2196.0
     },
     "Парк": {
       "total_orders": 5,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 145,
-    "total_revenue": 106403.0
+    "total_orders": 147,
+    "total_revenue": 108204.0
   },
   "plan": {
     "total_revenue": 20944728.513,
