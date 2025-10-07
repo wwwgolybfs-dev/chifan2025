@@ -1,0 +1,14 @@
+{
+  "date": "2025-10-08",
+  "time": "03:00",
+  "year_round": {},
+  "seasonal": {},
+  "total": {
+    "total_orders": 0,
+    "total_revenue": 0
+  },
+  "plan": {
+    "total_revenue": 20944728.513,
+    "total_orders": 34869.326
+  }
+}
