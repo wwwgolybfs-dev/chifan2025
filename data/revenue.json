@@ -1,6 +1,6 @@
 {
   "date": "2025-10-07",
-  "time": "01:00",
+  "time": "01:06",
   "year_round": {
     "Светланская": {
       "total_orders": 58,
@@ -65,14 +65,14 @@
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 18,
+      "total_orders": 19,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 17,
-      "total_revenue": 9432.0,
+      "cafe_orders": 18,
+      "total_revenue": 9571.0,
       "delivery_revenue": 0,
       "pickup_revenue": 249.0,
-      "cafe_revenue": 9183.0
+      "cafe_revenue": 9322.0
     },
     "МГУ": {
       "total_orders": 12,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 487,
-    "total_revenue": 328144.0
+    "total_orders": 488,
+    "total_revenue": 328283.0
   },
   "plan": {
     "total_revenue": 20944728.513,
