@@ -1,15 +1,15 @@
 {
   "date": "2025-10-07",
-  "time": "11:16",
+  "time": "11:20",
   "year_round": {
     "Светланская": {
-      "total_orders": 1,
+      "total_orders": 2,
       "delivery_orders": 0,
-      "pickup_orders": 0,
+      "pickup_orders": 1,
       "cafe_orders": 1,
-      "total_revenue": 355.0,
+      "total_revenue": 909.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 0,
+      "pickup_revenue": 554.0,
       "cafe_revenue": 355.0
     },
     "Красота": {
@@ -55,8 +55,8 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 31,
-    "total_revenue": 24557.0
+    "total_orders": 32,
+    "total_revenue": 25111.0
   },
   "plan": {
     "total_revenue": 20944728.513,
