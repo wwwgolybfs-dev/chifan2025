@@ -353,6 +353,34 @@
             margin-top: 5px;
             font-style: italic;
         }
+
+        .quick-periods {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .period-btn {
+            background: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .period-btn:hover {
+            background: #d97706;
+        }
+
+        .period-btn.active {
+            background: var(--success-color);
+            box-shadow: 0 0 0 2px var(--success-color);
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -369,6 +397,14 @@
             <label for="end-date">Конечная дата:</label>
             <input type="date" id="end-date">
             <button onclick="loadCustomData()"><i class="fas fa-download"></i> Загрузить</button>
+            
+            <div class="quick-periods">
+                <button class="period-btn" onclick="setPeriod('today')">Сегодня</button>
+                <button class="period-btn" onclick="setPeriod('yesterday')">Вчера</button>
+                <button class="period-btn" onclick="setPeriod('thisWeek')">Эта неделя</button>
+                <button class="period-btn" onclick="setPeriod('thisMonth')">Этот месяц</button>
+                <button class="period-btn" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
+            </div>
         </div>
         <div class="metrics-grid" id="metrics"></div>
 
@@ -426,6 +462,7 @@
         let dataCache = {};
         let currentStartDate = '';
         let currentEndDate = '';
+        let activePeriod = 'today';
 
         // --- КОНСТАНТЫ И НАСТРОЙКИ ---
         const DAILY_NETWORK_PLAN = 50000;
@@ -443,6 +480,75 @@
 
         function getTodayDateString() {
             return new Date().toISOString().split('T')[0];
+        }
+
+        function formatDateForInput(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function getWeekStartDate(date = new Date()) {
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Понедельник как начало недели
+            return new Date(date.setDate(diff));
+        }
+
+        function getMonthStartDate(date = new Date()) {
+            return new Date(date.getFullYear(), date.getMonth(), 1);
+        }
+
+        function getLastMonthStartDate() {
+            const date = new Date();
+            return new Date(date.getFullYear(), date.getMonth() - 1, 1);
+        }
+
+        function getLastMonthEndDate() {
+            const date = new Date();
+            return new Date(date.getFullYear(), date.getMonth(), 0);
+        }
+
+        function setPeriod(period) {
+            const today = new Date();
+            let startDate, endDate;
+            
+            // Снимаем активный класс со всех кнопок
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Устанавливаем активный класс на нажатую кнопку
+            event.target.classList.add('active');
+            activePeriod = period;
+
+            switch(period) {
+                case 'today':
+                    startDate = today;
+                    endDate = today;
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    startDate = yesterday;
+                    endDate = yesterday;
+                    break;
+                case 'thisWeek':
+                    startDate = getWeekStartDate();
+                    endDate = today;
+                    break;
+                case 'thisMonth':
+                    startDate = getMonthStartDate();
+                    endDate = today;
+                    break;
+                case 'lastMonth':
+                    startDate = getLastMonthStartDate();
+                    endDate = getLastMonthEndDate();
+                    break;
+            }
+
+            document.getElementById('start-date').value = formatDateForInput(startDate);
+            document.getElementById('end-date').value = formatDateForInput(endDate);
+            
+            // Автоматически загружаем данные при выборе периода
+            loadCustomData();
         }
 
         function toggleTheme() {
@@ -943,6 +1049,9 @@
         const todayStr = getTodayDateString();
         document.getElementById('start-date').value = todayStr;
         document.getElementById('end-date').value = todayStr;
+        
+        // Устанавливаем активную кнопку "Сегодня" при загрузке
+        document.querySelector('.period-btn').classList.add('active');
         
         load(todayStr, todayStr); 
         
