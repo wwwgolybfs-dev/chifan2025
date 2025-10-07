@@ -223,6 +223,7 @@
             box-shadow: var(--shadow);
             transition: box-shadow 0.3s ease;
             cursor: pointer;
+            position: relative;
         }
 
         .venue-card:hover {
@@ -392,6 +393,117 @@
             justify-content: center;
             gap: 5px;
         }
+
+        /* Новые стили для разбивки заказов */
+        .orders-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .order-type {
+            text-align: center;
+            padding: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+        }
+
+        .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
+        .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
+        .order-type.cafe { background: rgba(139, 92, 246, 0.1); }
+
+        .order-type-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+
+        .order-type-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+        }
+
+        .venue-details-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .venue-details-btn:hover {
+            transform: scale(1.2);
+        }
+
+        /* Анимация для праздника */
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .celebrate {
+            animation: celebrate 0.5s ease;
+        }
+
+        /* Стили для уведомления о новых данных */
+        .new-data-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -470,6 +582,20 @@
         </div>
 
         <div id="toast" class="toast"></div>
+        
+        <!-- Уведомление о новых данных -->
+        <div id="new-data-notification" class="new-data-notification">
+            <i class="fas fa-bell"></i> Доступны новые данные! <u>Обновить</u>
+        </div>
+    </div>
+
+    <!-- Модальное окно для деталей филиала -->
+    <div id="venueModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalVenueName"></h3>
+            <div id="modalVenueDetails"></div>
+        </div>
     </div>
 
     <script>
@@ -479,6 +605,7 @@
         let currentEndDate = '';
         let activePeriod = 'today';
         let autoRefreshInterval;
+        let lastDataHash = '';
 
         // --- КОНСТАНТЫ И НАСТРОЙКИ ---
         const DAILY_NETWORK_PLAN = 50000;
@@ -504,9 +631,11 @@
         }
 
         function getWeekStartDate(date = new Date()) {
-            const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-            return new Date(date.setDate(diff));
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            return d;
         }
 
         function getMonthStartDate(date = new Date()) {
@@ -546,11 +675,11 @@
                     endDate = yesterday;
                     break;
                 case 'thisWeek':
-                    startDate = getWeekStartDate();
+                    startDate = getWeekStartDate(new Date(today));
                     endDate = new Date(today);
                     break;
                 case 'thisMonth':
-                    startDate = getMonthStartDate();
+                    startDate = getMonthStartDate(new Date(today));
                     endDate = new Date(today);
                     break;
                 case 'lastMonth':
@@ -676,11 +805,18 @@
                         
                         let calculatedRevenue = 0;
                         let calculatedOrders = 0;
+                        let calculatedDeliveryOrders = 0;
+                        let calculatedPickupOrders = 0;
+                        let calculatedCafeOrders = 0;
+                        
                         const allVenues = { ...data.year_round, ...data.seasonal };
                         
                         Object.values(allVenues).forEach(stats => {
                             calculatedRevenue += stats.total_revenue || 0;
                             calculatedOrders += stats.total_orders || 0;
+                            calculatedDeliveryOrders += stats.delivery_orders || 0;
+                            calculatedPickupOrders += stats.pickup_orders || 0;
+                            calculatedCafeOrders += stats.cafe_orders || 0;
                         });
                         
                         const planRevenue = data.plan?.total_revenue || DAILY_NETWORK_PLAN;
@@ -691,7 +827,10 @@
                             plan: { total_revenue: planRevenue, total_orders: planOrders },
                             total: {
                                 total_revenue: calculatedRevenue,
-                                total_orders: calculatedOrders
+                                total_orders: calculatedOrders,
+                                total_delivery_orders: calculatedDeliveryOrders,
+                                total_pickup_orders: calculatedPickupOrders,
+                                total_cafe_orders: calculatedCafeOrders
                             },
                             _source: url.includes('revenue.json') && !url.includes('daily') ? 'latest' : 'daily'
                         };
@@ -708,7 +847,13 @@
             return {
                 date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
                 plan: { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 },
-                total: { total_revenue: 0, total_orders: 0 },
+                total: { 
+                    total_revenue: 0, 
+                    total_orders: 0,
+                    total_delivery_orders: 0,
+                    total_pickup_orders: 0,
+                    total_cafe_orders: 0
+                },
                 _source: 'empty'
             };
         }
@@ -717,7 +862,13 @@
             const diffDays = getDiffDays(startDateStr, endDateStr);
             let combinedData = {
                 year_round: {}, seasonal: {}, 
-                total: { total_revenue: 0, total_orders: 0 },
+                total: { 
+                    total_revenue: 0, 
+                    total_orders: 0,
+                    total_delivery_orders: 0,
+                    total_pickup_orders: 0,
+                    total_cafe_orders: 0
+                },
                 date: `${startDateStr} - ${endDateStr}`,
                 time: "23:59",
                 _sources: new Set()
@@ -742,6 +893,9 @@
             let totalDailyPlanOrders = 0;
             let totalActualRevenue = 0;
             let totalActualOrders = 0;
+            let totalActualDeliveryOrders = 0;
+            let totalActualPickupOrders = 0;
+            let totalActualCafeOrders = 0;
             
             const promises = dateList.map(dateStr => fetchDataForDate(dateStr));
             const dailyResults = await Promise.all(promises);
@@ -749,6 +903,9 @@
             dailyResults.forEach(dailyData => {
                 totalActualRevenue += dailyData.total.total_revenue || 0;
                 totalActualOrders += dailyData.total.total_orders || 0;
+                totalActualDeliveryOrders += dailyData.total.total_delivery_orders || 0;
+                totalActualPickupOrders += dailyData.total.total_pickup_orders || 0;
+                totalActualCafeOrders += dailyData.total.total_cafe_orders || 0;
                 combinedData._sources.add(dailyData._source);
 
                 const venuesToCombine = { ...dailyData.year_round, ...dailyData.seasonal };
@@ -778,7 +935,10 @@
 
             combinedData.total = {
                 total_revenue: totalActualRevenue,
-                total_orders: totalActualOrders
+                total_orders: totalActualOrders,
+                total_delivery_orders: totalActualDeliveryOrders,
+                total_pickup_orders: totalActualPickupOrders,
+                total_cafe_orders: totalActualCafeOrders
             };
             
             combinedData.plan = {
@@ -796,7 +956,13 @@
         // --- РЕНДЕРИНГ ---
 
         function renderMetrics(data) {
-            const total = data.total || { total_revenue: 0, total_orders: 0 };
+            const total = data.total || { 
+                total_revenue: 0, 
+                total_orders: 0,
+                total_delivery_orders: 0,
+                total_pickup_orders: 0,
+                total_cafe_orders: 0
+            };
             const plan = data.plan || { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 };
             
             const avg_bill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
@@ -826,7 +992,21 @@
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
                     <div class="metric-value">${total.total_orders}</div>
-                    <div class="metric-label">Заказы за период</div>
+                    <div class="metric-label">Всего заказов</div>
+                    <div class="orders-breakdown">
+                        <div class="order-type delivery">
+                            <div class="order-type-value">${total.total_delivery_orders || 0}</div>
+                            <div class="order-type-label">Доставка</div>
+                        </div>
+                        <div class="order-type pickup">
+                            <div class="order-type-value">${total.total_pickup_orders || 0}</div>
+                            <div class="order-type-label">Самовывоз</div>
+                        </div>
+                        <div class="order-type cafe">
+                            <div class="order-type-value">${total.total_cafe_orders || 0}</div>
+                            <div class="order-type-label">Кафе</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-receipt"></i></div>
@@ -855,6 +1035,12 @@
 
             if (revenueFulfill > 100) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                // Добавляем анимацию праздника к карточке выполнения плана
+                const planCard = document.querySelector('.metric-card:last-child');
+                if (planCard) {
+                    planCard.classList.add('celebrate');
+                    setTimeout(() => planCard.classList.remove('celebrate'), 1000);
+                }
             }
         }
 
@@ -869,12 +1055,31 @@
             
             return `
                 <div class="venue-card fade-in">
+                    <button class="venue-details-btn" onclick="openVenueModal('${venue}', ${JSON.stringify(stats).replace(/'/g, "&#39;")}, ${periodDays})">
+                        <i class="fas fa-chart-bar"></i>
+                    </button>
                     <div class="venue-name">${venue}</div>
                     <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</span></div>
                     <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders || 0}</span></div>
                     <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format((stats.delivery_revenue || 0).toFixed(0))} ₽</span></div>
                     <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format((stats.cafe_revenue || 0).toFixed(0))} ₽</span></div>
                     <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format((stats.pickup_revenue || 0).toFixed(0))} ₽</span></div>
+                    
+                    <div class="orders-breakdown" style="margin-top: 10px;">
+                        <div class="order-type delivery">
+                            <div class="order-type-value">${stats.delivery_orders || 0}</div>
+                            <div class="order-type-label">Доставка</div>
+                        </div>
+                        <div class="order-type pickup">
+                            <div class="order-type-value">${stats.pickup_orders || 0}</div>
+                            <div class="order-type-label">Самовывоз</div>
+                        </div>
+                        <div class="order-type cafe">
+                            <div class="order-type-value">${stats.cafe_orders || 0}</div>
+                            <div class="order-type-label">Кафе</div>
+                        </div>
+                    </div>
+                    
                     <div style="margin-top: 10px;">
                         <div class="progress-bar" style="height: 8px;">
                             <div class="progress-fill ${statusClass}" style="width: ${Math.min(fulfill, 100)}%;"></div>
@@ -1030,6 +1235,13 @@
                 const data = await loadData(startDateStr, endDateStr); 
                 dataCache.current = data;
 
+                // Проверяем, есть ли новые данные
+                const currentDataHash = JSON.stringify(data.total);
+                if (lastDataHash && lastDataHash !== currentDataHash) {
+                    showNewDataNotification();
+                }
+                lastDataHash = currentDataHash;
+
                 let dateDisplay;
                 if (startDateStr && endDateStr) {
                     dateDisplay = (startDateStr === endDateStr) ? 
@@ -1083,6 +1295,70 @@
                 }
             }, AUTO_REFRESH_INTERVAL);
         }
+
+        // --- НОВЫЕ ФИЧИ ---
+
+        // Модальное окно с деталями филиала
+        function openVenueModal(venue, stats, periodDays) {
+            const modal = document.getElementById('venueModal');
+            const modalVenueName = document.getElementById('modalVenueName');
+            const modalVenueDetails = document.getElementById('modalVenueDetails');
+            
+            const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
+            const planRevenueForPeriod = dailyPlan * periodDays;
+            const fulfill = planRevenueForPeriod > 0 ? (stats.total_revenue || 0) / planRevenueForPeriod * 100 : 0;
+            
+            modalVenueName.textContent = venue;
+            modalVenueDetails.innerHTML = `
+                <div class="venue-metric"><span>Выручка:</span> <span>${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</span></div>
+                <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders || 0}</span></div>
+                <div class="venue-metric"><span>Выполнение плана:</span> <span>${fulfill.toFixed(1)}%</span></div>
+                
+                <h4 style="margin-top: 15px;">Выручка по типам:</h4>
+                <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format((stats.delivery_revenue || 0).toFixed(0))} ₽</span></div>
+                <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format((stats.cafe_revenue || 0).toFixed(0))} ₽</span></div>
+                <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format((stats.pickup_revenue || 0).toFixed(0))} ₽</span></div>
+                
+                <h4 style="margin-top: 15px;">Заказы по типам:</h4>
+                <div class="venue-metric"><span>Доставка:</span> <span>${stats.delivery_orders || 0}</span></div>
+                <div class="venue-metric"><span>Кафе:</span> <span>${stats.cafe_orders || 0}</span></div>
+                <div class="venue-metric"><span>Самовывоз:</span> <span>${stats.pickup_orders || 0}</span></div>
+                
+                <div style="margin-top: 15px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+                    <strong>План:</strong> ${fmt.format(planRevenueForPeriod.toFixed(0))} ₽
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        // Уведомление о новых данных
+        function showNewDataNotification() {
+            const notification = document.getElementById('new-data-notification');
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Закрытие модального окна
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('venueModal').style.display = 'none';
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('venueModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Обновление при клике на уведомление о новых данных
+        document.getElementById('new-data-notification').addEventListener('click', function() {
+            load(currentStartDate, currentEndDate);
+            this.style.display = 'none';
+        });
         
         // --- PDF Export ---
 
