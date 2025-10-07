@@ -565,6 +565,29 @@
             loadCustomData();
         }
 
+        function calculateDailyPlanFromMonthly(monthlyPlan, dateStr, isRevenue = true) {
+            if (!monthlyPlan || monthlyPlan === 0) {
+                return isRevenue ? DAILY_NETWORK_PLAN : 1000;
+            }
+            
+            try {
+                const date = new Date(dateStr);
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                
+                // Получаем количество дней в месяце
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Рассчитываем средний дневной план
+                const dailyPlan = monthlyPlan / daysInMonth;
+                
+                return isRevenue ? dailyPlan : Math.round(dailyPlan);
+            } catch (e) {
+                console.warn('Ошибка расчета дневного плана:', e);
+                return isRevenue ? DAILY_NETWORK_PLAN : 1000;
+            }
+        }
+
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
@@ -705,6 +728,7 @@
             const endDate = new Date(endDateStr);
             
             if (isNaN(currentDate) || isNaN(endDate) || currentDate > endDate) {
+                // Для некорректных дат используем дневной план
                 combinedData.plan = { total_revenue: DAILY_NETWORK_PLAN * diffDays, total_orders: 1000 * diffDays };
                 return combinedData;
             }
@@ -714,13 +738,17 @@
                 currentDate.setDate(currentDate.getDate() + 1);
             }
             
-            let totalDailyPlan = 0;
+            let totalDailyPlanRevenue = 0;
+            let totalDailyPlanOrders = 0;
+            let totalActualRevenue = 0;
+            let totalActualOrders = 0;
+            
             const promises = dateList.map(dateStr => fetchDataForDate(dateStr));
             const dailyResults = await Promise.all(promises);
 
             dailyResults.forEach(dailyData => {
-                combinedData.total.total_revenue += dailyData.total.total_revenue || 0;
-                combinedData.total.total_orders += dailyData.total.total_orders || 0;
+                totalActualRevenue += dailyData.total.total_revenue || 0;
+                totalActualOrders += dailyData.total.total_orders || 0;
                 combinedData._sources.add(dailyData._source);
 
                 const venuesToCombine = { ...dailyData.year_round, ...dailyData.seasonal };
@@ -740,12 +768,22 @@
                     }
                 }
                 
-                totalDailyPlan += dailyData.plan.total_revenue || DAILY_NETWORK_PLAN;
+                // Рассчитываем дневной план на основе месячного плана из данных
+                const dailyPlanRevenue = calculateDailyPlanFromMonthly(dailyData.plan?.total_revenue, dailyData.date);
+                const dailyPlanOrders = calculateDailyPlanFromMonthly(dailyData.plan?.total_orders, dailyData.date, false);
+                
+                totalDailyPlanRevenue += dailyPlanRevenue;
+                totalDailyPlanOrders += dailyPlanOrders;
             });
 
+            combinedData.total = {
+                total_revenue: totalActualRevenue,
+                total_orders: totalActualOrders
+            };
+            
             combinedData.plan = {
-                total_revenue: totalDailyPlan,
-                total_orders: 1000 * diffDays
+                total_revenue: totalDailyPlanRevenue,
+                total_orders: totalDailyPlanOrders
             };
             
             if (diffDays === 1 && dailyResults[0].time !== "00:00") {
@@ -774,12 +812,16 @@
                 }
             }
             
+            // Отладочная информация о плане
+            const debugInfo = `<div class="data-source-info">📈 План расчитан для периода: ${fmt.format(plan.total_revenue.toFixed(0))} ₽</div>`;
+            
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
                     <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
                     <div class="metric-label">Выручка за период</div>
                     ${sourceInfo}
+                    ${debugInfo}
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
@@ -816,10 +858,11 @@
             }
         }
 
-        function renderVenueCard(venue, stats) {
+        function renderVenueCard(venue, stats, periodDays) {
             const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
-            const diffDays = getDiffDays(currentStartDate, currentEndDate);
-            const planRevenueForPeriod = dailyPlan * diffDays;
+            
+            // Рассчитываем план для всего периода
+            const planRevenueForPeriod = dailyPlan * periodDays;
             
             const fulfill = planRevenueForPeriod > 0 ? (stats.total_revenue || 0) / planRevenueForPeriod * 100 : 0;
             const statusClass = getStatusClass(fulfill);
@@ -854,8 +897,11 @@
                 return;
             }
             
+            // Рассчитываем количество дней в периоде
+            const periodDays = getDiffDays(currentStartDate, currentEndDate);
+            
             const sortedVenues = Object.entries(venues).sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats)).join('');
+            container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
         }
 
         // --- ФУНКЦИИ ГРАФИКОВ ---
