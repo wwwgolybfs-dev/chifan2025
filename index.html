@@ -345,6 +345,14 @@
         .metric-value.good, .metric-value.warn, .metric-value.bad {
             color: inherit;
         }
+
+        .data-source-info {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -415,16 +423,16 @@
 
     <script>
         let barChart1, barChart2;
-        let dataCache = {}; // Кэш для хранения загруженных данных по датам
+        let dataCache = {};
         let currentStartDate = '';
         let currentEndDate = '';
 
         // --- КОНСТАНТЫ И НАСТРОЙКИ ---
-        const DAILY_NETWORK_PLAN = 50000; // Ежедневный план сети по умолчанию
+        const DAILY_NETWORK_PLAN = 50000;
         const BASE_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/daily/';
+        const LATEST_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/revenue.json';
         const fmt = new Intl.NumberFormat('ru-RU');
 
-        // Индивидуальные дневные планы для расчета выполнения плана по филиалам
         const fixedDailyPlans = {
             "Тобольская": 70000,
             "Тихая": 55000,
@@ -434,9 +442,7 @@
         // --- УТИЛИТЫ ---
 
         function getTodayDateString() {
-            const today = new Date();
-            today.setFullYear(2025, 9, 6); // Сегодня 06.10.2025
-            return today.toISOString().split('T')[0];
+            return new Date().toISOString().split('T')[0];
         }
 
         function toggleTheme() {
@@ -500,55 +506,70 @@
         async function fetchDataForDate(dateStr) {
             if (dataCache[dateStr]) return dataCache[dateStr];
             
-            const url = `${BASE_DATA_URL}${dateStr}_revenue.json`;
+            const todayStr = getTodayDateString();
+            const isToday = dateStr === todayStr;
             
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        console.warn(`Файл для ${dateStr} не найден, возвращаем пустые данные с планом`);
-                        return {
-                            date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
-                            plan: { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 },
-                            total: { total_revenue: 0, total_orders: 0 }
-                        };
-                    }
-                    throw new Error(`Ошибка загрузки данных: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                let calculatedRevenue = 0;
-                let calculatedOrders = 0;
-                const allVenues = { ...data.year_round, ...data.seasonal };
-                
-                Object.values(allVenues).forEach(stats => {
-                    calculatedRevenue += stats.total_revenue || 0;
-                    calculatedOrders += stats.total_orders || 0;
-                });
-                
-                const planRevenue = data.plan?.total_revenue || DAILY_NETWORK_PLAN;
-                const planOrders = data.plan?.total_orders || 1000;
-
-                const result = {
-                    ...data,
-                    plan: { total_revenue: planRevenue, total_orders: planOrders },
-                    total: {
-                        total_revenue: calculatedRevenue,
-                        total_orders: calculatedOrders
-                    }
-                };
-                
-                dataCache[dateStr] = result;
-                return result;
-
-            } catch (error) {
-                console.warn(`Не удалось загрузить данные для ${dateStr}: ${error.message}`);
-                return {
-                    date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
-                    plan: { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 },
-                    total: { total_revenue: 0, total_orders: 0 }
-                };
+            // Для сегодняшней даты пробуем сначала daily (архив), потом latest
+            // Для прошлых дат - только daily
+            const urls = [];
+            
+            if (isToday) {
+                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json`); // daily архив
+                urls.push(LATEST_DATA_URL); // latest
+            } else {
+                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json`); // только daily
             }
+            
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Проверяем, что данные соответствуют запрашиваемой дате
+                        if (data.date && data.date !== dateStr && url === LATEST_DATA_URL) {
+                            console.warn(`Latest данные содержат другую дату (${data.date}), пропускаем`);
+                            continue;
+                        }
+                        
+                        let calculatedRevenue = 0;
+                        let calculatedOrders = 0;
+                        const allVenues = { ...data.year_round, ...data.seasonal };
+                        
+                        Object.values(allVenues).forEach(stats => {
+                            calculatedRevenue += stats.total_revenue || 0;
+                            calculatedOrders += stats.total_orders || 0;
+                        });
+                        
+                        const planRevenue = data.plan?.total_revenue || DAILY_NETWORK_PLAN;
+                        const planOrders = data.plan?.total_orders || 1000;
+
+                        const result = {
+                            ...data,
+                            plan: { total_revenue: planRevenue, total_orders: planOrders },
+                            total: {
+                                total_revenue: calculatedRevenue,
+                                total_orders: calculatedOrders
+                            },
+                            _source: url.includes('latest') ? 'latest' : 'daily'
+                        };
+                        
+                        dataCache[dateStr] = result;
+                        return result;
+                    }
+                } catch (error) {
+                    console.warn(`Не удалось загрузить из ${url}: ${error.message}`);
+                }
+            }
+            
+            // Если данные не найдены - возвращаем пустые
+            console.warn(`Файл для ${dateStr} не найден, возвращаем пустые данные`);
+            return {
+                date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
+                plan: { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 },
+                total: { total_revenue: 0, total_orders: 0 },
+                _source: 'empty'
+            };
         }
 
         async function loadData(startDateStr, endDateStr) {
@@ -557,7 +578,8 @@
                 year_round: {}, seasonal: {}, 
                 total: { total_revenue: 0, total_orders: 0 },
                 date: `${startDateStr} - ${endDateStr}`,
-                time: "23:59"
+                time: "23:59",
+                _sources: new Set()
             };
 
             const dateList = [];
@@ -581,6 +603,7 @@
             dailyResults.forEach(dailyData => {
                 combinedData.total.total_revenue += dailyData.total.total_revenue || 0;
                 combinedData.total.total_orders += dailyData.total.total_orders || 0;
+                combinedData._sources.add(dailyData._source);
 
                 const venuesToCombine = { ...dailyData.year_round, ...dailyData.seasonal };
                 for (const venue in venuesToCombine) {
@@ -623,11 +646,22 @@
             const avg_bill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
             const revenueFulfill = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
             
+            let sourceInfo = '';
+            if (data._sources) {
+                const sources = Array.from(data._sources);
+                if (sources.includes('latest')) {
+                    sourceInfo = '<div class="data-source-info">📊 Данные в реальном времени</div>';
+                } else if (sources.includes('daily')) {
+                    sourceInfo = '<div class="data-source-info">📁 Архивные данные</div>';
+                }
+            }
+            
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
                     <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
                     <div class="metric-label">Выручка за период</div>
+                    ${sourceInfo}
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
@@ -858,7 +892,7 @@
             }
         }
         
-        // --- PDF Export (использует кэшированные агрегированные данные) ---
+        // --- PDF Export ---
 
         function exportPDF(filter = 'all') {
             const data = dataCache.current;
@@ -918,4 +952,5 @@
             }
         }, 4 * 60 * 1000);
     </script>
-</body
+</body>
+</html>
