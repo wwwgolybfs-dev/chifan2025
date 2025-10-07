@@ -381,6 +381,17 @@
             background: var(--success-color);
             box-shadow: 0 0 0 2px var(--success-color);
         }
+
+        .auto-refresh-info {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -454,6 +465,10 @@
             <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
         </div>
 
+        <div id="auto-refresh-info" class="auto-refresh-info">
+            <i class="fas fa-sync-alt"></i> Автообновление каждые 4 минуты
+        </div>
+
         <div id="toast" class="toast"></div>
     </div>
 
@@ -463,12 +478,14 @@
         let currentStartDate = '';
         let currentEndDate = '';
         let activePeriod = 'today';
+        let autoRefreshInterval;
 
         // --- КОНСТАНТЫ И НАСТРОЙКИ ---
         const DAILY_NETWORK_PLAN = 50000;
         const BASE_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/daily/';
         const LATEST_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/revenue.json';
         const fmt = new Intl.NumberFormat('ru-RU');
+        const AUTO_REFRESH_INTERVAL = 4 * 60 * 1000; // 4 минуты
 
         const fixedDailyPlans = {
             "Тобольская": 70000,
@@ -488,7 +505,7 @@
 
         function getWeekStartDate(date = new Date()) {
             const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Понедельник как начало недели
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(date.setDate(diff));
         }
 
@@ -510,19 +527,17 @@
             const today = new Date();
             let startDate, endDate;
             
-            // Снимаем активный класс со всех кнопок
             document.querySelectorAll('.period-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // Устанавливаем активный класс на нажатую кнопку
             event.target.classList.add('active');
             activePeriod = period;
 
             switch(period) {
                 case 'today':
-                    startDate = today;
-                    endDate = today;
+                    startDate = new Date(today);
+                    endDate = new Date(today);
                     break;
                 case 'yesterday':
                     const yesterday = new Date(today);
@@ -532,11 +547,11 @@
                     break;
                 case 'thisWeek':
                     startDate = getWeekStartDate();
-                    endDate = today;
+                    endDate = new Date(today);
                     break;
                 case 'thisMonth':
                     startDate = getMonthStartDate();
-                    endDate = today;
+                    endDate = new Date(today);
                     break;
                 case 'lastMonth':
                     startDate = getLastMonthStartDate();
@@ -547,7 +562,6 @@
             document.getElementById('start-date').value = formatDateForInput(startDate);
             document.getElementById('end-date').value = formatDateForInput(endDate);
             
-            // Автоматически загружаем данные при выборе периода
             loadCustomData();
         }
 
@@ -610,20 +624,17 @@
         // --- ЛОГИКА ЗАГРУЗКИ ДАННЫХ ---
         
         async function fetchDataForDate(dateStr) {
-            if (dataCache[dateStr]) return dataCache[dateStr];
-            
             const todayStr = getTodayDateString();
             const isToday = dateStr === todayStr;
             
-            // Для сегодняшней даты пробуем сначала daily (архив), потом latest
-            // Для прошлых дат - только daily
+            // Для сегодняшней даты пробуем сначала latest, потом daily
             const urls = [];
             
             if (isToday) {
-                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json`); // daily архив
-                urls.push(LATEST_DATA_URL); // latest
+                urls.push(LATEST_DATA_URL + '?t=' + Date.now()); // latest - сначала с timestamp
+                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`); // daily архив
             } else {
-                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json`); // только daily
+                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`); // только daily
             }
             
             for (const url of urls) {
@@ -632,10 +643,12 @@
                     if (response.ok) {
                         const data = await response.json();
                         
-                        // Проверяем, что данные соответствуют запрашиваемой дате
-                        if (data.date && data.date !== dateStr && url === LATEST_DATA_URL) {
-                            console.warn(`Latest данные содержат другую дату (${data.date}), пропускаем`);
-                            continue;
+                        // Для latest данных проверяем дату
+                        if (url.includes('revenue.json') && !url.includes('daily')) {
+                            if (data.date && data.date !== dateStr) {
+                                console.warn(`Latest данные содержат другую дату (${data.date}), пропускаем`);
+                                continue;
+                            }
                         }
                         
                         let calculatedRevenue = 0;
@@ -657,7 +670,7 @@
                                 total_revenue: calculatedRevenue,
                                 total_orders: calculatedOrders
                             },
-                            _source: url.includes('latest') ? 'latest' : 'daily'
+                            _source: url.includes('revenue.json') && !url.includes('daily') ? 'latest' : 'daily'
                         };
                         
                         dataCache[dateStr] = result;
@@ -668,7 +681,6 @@
                 }
             }
             
-            // Если данные не найдены - возвращаем пустые
             console.warn(`Файл для ${dateStr} не найден, возвращаем пустые данные`);
             return {
                 date: dateStr, time: "00:00", year_round: {}, seasonal: {}, 
@@ -756,7 +768,7 @@
             if (data._sources) {
                 const sources = Array.from(data._sources);
                 if (sources.includes('latest')) {
-                    sourceInfo = '<div class="data-source-info">📊 Данные в реальном времени</div>';
+                    sourceInfo = '<div class="data-source-info">📊 Данные в реальном времени (автообновление)</div>';
                 } else if (sources.includes('daily')) {
                     sourceInfo = '<div class="data-source-info">📁 Архивные данные</div>';
                 }
@@ -962,6 +974,12 @@
             currentStartDate = startDateStr;
             currentEndDate = endDateStr;
 
+            // Принудительно очищаем кэш для сегодняшней даты, чтобы всегда брать актуальные данные
+            const todayStr = getTodayDateString();
+            if (startDateStr === todayStr || endDateStr === todayStr) {
+                delete dataCache[todayStr];
+            }
+
             try {
                 const data = await loadData(startDateStr, endDateStr); 
                 dataCache.current = data;
@@ -996,6 +1014,28 @@
                     setTimeout(() => el.classList.add('fade-in'), index * 50);
                 });
             }
+        }
+
+        // --- АВТООБНОВЛЕНИЕ ---
+
+        function setupAutoRefresh() {
+            // Очищаем предыдущий интервал
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            // Запускаем автообновление каждые 4 минуты
+            autoRefreshInterval = setInterval(() => {
+                const todayStr = getTodayDateString();
+                
+                // Автообновляем только если просматриваем сегодняшние данные
+                if (currentStartDate === todayStr && currentEndDate === todayStr) {
+                    console.log('Автообновление данных...');
+                    delete dataCache[todayStr]; // Очищаем кэш
+                    load(currentStartDate, currentEndDate);
+                    showToast('Данные автоматически обновлены', 'success');
+                }
+            }, AUTO_REFRESH_INTERVAL);
         }
         
         // --- PDF Export ---
@@ -1055,11 +1095,8 @@
         
         load(todayStr, todayStr); 
         
-        setInterval(() => {
-            if (currentStartDate === currentEndDate && currentStartDate === getTodayDateString()) {
-                load(currentStartDate, currentEndDate);
-            }
-        }, 4 * 60 * 1000);
+        // Запускаем автообновление
+        setupAutoRefresh();
     </script>
 </body>
 </html>
