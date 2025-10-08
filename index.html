@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
+            /* Темные цвета */
             --primary-color: #0d1b2a;
             --success-color: #00c853;
             --warning-color: #ff9800;
@@ -40,22 +41,27 @@
             color: var(--text-primary);
             line-height: 1.6;
             transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
         }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            z-index: 10;
+            position: relative;
         }
         h1 {
             margin: 0;
             color: var(--primary-color);
             font-weight: 700;
             font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         .theme-toggle {
             background: var(--primary-color);
@@ -83,11 +89,6 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 8px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
         }
         #business-day-info {
             text-align: center;
@@ -95,11 +96,8 @@
             font-size: 0.9rem;
             margin-bottom: 15px;
             padding: 8px 15px;
-            background: rgba(66, 133, 244, 0.1);
-            border-left: 3px solid var(--primary-color);
-            border-radius: 8px;
-            border: 1px solid rgba(66, 133, 244, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent-color);
         }
         .export-buttons {
             display: flex;
@@ -144,8 +142,6 @@
             animation: slideIn 0.5s ease;
             opacity: 0;
             transform: translateY(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
         }
         .metric-card.fade-in {
             opacity: 1;
@@ -154,7 +150,6 @@
         .metric-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
-            border-color: rgba(255, 255, 255, 0.1);
         }
         .metric-icon {
             font-size: 2rem;
@@ -170,12 +165,10 @@
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 5px;
-            transition: color 0.3s ease;
         }
         .metric-label {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            transition: color 0.3s ease;
         }
         .progress-container {
             margin: 20px 0;
@@ -197,15 +190,11 @@
             background: var(--border-color);
             border-radius: 10px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
         }
         .progress-fill {
             height: 100%;
             transition: width 1s ease;
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
         }
         .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
         .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
@@ -214,7 +203,6 @@
             text-align: center;
             font-weight: 500;
             margin-top: 10px;
-            color: var(--text-primary);
         }
         .section {
             margin-bottom: 40px;
@@ -442,14 +430,12 @@
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
         }
         .order-type {
             text-align: center;
             padding: 8px;
             background: rgba(0, 200, 83, 0.1);
             border-radius: 6px;
-            transition: all 0.3s ease;
         }
         .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
         .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
@@ -540,6 +526,14 @@
             cursor: pointer;
             z-index: 1000;
             display: none;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .new-data-notification:hover {
+            transform: scale(1.05);
+        }
+        .new-data-notification:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -830,9 +824,11 @@
                             calculatedPickupOrders += stats.pickup_orders || 0;
                             calculatedCafeOrders += stats.cafe_orders || 0;
                         });
-                        // Используем plan из данных
+                        
+                        // ИСПРАВЛЕНИЕ: Правильно обрабатываем план из данных
                         const planRevenue = data.plan?.revenue || DAILY_NETWORK_PLAN;
                         const planOrders = data.plan?.orders || 1000;
+                        
                         const result = {
                             ...data,
                             plan: { revenue: planRevenue, orders: planOrders },
@@ -886,7 +882,7 @@
             const endDate = new Date(endDateStr);
             if (isNaN(currentDate) || isNaN(endDate) || currentDate > endDate) {
                 // Для некорректных дат используем дневной план
-                combinedData.plan = { revenue: DAILY_NETWORK_PLAN * diffDays, orders: 1000 * diffDays };
+                combinedData.plan = { total_revenue: DAILY_NETWORK_PLAN * diffDays, total_orders: 1000 * diffDays };
                 return combinedData;
             }
             while (currentDate <= endDate) {
@@ -924,11 +920,15 @@
                         }
                     }
                 }
-                // Используем plan из данных
-                const planRevenue = dailyData.plan?.revenue || DAILY_NETWORK_PLAN;
-                const planOrders = dailyData.plan?.orders || 1000;
-                totalDailyPlanRevenue += planRevenue;
-                totalDailyPlanOrders += planOrders;
+                // ИСПРАВЛЕНИЕ: Правильно рассчитываем дневной план
+                const monthlyRevenuePlan = dailyData.plan?.revenue;
+                const monthlyOrdersPlan = dailyData.plan?.orders;
+                const dailyPlanRevenue = calculateDailyPlanFromMonthly(monthlyRevenuePlan, dailyData.date);
+                const dailyPlanOrders = calculateDailyPlanFromMonthly(monthlyOrdersPlan, dailyData.date, false);
+                
+                // Проверяем на NaN и заменяем на дефолтные значения при необходимости
+                totalDailyPlanRevenue += (isNaN(dailyPlanRevenue) ? DAILY_NETWORK_PLAN : dailyPlanRevenue);
+                totalDailyPlanOrders += (isNaN(dailyPlanOrders) ? 1000 : dailyPlanOrders);
             });
             combinedData.total = {
                 total_revenue: totalActualRevenue,
@@ -938,8 +938,8 @@
                 total_cafe_orders: totalActualCafeOrders
             };
             combinedData.plan = {
-                revenue: totalDailyPlanRevenue,
-                orders: totalDailyPlanOrders
+                total_revenue: totalDailyPlanRevenue,
+                total_orders: totalDailyPlanOrders
             };
             if (diffDays === 1 && dailyResults[0].time !== "00:00") {
                 combinedData.time = dailyResults[0].time;
@@ -955,9 +955,9 @@
                 total_pickup_orders: 0,
                 total_cafe_orders: 0
             };
-            const plan = data.plan || { revenue: DAILY_NETWORK_PLAN, orders: 1000 };
+            const plan = data.plan || { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 };
             const avg_bill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
-            const revenueFulfill = plan.revenue > 0 ? (total.total_revenue / plan.revenue) * 100 : 0;
+            const revenueFulfill = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
             let sourceInfo = '';
             if (data._sources) {
                 const sources = Array.from(data._sources);
@@ -968,7 +968,7 @@
                 }
             }
             // Отладочная информация о плане
-            const debugInfo = `<div class="data-source-info">📈 План расчитан для периода: ${fmt.format(plan.revenue.toFixed(0))} ₽</div>`;
+            const debugInfo = `<div class="data-source-info">📈 План расчитан для периода: ${fmt.format(plan.total_revenue.toFixed(0))} ₽</div>`;
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
@@ -1016,7 +1016,7 @@
                 bar.style.width = Math.min(revenueFulfill, 100) + '%';
                 progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
                 currentValue.textContent = `${fmt.format(total.total_revenue.toFixed(0))} ₽`;
-                planValue.textContent = `${fmt.format(plan.revenue.toFixed(0))} ₽`;
+                planValue.textContent = `${fmt.format(plan.total_revenue.toFixed(0))} ₽`;
             }
             if (revenueFulfill > 100) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
