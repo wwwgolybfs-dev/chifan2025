@@ -561,15 +561,12 @@
             // Иначе текущий бизнес-день - это текущая дата
             return new Date(now.getFullYear(), now.getMonth(), now.getDate());
         }
-        
         function getTodayDateString() {
             return getCurrentBusinessDay().toISOString().split('T')[0];
         }
-        
         function formatDateForInput(date) {
             return date.toISOString().split('T')[0];
         }
-        
         function getWeekStartDate(date = new Date()) {
             const d = new Date(date);
             const day = d.getDay();
@@ -577,25 +574,20 @@
             d.setDate(diff);
             return d;
         }
-        
         function getMonthStartDate(date = new Date()) {
             return new Date(date.getFullYear(), date.getMonth(), 1);
         }
-        
         function getLastMonthStartDate() {
             const date = new Date();
             return new Date(date.getFullYear(), date.getMonth() - 1, 1);
         }
-        
         function getLastMonthEndDate() {
             const date = new Date();
             return new Date(date.getFullYear(), date.getMonth(), 0);
         }
-        
         function isCurrentBusinessDay(dateStr) {
             const now = new Date();
             const businessDay = new Date(dateStr);
-            
             // Если время меньше 03:00, то текущий бизнес-день - это вчерашний календарный день
             if (now.getHours() < 3) {
                 return businessDay.toDateString() === (new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)).toDateString();
@@ -603,7 +595,6 @@
                 return businessDay.toDateString() === (new Date(now.getFullYear(), now.getMonth(), now.getDate())).toDateString();
             }
         }
-        
         function setPeriod(period) {
             const businessDay = getCurrentBusinessDay();
             let startDate, endDate;
@@ -640,7 +631,6 @@
             document.getElementById('end-date').value = formatDateForInput(endDate);
             loadCustomData();
         }
-        
         function calculateDailyPlanFromMonthly(monthlyPlan, dateStr, isRevenue = true) {
             if (!monthlyPlan || monthlyPlan === 0) {
                 return isRevenue ? DAILY_NETWORK_PLAN : 1000;
@@ -659,7 +649,6 @@
                 return isRevenue ? DAILY_NETWORK_PLAN : 1000;
             }
         }
-        
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
@@ -670,7 +659,6 @@
             icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
             updateChartTheme();
         }
-        
         function updateChartTheme() {
             const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
             const updateOptions = { 
@@ -691,13 +679,11 @@
                 barChart2.update();
             }
         }
-        
         function getStatusClass(fulfill) {
             if (fulfill >= 100) return 'good';
             if (fulfill >= 80) return 'warn';
             return 'bad';
         }
-        
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             if (!toast) return;
@@ -706,7 +692,6 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-        
         function getDiffDays(startDateStr, endDateStr) {
             const start = new Date(startDateStr);
             const end = new Date(endDateStr);
@@ -714,7 +699,6 @@
             const diffTime = Math.abs(end - start);
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         }
-        
         // --- ЛОГИКА ЗАГРУЗКИ ДАННЫХ ---
         async function fetchDataForDate(dateStr) {
             const todayStr = getTodayDateString();
@@ -787,7 +771,6 @@
                 _source: 'empty'
             };
         }
-        
         async function loadData(startDateStr, endDateStr) {
             const diffDays = getDiffDays(startDateStr, endDateStr);
             let combinedData = {
@@ -868,7 +851,6 @@
             }
             return combinedData;
         }
-        
         // --- РЕНДЕРИНГ ---
         function renderMetrics(data) {
             const total = data.total || { 
@@ -951,7 +933,6 @@
                 }
             }
         }
-        
         function renderVenueCard(venue, stats, periodDays) {
             const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
             // Рассчитываем план для всего периода
@@ -992,7 +973,6 @@
                 </div>
             `;
         }
-        
         function renderVenues(data, containerId) {
             const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
             const venues = data[key] || {};
@@ -1007,7 +987,6 @@
             const sortedVenues = Object.entries(venues).sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
         }
-        
         // --- ФУНКЦИИ ГРАФИКОВ ---
         function renderCharts(data) {
             const allVenues = { ...data.year_round, ...data.seasonal };
@@ -1039,7 +1018,6 @@
             }
             updateBarChart2(data);
         }
-        
         function updateBarChart2(data) {
             const dataType = document.getElementById('dataType').value;
             const allVenues = data ? { ...data.year_round, ...data.seasonal } : {};
@@ -1086,7 +1064,6 @@
                 });
             }
         }
-        
         // --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ---
         function loadCustomData() {
             const startDate = document.getElementById('start-date').value;
@@ -1105,7 +1082,6 @@
             showToast(`Загрузка данных ${periodText}`);
             load(startDate, endDate);
         }
-        
         async function load(startDateStr, endDateStr) {
             const updateEl = document.getElementById('last-update');
             if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
@@ -1152,7 +1128,6 @@
                 });
             }
         }
-        
         // --- АВТООБНОВЛЕНИЕ ---
         function setupAutoRefresh() {
             // Очищаем предыдущий интервал
@@ -1172,7 +1147,6 @@
                 }
             }, AUTO_REFRESH_INTERVAL);
         }
-        
         // --- НОВЫЕ ФИЧИ ---
         // Модальное окно с деталями филиала
         function openVenueModal(venue, stats, periodDays) {
@@ -1201,7 +1175,6 @@
             `;
             modal.style.display = 'block';
         }
-        
         // Уведомление о новых данных
         function showNewDataNotification() {
             const notification = document.getElementById('new-data-notification');
@@ -1210,12 +1183,10 @@
                 notification.style.display = 'none';
             }, 5000);
         }
-        
         // Закрытие модального окна
         document.querySelector('.close').addEventListener('click', function() {
             document.getElementById('venueModal').style.display = 'none';
         });
-        
         // Закрытие модального окна при клике вне его
         window.addEventListener('click', function(event) {
             const modal = document.getElementById('venueModal');
@@ -1223,13 +1194,11 @@
                 modal.style.display = 'none';
             }
         });
-        
         // Обновление при клике на уведомление о новых данных
         document.getElementById('new-data-notification').addEventListener('click', function() {
             load(currentStartDate, currentEndDate);
             this.style.display = 'none';
         });
-        
         // --- PDF Export ---
         function exportPDF(filter = 'all') {
             const data = dataCache.current;
@@ -1266,7 +1235,6 @@
             doc.save(`chifan_report_${currentStartDate.replace(/-/g, '_')}_${filter}.pdf`);
             showToast('PDF экспортирован!');
         }
-        
         // --- Инициализация ---
         if (localStorage.getItem('theme') === 'dark') toggleTheme();
         const todayStr = getTodayDateString();
@@ -1274,14 +1242,11 @@
         document.getElementById('end-date').value = todayStr;
         // Устанавливаем активную кнопку "Сегодня" при загрузке
         document.querySelector('.period-btn').classList.add('active');
-        
         // Обновляем информацию о бизнес-дне
         updateBusinessDayInfo();
-        
         load(todayStr, todayStr); 
         // Запускаем автообновление
         setupAutoRefresh();
-        
         function updateBusinessDayInfo() {
             const businessDayDate = getCurrentBusinessDay().toISOString().split('T')[0];
             document.getElementById('business-day-date').textContent = businessDayDate;
