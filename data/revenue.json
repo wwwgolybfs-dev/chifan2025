@@ -1,6 +1,6 @@
 {
   "date": "2025-10-08",
-  "time": "11:18",
+  "time": "11:24",
   "year_round": {
     "Красота": {
       "total_orders": 8,
@@ -33,14 +33,14 @@
       "cafe_revenue": 725.0
     },
     "Чуркин": {
-      "total_orders": 3,
+      "total_orders": 5,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 3,
-      "total_revenue": 1078.0,
+      "cafe_orders": 5,
+      "total_revenue": 3194.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 1078.0
+      "cafe_revenue": 3194.0
     }
   },
   "seasonal": {
@@ -56,8 +56,8 @@
     }
   },
   "total": {
-    "total_orders": 19,
-    "total_revenue": 9309.0
+    "total_orders": 21,
+    "total_revenue": 11425.0
   },
   "plan": {
     "total_revenue": 20944728.513,
