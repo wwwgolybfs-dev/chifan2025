@@ -1,6 +1,6 @@
 {
   "date": "2025-10-08",
-  "time": "18:00",
+  "time": "18:06",
   "year_round": {
     "Парк": {
       "total_orders": 24,
@@ -55,14 +55,14 @@
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 30,
+      "total_orders": 32,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 29,
-      "total_revenue": 14209.0,
+      "cafe_orders": 31,
+      "total_revenue": 15037.0,
       "delivery_revenue": 0,
       "pickup_revenue": 339.0,
-      "cafe_revenue": 13870.0
+      "cafe_revenue": 14698.0
     },
     "МГУ": {
       "total_orders": 16,
@@ -86,8 +86,8 @@
     }
   },
   "total": {
-    "total_orders": 332,
-    "total_revenue": 195557.0
+    "total_orders": 334,
+    "total_revenue": 196385.0
   },
   "plan": {
     "total_revenue": 20944728.513,
