@@ -1,36 +1,36 @@
 {
   "date": "2025-10-08",
-  "time": "14:12",
+  "time": "14:18",
   "year_round": {
     "Красота": {
-      "total_orders": 26,
+      "total_orders": 28,
       "delivery_orders": 5,
-      "pickup_orders": 7,
-      "cafe_orders": 14,
-      "total_revenue": 17205.0,
+      "pickup_orders": 8,
+      "cafe_orders": 15,
+      "total_revenue": 17793.0,
       "delivery_revenue": 6653.0,
-      "pickup_revenue": 2765.0,
-      "cafe_revenue": 7787.0
+      "pickup_revenue": 2994.0,
+      "cafe_revenue": 8146.0
     },
     "Тобольская": {
-      "total_orders": 22,
+      "total_orders": 24,
       "delivery_orders": 4,
       "pickup_orders": 4,
-      "cafe_orders": 14,
-      "total_revenue": 17658.0,
+      "cafe_orders": 16,
+      "total_revenue": 19014.0,
       "delivery_revenue": 7925.0,
       "pickup_revenue": 3451.0,
-      "cafe_revenue": 6282.0
+      "cafe_revenue": 7638.0
     },
     "Тихая": {
-      "total_orders": 17,
+      "total_orders": 19,
       "delivery_orders": 1,
-      "pickup_orders": 1,
-      "cafe_orders": 15,
-      "total_revenue": 9938.0,
+      "pickup_orders": 2,
+      "cafe_orders": 16,
+      "total_revenue": 11041.0,
       "delivery_revenue": 575.0,
-      "pickup_revenue": 659.0,
-      "cafe_revenue": 8704.0
+      "pickup_revenue": 1407.0,
+      "cafe_revenue": 9059.0
     },
     "Чуркин": {
       "total_orders": 47,
@@ -45,14 +45,14 @@
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 15,
+      "total_orders": 16,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 14,
-      "total_revenue": 7558.0,
+      "cafe_orders": 15,
+      "total_revenue": 8268.0,
       "delivery_revenue": 0,
       "pickup_revenue": 339.0,
-      "cafe_revenue": 7219.0
+      "cafe_revenue": 7929.0
     },
     "МГУ": {
       "total_orders": 7,
@@ -76,8 +76,8 @@
     }
   },
   "total": {
-    "total_orders": 156,
-    "total_revenue": 89988.0
+    "total_orders": 163,
+    "total_revenue": 93745.0
   },
   "plan": {
     "total_revenue": 20944728.513,
