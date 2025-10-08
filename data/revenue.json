@@ -1,6 +1,6 @@
 {
   "date": "2025-10-08",
-  "time": "15:12",
+  "time": "15:18",
   "year_round": {
     "Парк": {
       "total_orders": 5,
@@ -13,34 +13,34 @@
       "cafe_revenue": 970.0
     },
     "Красота": {
-      "total_orders": 33,
+      "total_orders": 34,
       "delivery_orders": 8,
       "pickup_orders": 8,
-      "cafe_orders": 17,
-      "total_revenue": 24456.0,
+      "cafe_orders": 18,
+      "total_revenue": 24771.0,
       "delivery_revenue": 12101.0,
       "pickup_revenue": 2994.0,
-      "cafe_revenue": 9361.0
+      "cafe_revenue": 9676.0
     },
     "Тобольская": {
-      "total_orders": 32,
-      "delivery_orders": 4,
+      "total_orders": 34,
+      "delivery_orders": 5,
       "pickup_orders": 5,
-      "cafe_orders": 23,
-      "total_revenue": 24373.0,
-      "delivery_revenue": 7925.0,
+      "cafe_orders": 24,
+      "total_revenue": 26525.0,
+      "delivery_revenue": 9339.0,
       "pickup_revenue": 4478.0,
-      "cafe_revenue": 11970.0
+      "cafe_revenue": 12708.0
     },
     "Тихая": {
-      "total_orders": 24,
+      "total_orders": 29,
       "delivery_orders": 1,
       "pickup_orders": 5,
-      "cafe_orders": 18,
-      "total_revenue": 14129.0,
+      "cafe_orders": 23,
+      "total_revenue": 17558.0,
       "delivery_revenue": 575.0,
       "pickup_revenue": 3572.0,
-      "cafe_revenue": 9982.0
+      "cafe_revenue": 13411.0
     },
     "Чуркин": {
       "total_orders": 59,
@@ -65,14 +65,14 @@
       "cafe_revenue": 10128.0
     },
     "МГУ": {
-      "total_orders": 11,
+      "total_orders": 12,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 11,
-      "total_revenue": 4322.0,
+      "cafe_orders": 12,
+      "total_revenue": 4677.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 4322.0
+      "cafe_revenue": 4677.0
     },
     "Юбилейный": {
       "total_orders": 26,
@@ -86,8 +86,8 @@
     }
   },
   "total": {
-    "total_orders": 211,
-    "total_revenue": 124062.0
+    "total_orders": 220,
+    "total_revenue": 130313.0
   },
   "plan": {
     "total_revenue": 20944728.513,
