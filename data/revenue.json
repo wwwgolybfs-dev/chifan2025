@@ -1,6 +1,6 @@
 {
   "date": "2025-10-08",
-  "time": "17:48",
+  "time": "17:54",
   "year_round": {
     "Парк": {
       "total_orders": 23,
@@ -43,14 +43,14 @@
       "cafe_revenue": 16781.0
     },
     "Чуркин": {
-      "total_orders": 80,
+      "total_orders": 81,
       "delivery_orders": 0,
       "pickup_orders": 11,
-      "cafe_orders": 69,
-      "total_revenue": 46882.0,
+      "cafe_orders": 70,
+      "total_revenue": 47197.0,
       "delivery_revenue": 0,
       "pickup_revenue": 7992.0,
-      "cafe_revenue": 38890.0
+      "cafe_revenue": 39205.0
     }
   },
   "seasonal": {
@@ -86,8 +86,8 @@
     }
   },
   "total": {
-    "total_orders": 328,
-    "total_revenue": 194198.0
+    "total_orders": 329,
+    "total_revenue": 194513.0
   },
   "plan": {
     "total_revenue": 20944728.513,
