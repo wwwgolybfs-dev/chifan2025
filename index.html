@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чи-Фань — Выручка в реальном времени</title>
+    <title>Чи-Фань — Аналитика выручки</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,358 +11,119 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            /* Улучшенные темные цвета */
-            --primary-color: #0d1b2a;
+            --primary-color: #1a237e;
+            --secondary-color: #283593;
             --success-color: #00c853;
             --warning-color: #ff9800;
             --danger-color: #f44336;
-            --bg-color: #0a111e;
-            --card-bg: #121c2b;
-            --text-primary: #ffffff;
-            --text-secondary: #c1cdd2;
-            --border-color: #1a2534;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --accent-color: #00c853;
-            --secondary-accent: #009688;
-            --compare-positive: #4caf50;
-            --compare-negative: #f44336;
-            --avg-check-color: #009688;
-            --highlight: #2196f3;
+            --info-color: #2196f3;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+            --accent-color: #1a237e;
+            --border-radius: 8px;
         }
+
         [data-theme="dark"] {
-            --bg-color: #0a111e;
-            --card-bg: #121c2b;
-            --text-primary: #ffffff;
-            --text-secondary: #c1cdd2;
-            --border-color: #1a2534;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #9e9e9e;
+            --border-color: #333333;
+            --shadow: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.4);
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
             transition: background 0.3s ease, color 0.3s ease;
-            overflow-x: hidden;
         }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            position: relative;
+            padding: 20px;
         }
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            z-index: 10;
-            position: relative;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
+
         h1 {
             margin: 0;
-            color: var(--primary-color);
             font-weight: 700;
-            font-size: 2.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 2rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
+
         .theme-toggle {
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 50%;
+            padding: 10px 14px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
         .theme-toggle:hover {
-            background: #0a1522;
-            transform: scale(1.1);
-        }
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-        #last-update {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        #business-day-info {
-            text-align: center;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 3px solid var(--accent-color);
-        }
-        .export-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .export-btn {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            box-shadow: 0 2px 6px rgba(0, 200, 83, 0.3);
-            backdrop-filter: blur(5px);
-        }
-        .export-btn:hover {
-            background: #00a845;
+            background: var(--secondary-color);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 200, 83, 0.4);
         }
-        .export-btn:active {
-            transform: translateY(0);
-        }
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        @media (min-width: 768px) {
-            .dashboard {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .metric-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: slideIn 0.5s ease;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .metric-card.fade-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-        .metric-icon {
-            font-size: 2rem;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-            transition: transform 0.3s ease;
-        }
-        .metric-icon:hover {
-            transform: scale(1.2);
-        }
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-        .metric-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-        .progress-container {
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .progress-header {
+
+        .info-panel {
             display: flex;
             justify-content: space-between;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: var(--border-color);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            transition: width 1s ease;
-            border-radius: 10px;
-        }
-        .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
-        .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
-        .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
-        .progress-text {
-            text-align: center;
-            font-weight: 500;
-            margin-top: 10px;
-        }
-        .section {
-            margin-bottom: 40px;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--text-primary);
+            align-items: center;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -5px;
-            width: 50px;
-            height: 3px;
-            background: var(--accent-color);
-            border-radius: 3px;
-        }
-        .venues-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .venue-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-        .venue-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.02);
-        }
-        .venue-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-            transition: color 0.3s ease;
-        }
-        .venue-metric {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            transition: color 0.3s ease;
-        }
-        .venue-metric-value {
-            font-weight: 500;
-            color: var(--text-primary);
-            transition: color 0.3s ease;
-        }
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .chart-container {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-        .chart-container canvas {
-            color: var(--text-primary);
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @media (max-width: 768px) {
-            .charts-grid { grid-template-columns: 1fr; }
-            .venues-grid { grid-template-columns: 1fr; }
-            body { padding: 10px; }
-            .metric-card {
-                margin-bottom: 10px;
-            }
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--success-color);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
-            backdrop-filter: blur(5px);
-        }
-        .toast.show {
-            opacity: 1;
-        }
-        .error-msg {
-            color: var(--danger-color);
-            text-align: center;
-            padding: 10px;
-            background: rgba(244, 67, 54, 0.1);
-            border-radius: 8px;
-            margin: 10px 0;
-            border: 1px solid rgba(244, 67, 54, 0.2);
-            backdrop-filter: blur(5px);
-        }
-        .data-selector {
-            margin-bottom: 10px;
-            padding: 5px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-        }
+
         .date-range-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
             align-items: center;
             flex-wrap: wrap;
-            padding: 15px;
+            padding: 16px;
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
-        .date-range-selector input, .date-range-selector button {
+
+        .date-range-selector label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .date-range-selector input, 
+        .date-range-selector button,
+        .data-selector {
             padding: 8px 12px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
@@ -370,61 +131,329 @@
             color: var(--text-primary);
             transition: all 0.3s ease;
         }
+
         .date-range-selector button {
             background: var(--accent-color);
             color: white;
             border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 6px rgba(0, 200, 83, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+
         .date-range-selector button:hover {
-            background: #00a845;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 200, 83, 0.4);
+            background: var(--secondary-color);
         }
-        .date-range-selector button:active {
-            transform: translateY(0);
+
+        .quick-periods {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        .metric-value.good, .metric-value.warn, .metric-value.bad {
-            color: inherit;
+
+        .period-btn {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
         }
+
+        .period-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .period-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .metric-icon {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .metric-change.positive {
+            background: rgba(0, 200, 83, 0.1);
+            color: var(--success-color);
+        }
+
+        .metric-change.negative {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+        }
+
+        .progress-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 1s ease;
+            border-radius: 10px;
+        }
+
+        .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
+        .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
+        .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .venues-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .venues-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .venue-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 3px solid var(--accent-color);
+        }
+
+        .venue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .venue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .venue-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .venue-details-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .venue-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .venue-metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .venue-metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .venue-metric-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .orders-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .order-type {
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
+        .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
+        .order-type.cafe { background: rgba(139, 92, 246, 0.1); }
+
+        .order-type-value {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .order-type-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .export-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .error-msg {
+            color: var(--danger-color);
+            text-align: center;
+            padding: 12px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: var(--border-radius);
+            margin: 10px 0;
+            border: 1px solid rgba(244, 67, 54, 0.2);
+        }
+
         .data-source-info {
             text-align: center;
             color: var(--text-secondary);
             font-size: 0.8rem;
             margin-top: 5px;
             font-style: italic;
-            transition: color 0.3s ease;
         }
-        .quick-periods {
-            display: flex;
-            gap: 8px;
-            margin-left: auto;
-            flex-wrap: wrap;
-        }
-        .period-btn {
-            background: var(--warning-color);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
-        }
-        .period-btn:hover {
-            background: #d97706;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.4);
-        }
-        .period-btn.active {
-            background: var(--success-color);
-            box-shadow: 0 0 0 2px var(--success-color);
-            transform: scale(1.05);
-        }
+
         .auto-refresh-info {
             text-align: center;
             color: var(--text-secondary);
@@ -434,399 +463,138 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            transition: color 0.3s ease;
         }
-        /* Новые стили для разбивки заказов */
-        .orders-breakdown {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+
+        .comparison-selector {
+            display: flex;
             gap: 10px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
+            align-items: center;
+            margin-bottom: 20px;
         }
-        .order-type {
-            text-align: center;
-            padding: 8px;
-            background: rgba(0, 200, 83, 0.1);
+
+        .comparison-option {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-        }
-        .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
-        .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
-        .order-type.cafe { background: rgba(139, 92, 246, 0.1); }
-        .order-type-value {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 2px;
-            color: var(--text-primary);
-            transition: color 0.3s ease;
-        }
-        .order-type-label {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            transition: color 0.3s ease;
-        }
-        /* Стили для модального окна */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
             background: var(--card-bg);
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-        }
-        .close {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-        .close:hover {
             color: var(--text-primary);
-            transform: scale(1.2);
-        }
-        .venue-details-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: var(--accent-color);
             cursor: pointer;
-            font-size: 1.1rem;
             transition: all 0.3s ease;
         }
-        .venue-details-btn:hover {
-            transform: scale(1.2);
-        }
-        /* Анимация для праздника */
-        @keyframes celebrate {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .celebrate {
-            animation: celebrate 0.5s ease;
-        }
-        /* Стили для уведомления о новых данных */
-        .new-data-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--accent-color);
+
+        .comparison-option.active {
+            background: var(--primary-color);
             color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
-            cursor: pointer;
-            z-index: 1000;
-            display: none;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+            border-color: var(--primary-color);
         }
-        .new-data-notification:hover {
-            transform: scale(1.05);
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .venues-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .date-range-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .quick-periods {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
-        .new-data-notification:active {
-            transform: scale(0.95);
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
         }
-        /* Новые стили для сравнения данных */
-        .comparison-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-top: 20px;
-            transition: all 0.3s ease;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .comparison-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .comparison-title {
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .comparison-periods {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .period-display {
-            background: var(--bg-color);
-            border-radius: 8px;
-            padding: 5px 10px;
-            border: 1px solid var(--border-color);
-        }
-        .period-display strong {
-            color: var(--accent-color);
-        }
-        .comparison-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .compare-metric {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 4px solid var(--accent-color);
-            transition: transform 0.2s ease;
-        }
-        .compare-metric:hover {
-            transform: translateY(-3px);
-        }
-        .compare-metric-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        .compare-metric-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        .compare-change {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 600;
-        }
-        .compare-positive {
-            color: var(--compare-positive);
-        }
-        .compare-negative {
-            color: var(--compare-negative);
-        }
-        .compare-metric-description {
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 5px;
+            font-weight: 500;
         }
-        .compare-graph {
-            height: 200px;
-            margin-top: 15px;
+
+        .status-good {
+            background: rgba(0, 200, 83, 0.1);
+            color: var(--success-color);
         }
-        .compare-tabs {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+
+        .status-warn {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning-color);
         }
-        .compare-tab {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .compare-tab.active {
-            background: var(--accent-color);
-            color: white;
-            border: 1px solid var(--accent-color);
-        }
-        .compare-tab:hover {
-            background: var(--secondary-accent);
-        }
-        .compare-tab-content {
-            display: none;
-        }
-        .compare-tab-content.active {
-            display: block;
-        }
-        .compare-venue-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .compare-venue-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.2s ease;
-        }
-        .compare-venue-card:hover {
-            transform: translateY(-3px);
-        }
-        .compare-venue-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-        .compare-venue-metric {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 3px;
-        }
-        .compare-venue-change {
-            font-weight: 600;
-            margin-left: 10px;
-            display: inline-block;
-        }
-        .compare-venue-change.positive {
-            color: var(--compare-positive);
-        }
-        .compare-venue-change.negative {
-            color: var(--compare-negative);
-        }
-        .compare-venue-change.zero {
-            color: var(--text-secondary);
-        }
-        /* Стили для сравнения филиалов */
-        .compare-filial-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-top: 20px;
-        }
-        .compare-filial-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .compare-filial-title {
-            font-size: 1.5rem;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .compare-filial-venues {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-        }
-        .compare-filial-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            border-left: 4px solid var(--accent-color);
-            transition: all 0.2s ease;
-        }
-        .compare-filial-card:hover {
-            transform: translateY(-3px);
-        }
-        .compare-filial-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-        .compare-filial-metric {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 3px;
-        }
-        .compare-filial-change {
-            font-weight: 600;
-            margin-left: 10px;
-            display: inline-block;
-        }
-        .compare-filial-change.positive {
-            color: var(--compare-positive);
-        }
-        .compare-filial-change.negative {
-            color: var(--compare-negative);
-        }
-        .compare-filial-change.zero {
-            color: var(--text-secondary);
-        }
-        .compare-filial-description {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-        /* Новые стили для сравнения данных */
-        .compare-chart-container {
-            height: 250px;
-            margin-top: 15px;
-        }
-        .compare-chart {
-            width: 100%;
-            height: 100%;
-        }
-        .compare-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        .compare-value-change {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-left: 5px;
-        }
-        .compare-value-change.positive {
-            color: var(--compare-positive);
-        }
-        .compare-value-change.negative {
-            color: var(--compare-negative);
-        }
-        .compare-value-change.zero {
-            color: var(--text-secondary);
+
+        .status-bad {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
         }
     </style>
 </head>
 <body data-theme="light">
     <div class="container">
         <header>
-            <h1><i class="fas fa-utensils"></i> Чи-Фань — Выручка в реальном времени</h1>
-            <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+            <h1><i class="fas fa-chart-line"></i> Чи-Фань — Аналитика выручки</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i> Тема
+            </button>
         </header>
-        <div id="business-day-info">
-            <i class="fas fa-clock"></i> Текущий бизнес-день: <span id="business-day-date"></span>
+
+        <div class="info-panel">
+            <div id="last-update">
+                <i class="fas fa-clock"></i> Загрузка данных...
+            </div>
+            <div id="business-day-info">
+                <i class="fas fa-calendar-day"></i> Бизнес-день: <span id="business-day-date"></span>
+            </div>
         </div>
-        <div id="last-update"><i class="fas fa-clock"></i> Загрузка...</div>
+
         <div class="date-range-selector">
-            <label for="start-date">Начальная дата:</label>
-            <input type="date" id="start-date">
-            <label for="end-date">Конечная дата:</label>
-            <input type="date" id="end-date">
-            <button onclick="loadCustomData()"><i class="fas fa-download"></i> Загрузить</button>
-            <button onclick="openCompareModal()"><i class="fas fa-exchange-alt"></i> Сравнить</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <label for="start-date">С:</label>
+                <input type="date" id="start-date">
+                <label for="end-date">По:</label>
+                <input type="date" id="end-date">
+                <button onclick="loadCustomData()">
+                    <i class="fas fa-download"></i> Загрузить
+                </button>
+            </div>
+            
             <div class="quick-periods">
                 <button class="period-btn" onclick="setPeriod('today')">Сегодня</button>
                 <button class="period-btn" onclick="setPeriod('yesterday')">Вчера</button>
-                <button class="period-btn" onclick="setPeriod('thisWeek')">Эта неделя</button>
-                <button class="period-btn" onclick="setPeriod('thisMonth')">Этот месяц</button>
+                <button class="period-btn" onclick="setPeriod('thisWeek')">Неделя</button>
+                <button class="period-btn" onclick="setPeriod('thisMonth')">Месяц</button>
                 <button class="period-btn" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
             </div>
         </div>
+
+        <div class="comparison-selector">
+            <span>Сравнение:</span>
+            <div class="comparison-option active" onclick="setComparisonType('none')">Нет</div>
+            <div class="comparison-option" onclick="setComparisonType('previous_period')">С предыдущим периодом</div>
+            <div class="comparison-option" onclick="setComparisonType('previous_year')">С прошлым годом</div>
+        </div>
+
         <div class="metrics-grid" id="metrics"></div>
+
         <div class="progress-container">
             <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
             <div class="progress-header">
-                <span>Текущее: <span id="current-value">0 ₽</span></span>
+                <span>Факт: <span id="current-value">0 ₽</span></span>
                 <span>План: <span id="plan-value">0 ₽</span></span>
             </div>
             <div class="progress-bar">
@@ -834,332 +602,122 @@
             </div>
             <div id="progress-text" class="progress-text">0%</div>
         </div>
+
         <div class="charts-grid">
             <div class="chart-container">
-                <h4>Выручка по филиалам</h4>
-                <canvas id="barChart1"></canvas>
+                <div class="chart-title">Выручка по филиалам</div>
+                <canvas id="revenueChart"></canvas>
             </div>
             <div class="chart-container">
-                <h4>Средний чек по филиалам</h4>
-                <canvas id="barChart3"></canvas>
-            </div>
-            <div class="chart-container">
-                <h4>Статистика по типам</h4>
-                <select class="data-selector" id="dataType" onchange="updateBarChart2()">
-                    <option value="revenue">Выручка</option>
-                    <option value="orders">Заказы</option>
-                    <option value="delivery">Доставка</option>
-                    <option value="cafe">Кафе</option>
-                    <option value="pickup">Самовывоз</option>
-                </select>
-                <canvas id="barChart2"></canvas>
+                <div class="chart-title">Типы заказов</div>
+                <canvas id="ordersChart"></canvas>
             </div>
         </div>
-        <div class="section">
+
+        <div class="venues-section">
             <h3 class="section-title"><i class="fas fa-building"></i> Круглогодичные филиалы</h3>
             <div class="venues-grid" id="year-round"></div>
         </div>
-        <div class="section">
+
+        <div class="venues-section">
             <h3 class="section-title"><i class="fas fa-leaf"></i> Сезонные филиалы</h3>
             <div class="venues-grid" id="seasonal"></div>
         </div>
+
         <div class="export-buttons">
-            <button class="export-btn" onclick="exportPDF('all')"><i class="fas fa-file-pdf"></i> Экспорт PDF (Все)</button>
-            <button class="export-btn" onclick="exportPDF('year-round')"><i class="fas fa-file-pdf"></i> PDF Круглогодичные</button>
-            <button class="export-btn" onclick="exportPDF('seasonal')"><i class="fas fa-file-pdf"></i> PDF Сезонные</button>
+            <button class="export-btn" onclick="exportPDF('all')">
+                <i class="fas fa-file-pdf"></i> Экспорт PDF (Все)
+            </button>
+            <button class="export-btn" onclick="exportPDF('year-round')">
+                <i class="fas fa-file-pdf"></i> PDF Круглогодичные
+            </button>
+            <button class="export-btn" onclick="exportPDF('seasonal')">
+                <i class="fas fa-file-pdf"></i> PDF Сезонные
+            </button>
         </div>
-        <div id="auto-refresh-info" class="auto-refresh-info">
-            <i class="fas fa-sync-alt"></i> Автообновление каждые 4 минуты
+
+        <div class="auto-refresh-info">
+            <i class="fas fa-sync-alt"></i> Автообновление каждые 5 минут
         </div>
+
         <div id="toast" class="toast"></div>
-        <!-- Уведомление о новых данных -->
-        <div id="new-data-notification" class="new-data-notification">
-            <i class="fas fa-bell"></i> Доступны новые данные! <u>Обновить</u>
-        </div>
     </div>
-    <!-- Модальное окно для сравнения данных -->
-    <div id="compareModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 class="comparison-title"><i class="fas fa-exchange-alt"></i> Сравнение периодов</h3>
-            <div class="comparison-periods">
-                <div class="period-display"><strong>Период 1</strong>: <span id="period1-date">-</span></div>
-                <div class="period-display"><strong>Период 2</strong>: <span id="period2-date">-</span></div>
-            </div>
-            <div class="compare-tabs">
-                <div class="compare-tab active" onclick="switchTab('overview')">Обзор</div>
-                <div class="compare-tab" onclick="switchTab('venues')">По филиалам</div>
-                <div class="compare-tab" onclick="switchTab('types')">По типам заказов</div>
-            </div>
-            <div class="compare-tab-content active" id="tab-overview">
-                <div class="comparison-metrics">
-                    <div class="compare-metric">
-                        <div class="compare-metric-label">Выручка</div>
-                        <div class="compare-metric-value">
-                            <span id="revenue-compare-value">0 ₽</span>
-                            <span class="compare-value-change" id="revenue-compare-change">0%</span>
-                        </div>
-                        <div class="compare-metric-description">Сравнение выручки между периодами</div>
-                    </div>
-                    <div class="compare-metric">
-                        <div class="compare-metric-label">Заказы</div>
-                        <div class="compare-metric-value">
-                            <span id="orders-compare-value">0</span>
-                            <span class="compare-value-change" id="orders-compare-change">0%</span>
-                        </div>
-                        <div class="compare-metric-description">Сравнение количества заказов</div>
-                    </div>
-                    <div class="compare-metric">
-                        <div class="compare-metric-label">Средний чек</div>
-                        <div class="compare-metric-value">
-                            <span id="avg-check-compare-value">0 ₽</span>
-                            <span class="compare-value-change" id="avg-check-compare-change">0%</span>
-                        </div>
-                        <div class="compare-metric-description">Сравнение среднего чека</div>
-                    </div>
-                </div>
-                <div class="compare-graph">
-                    <canvas id="compareChart"></canvas>
-                </div>
-            </div>
-            <div class="compare-tab-content" id="tab-venues">
-                <div class="compare-venue-stats" id="venue-stats">
-                    <!-- Статистика по филиалам будет добавляться здесь -->
-                </div>
-            </div>
-            <div class="compare-tab-content" id="tab-types">
-                <div class="compare-filial-container">
-                    <div class="compare-filial-header">
-                        <h3 class="compare-filial-title"><i class="fas fa-chart-line"></i> Сравнение типов заказов</h3>
-                    </div>
-                    <div class="compare-filial-venues">
-                        <div class="compare-filial-card">
-                            <div class="compare-filial-name">Кафе</div>
-                            <div class="compare-filial-metric">
-                                <span>Выручка</span>
-                                <div class="compare-filial-change positive">+15.2%</div>
-                            </div>
-                            <div class="compare-filial-metric">
-                                <span>Заказы</span>
-                                <div class="compare-filial-change negative">-3.5%</div>
-                            </div>
-                            <div class="compare-filial-description">Увеличение выручки, но снижение количества заказов</div>
-                        </div>
-                        <div class="compare-filial-card">
-                            <div class="compare-filial-name">Самовывоз</div>
-                            <div class="compare-filial-metric">
-                                <span>Выручка</span>
-                                <div class="compare-filial-change negative">-8.7%</div>
-                            </div>
-                            <div class="compare-filial-metric">
-                                <span>Заказы</span>
-                                <div class="compare-filial-change positive">+5.1%</div>
-                            </div>
-                            <div class="compare-filial-description">Снижение выручки, но увеличение количества заказов</div>
-                        </div>
-                        <div class="compare-filial-card">
-                            <div class="compare-filial-name">Доставка</div>
-                            <div class="compare-filial-metric">
-                                <span>Выручка</span>
-                                <div class="compare-filial-change positive">+12.8%</div>
-                            </div>
-                            <div class="compare-filial-metric">
-                                <span>Заказы</span>
-                                <div class="compare-filial-change positive">+9.3%</div>
-                            </div>
-                            <div class="compare-filial-description">Рост как выручки, так и количества заказов</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Модальное окно для деталей филиала -->
-    <div id="venueModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3 id="modalVenueName"></h3>
-            <div id="modalVenueDetails"></div>
-        </div>
-    </div>
+
     <script>
-        let barChart1, barChart2, barChart3;
-        let compareChart;
-        let dataCache = {};
-        let currentStartDate = '';
-        let currentEndDate = '';
-        let activePeriod = 'today';
-        let autoRefreshInterval;
-        let lastDataHash = '';
-        let compareData1 = null;
-        let compareData2 = null;
-        // --- КОНСТАНТЫ И НАСТРОЙКИ ---
+        // Константы и настройки
         const DAILY_NETWORK_PLAN = 50000;
         const BASE_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/daily/';
         const LATEST_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/revenue.json';
         const fmt = new Intl.NumberFormat('ru-RU');
-        const AUTO_REFRESH_INTERVAL = 4 * 60 * 1000; // 4 минуты
+        const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
+        
         const fixedDailyPlans = {
             "Тобольская": 70000,
             "Тихая": 55000,
             "Красота": 80000,
         };
-        // --- УТИЛИТЫ ---
+
+        // Переменные состояния
+        let revenueChart, ordersChart;
+        let dataCache = {};
+        let currentStartDate = '';
+        let currentEndDate = '';
+        let activePeriod = 'today';
+        let comparisonType = 'none';
+        let autoRefreshInterval;
+        let lastDataHash = '';
+
+        // Утилиты
         function getCurrentBusinessDay() {
             const now = new Date();
             // Бизнес-день меняется в 03:00
-            // Если время меньше 03:00, то текущий бизнес-день - это вчерашний календарный день
             if (now.getHours() < 3) {
                 return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
             }
-            // Иначе текущий бизнес-день - это текущая дата
             return new Date(now.getFullYear(), now.getMonth(), now.getDate());
         }
+
         function getTodayDateString() {
             return getCurrentBusinessDay().toISOString().split('T')[0];
         }
+
         function formatDateForInput(date) {
             return date.toISOString().split('T')[0];
         }
+
         function getWeekStartDate(date = new Date()) {
             const d = new Date(date);
             const day = d.getDay();
-            // Понедельник как первый день недели (0 - воскресенье, 1 - понедельник)
             const diff = d.getDate() - day + (day === 0 ? -6 : 1);
             d.setDate(diff);
             return d;
         }
+
         function getWeekEndDate(date = new Date()) {
             const start = getWeekStartDate(date);
             const end = new Date(start);
             end.setDate(start.getDate() + 6);
             return end;
         }
+
         function getMonthStartDate(date = new Date()) {
             return new Date(date.getFullYear(), date.getMonth(), 1);
         }
+
         function getMonthEndDate(date = new Date()) {
             return new Date(date.getFullYear(), date.getMonth() + 1, 0);
         }
+
         function getLastMonthStartDate() {
             const date = new Date();
             return new Date(date.getFullYear(), date.getMonth() - 1, 1);
         }
+
         function getLastMonthEndDate() {
             const date = new Date();
             return new Date(date.getFullYear(), date.getMonth(), 0);
         }
-        function isCurrentBusinessDay(dateStr) {
-            const businessDay = getCurrentBusinessDay();
-            return dateStr === businessDay.toISOString().split('T')[0];
-        }
-        function setPeriod(period) {
-            const now = new Date();
-            let startDate, endDate;
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            activePeriod = period;
-            switch(period) {
-                case 'today':
-                    startDate = getCurrentBusinessDay();
-                    endDate = new Date(startDate);
-                    break;
-                case 'yesterday':
-                    const yesterday = new Date(getCurrentBusinessDay());
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    startDate = yesterday;
-                    endDate = new Date(yesterday);
-                    break;
-                case 'thisWeek':
-                    startDate = getWeekStartDate(getCurrentBusinessDay());
-                    endDate = getWeekEndDate(getCurrentBusinessDay());
-                    break;
-                case 'thisMonth':
-                    startDate = getMonthStartDate(getCurrentBusinessDay());
-                    endDate = getMonthEndDate(getCurrentBusinessDay());
-                    break;
-                case 'lastMonth':
-                    startDate = getLastMonthStartDate();
-                    endDate = getLastMonthEndDate();
-                    break;
-            }
-            document.getElementById('start-date').value = formatDateForInput(startDate);
-            document.getElementById('end-date').value = formatDateForInput(endDate);
-            loadCustomData();
-        }
-        function calculateDailyPlanFromMonthly(monthlyPlan, dateStr, isRevenue = true) {
-            if (!monthlyPlan || monthlyPlan === 0 || isNaN(monthlyPlan)) {
-                return isRevenue ? DAILY_NETWORK_PLAN : 1000;
-            }
-            try {
-                const date = new Date(dateStr);
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                // Получаем количество дней в месяце
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                // Рассчитываем средний дневной план
-                const dailyPlan = monthlyPlan / daysInMonth;
-                return isRevenue ? dailyPlan : Math.round(dailyPlan);
-            } catch (e) {
-                console.warn('Ошибка расчета дневного плана:', e);
-                return isRevenue ? DAILY_NETWORK_PLAN : 1000;
-            }
-        }
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            const icon = document.querySelector('.theme-toggle i');
-            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            updateChartTheme();
-        }
-        function updateChartTheme() {
-            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
-            const updateOptions = { 
-                scales: { 
-                    x: { title: { color: textColor }, ticks: { color: textColor } }, 
-                    y: { title: { color: textColor }, ticks: { color: textColor } } 
-                }, 
-                plugins: { legend: { labels: { color: textColor } } } 
-            };
-            if (barChart1) {
-                Object.assign(barChart1.options.scales, updateOptions.scales);
-                barChart1.options.plugins.legend.labels.color = textColor;
-                barChart1.update();
-            }
-            if (barChart2) {
-                Object.assign(barChart2.options.scales, updateOptions.scales);
-                barChart2.options.plugins.legend.labels.color = textColor;
-                barChart2.update();
-            }
-            if (barChart3) {
-                Object.assign(barChart3.options.scales, updateOptions.scales);
-                barChart3.options.plugins.legend.labels.color = textColor;
-                barChart3.update();
-            }
-            if (compareChart) {
-                Object.assign(compareChart.options.scales, updateOptions.scales);
-                compareChart.options.plugins.legend.labels.color = textColor;
-                compareChart.update();
-            }
-        }
-        function getStatusClass(fulfill) {
-            if (fulfill >= 100) return 'good';
-            if (fulfill >= 80) return 'warn';
-            return 'bad';
-        }
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? 'var(--danger-color)' : 'var(--success-color)';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+
         function getDiffDays(startDateStr, endDateStr) {
             const start = new Date(startDateStr);
             const end = new Date(endDateStr);
@@ -1167,35 +725,180 @@
             const diffTime = Math.abs(end - start);
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         }
-        // --- ЛОГИКА ЗАГРУЗКИ ДАННЫХ ---
+
+        function calculateDailyPlanFromMonthly(monthlyPlan, dateStr) {
+            if (!monthlyPlan || monthlyPlan === 0) {
+                return DAILY_NETWORK_PLAN;
+            }
+            
+            try {
+                const date = new Date(dateStr);
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                return monthlyPlan / daysInMonth;
+            } catch (e) {
+                console.warn('Ошибка расчета дневного плана:', e);
+                return DAILY_NETWORK_PLAN;
+            }
+        }
+
+        function getStatusClass(percentage) {
+            if (percentage >= 100) return 'good';
+            if (percentage >= 80) return 'warn';
+            return 'bad';
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? 'var(--danger-color)' : 
+                                   type === 'warning' ? 'var(--warning-color)' : 'var(--success-color)';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Управление темой
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            const icon = document.querySelector('.theme-toggle i');
+            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            updateChartThemes();
+        }
+
+        function updateChartThemes() {
+            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            const gridColor = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
+            
+            const chartOptions = {
+                scales: {
+                    x: {
+                        ticks: { color: textColor },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        ticks: { color: textColor },
+                        grid: { color: gridColor }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: textColor }
+                    }
+                }
+            };
+            
+            if (revenueChart) {
+                revenueChart.options = { ...revenueChart.options, ...chartOptions };
+                revenueChart.update();
+            }
+            
+            if (ordersChart) {
+                ordersChart.options = { ...ordersChart.options, ...chartOptions };
+                ordersChart.update();
+            }
+        }
+
+        // Управление периодами
+        function setPeriod(period) {
+            const businessDay = getCurrentBusinessDay();
+            let startDate, endDate;
+            
+            // Сброс активного класса у всех кнопок
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Установка активного класса нажатой кнопке
+            event.target.classList.add('active');
+            activePeriod = period;
+            
+            switch(period) {
+                case 'today':
+                    startDate = new Date(businessDay);
+                    endDate = new Date(businessDay);
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date(businessDay);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    startDate = yesterday;
+                    endDate = yesterday;
+                    break;
+                case 'thisWeek':
+                    startDate = getWeekStartDate(businessDay);
+                    endDate = getWeekEndDate(businessDay);
+                    break;
+                case 'thisMonth':
+                    startDate = getMonthStartDate(businessDay);
+                    endDate = getMonthEndDate(businessDay);
+                    break;
+                case 'lastMonth':
+                    startDate = getLastMonthStartDate();
+                    endDate = getLastMonthEndDate();
+                    break;
+            }
+            
+            document.getElementById('start-date').value = formatDateForInput(startDate);
+            document.getElementById('end-date').value = formatDateForInput(endDate);
+            loadCustomData();
+        }
+
+        function setComparisonType(type) {
+            comparisonType = type;
+            
+            // Обновление активного класса
+            document.querySelectorAll('.comparison-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Перезагрузка данных с учетом сравнения
+            if (currentStartDate && currentEndDate) {
+                load(currentStartDate, currentEndDate);
+            }
+        }
+
+        // Загрузка данных
         async function fetchDataForDate(dateStr) {
             const todayStr = getTodayDateString();
             const isToday = dateStr === todayStr;
-            // Для сегодняшней даты пробуем сначала latest, потом daily
-            const urls = [];
-            if (isToday) {
-                urls.push(LATEST_DATA_URL + '?t=' + Date.now());
-                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`);
-            } else {
-                urls.push(`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`);
-            }
+            
+            const urls = isToday ? 
+                [LATEST_DATA_URL + '?t=' + Date.now(), `${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`] :
+                [`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`];
+            
             for (const url of urls) {
                 try {
                     const response = await fetch(url);
                     if (response.ok) {
                         const data = await response.json();
-                        // Для latest данных проверяем дату
+                        
+                        // Проверка даты для latest данных
                         if (url.includes('revenue.json') && !url.includes('daily')) {
                             if (data.date && data.date !== dateStr) {
-                                console.warn(`Latest данные содержат другую дату (${data.date}), пропускаем`);
                                 continue;
                             }
                         }
+                        
+                        // Расчет агрегированных данных
                         let calculatedRevenue = 0;
                         let calculatedOrders = 0;
                         let calculatedDeliveryOrders = 0;
                         let calculatedPickupOrders = 0;
                         let calculatedCafeOrders = 0;
+                        
                         const allVenues = { ...data.year_round, ...data.seasonal };
                         Object.values(allVenues).forEach(stats => {
                             calculatedRevenue += stats.total_revenue || 0;
@@ -1204,37 +907,41 @@
                             calculatedPickupOrders += stats.pickup_orders || 0;
                             calculatedCafeOrders += stats.cafe_orders || 0;
                         });
-                        // Исправление: правильно обрабатываем план из данных
+                        
+                        // Обработка плана
                         const planRevenue = data.plan?.revenue || data.plan?.total_revenue || DAILY_NETWORK_PLAN;
                         const planOrders = data.plan?.orders || data.plan?.total_orders || 1000;
+                        
                         const result = {
                             ...data,
                             plan: { revenue: planRevenue, orders: planOrders },
                             total: {
-                                total_revenue: calculatedRevenue > 0 ? calculatedRevenue : (data.total?.total_revenue || 0),
-                                total_orders: calculatedOrders > 0 ? calculatedOrders : (data.total?.total_orders || 0),
+                                total_revenue: calculatedRevenue || data.total?.total_revenue || 0,
+                                total_orders: calculatedOrders || data.total?.total_orders || 0,
                                 total_delivery_orders: calculatedDeliveryOrders,
                                 total_pickup_orders: calculatedPickupOrders,
                                 total_cafe_orders: calculatedCafeOrders
                             },
                             _source: url.includes('revenue.json') && !url.includes('daily') ? 'latest' : 'daily'
                         };
+                        
                         dataCache[dateStr] = result;
                         return result;
                     }
                 } catch (error) {
-                    console.warn(`Не удалось загрузить из ${url}: ${error.message}`);
+                    console.warn(`Ошибка загрузки ${url}:`, error);
                 }
             }
-            console.warn(`Файл для ${dateStr} не найден, возвращаем пустые данные`);
+            
+            // Возврат пустых данных, если файл не найден
             return {
-                date: dateStr, 
-                time: "00:00", 
-                year_round: {}, 
-                seasonal: {}, 
+                date: dateStr,
+                time: "00:00",
+                year_round: {},
+                seasonal: {},
                 plan: { revenue: DAILY_NETWORK_PLAN, orders: 1000 },
-                total: { 
-                    total_revenue: 0, 
+                total: {
+                    total_revenue: 0,
                     total_orders: 0,
                     total_delivery_orders: 0,
                     total_pickup_orders: 0,
@@ -1243,13 +950,14 @@
                 _source: 'empty'
             };
         }
+
         async function loadData(startDateStr, endDateStr) {
             const diffDays = getDiffDays(startDateStr, endDateStr);
             let combinedData = {
-                year_round: {}, 
-                seasonal: {}, 
-                total: { 
-                    total_revenue: 0, 
+                year_round: {},
+                seasonal: {},
+                total: {
+                    total_revenue: 0,
                     total_orders: 0,
                     total_delivery_orders: 0,
                     total_pickup_orders: 0,
@@ -1259,20 +967,25 @@
                 time: "23:59",
                 _sources: new Set()
             };
+            
+            // Генерация списка дат
             const dateList = [];
             let currentDate = new Date(startDateStr);
             const endDate = new Date(endDateStr);
+            
             if (isNaN(currentDate) || isNaN(endDate) || currentDate > endDate) {
-                combinedData.plan = { 
-                    total_revenue: DAILY_NETWORK_PLAN * diffDays, 
-                    total_orders: 1000 * diffDays 
+                combinedData.plan = {
+                    total_revenue: DAILY_NETWORK_PLAN * diffDays,
+                    total_orders: 1000 * diffDays
                 };
                 return combinedData;
             }
+            
             while (currentDate <= endDate) {
-                dateList.push(currentDate.toISOString().split('T')[0]);
+                dateList.push(formatDateForInput(currentDate));
                 currentDate.setDate(currentDate.getDate() + 1);
             }
+            
             let totalDailyPlanRevenue = 0;
             let totalDailyPlanOrders = 0;
             let totalActualRevenue = 0;
@@ -1280,23 +993,32 @@
             let totalActualDeliveryOrders = 0;
             let totalActualPickupOrders = 0;
             let totalActualCafeOrders = 0;
+            
+            // Загрузка данных за каждую дату
             const promises = dateList.map(dateStr => fetchDataForDate(dateStr));
             const dailyResults = await Promise.all(promises);
+            
             dailyResults.forEach(dailyData => {
                 if (!dailyData) return;
+                
+                // Суммирование фактических данных
                 totalActualRevenue += dailyData.total.total_revenue || 0;
                 totalActualOrders += dailyData.total.total_orders || 0;
                 totalActualDeliveryOrders += dailyData.total.total_delivery_orders || 0;
                 totalActualPickupOrders += dailyData.total.total_pickup_orders || 0;
                 totalActualCafeOrders += dailyData.total.total_cafe_orders || 0;
+                
                 combinedData._sources.add(dailyData._source);
-                // Объединяем данные по филиалам
+                
+                // Объединение данных по филиалам
                 const venuesToCombine = { ...dailyData.year_round, ...dailyData.seasonal };
                 for (const venue in venuesToCombine) {
                     const stats = venuesToCombine[venue];
                     let existingStats = combinedData.year_round[venue] || combinedData.seasonal[venue];
+                    
                     if (!existingStats) {
-                        const target = dailyData.year_round[venue] ? combinedData.year_round : combinedData.seasonal;
+                        const target = dailyData.year_round[venue] ? 
+                            combinedData.year_round : combinedData.seasonal;
                         target[venue] = { ...stats };
                     } else {
                         for (const key in stats) {
@@ -1306,14 +1028,18 @@
                         }
                     }
                 }
-                // Рассчитываем дневной план на основе месячного плана из данных
+                
+                // Расчет дневного плана
                 const monthlyRevenuePlan = dailyData.plan?.revenue;
                 const monthlyOrdersPlan = dailyData.plan?.orders;
+                
                 const dailyPlanRevenue = calculateDailyPlanFromMonthly(monthlyRevenuePlan, dailyData.date);
-                const dailyPlanOrders = calculateDailyPlanFromMonthly(monthlyOrdersPlan, dailyData.date, false);
+                const dailyPlanOrders = calculateDailyPlanFromMonthly(monthlyOrdersPlan, dailyData.date);
+                
                 totalDailyPlanRevenue += isNaN(dailyPlanRevenue) ? DAILY_NETWORK_PLAN : dailyPlanRevenue;
                 totalDailyPlanOrders += isNaN(dailyPlanOrders) ? 1000 : dailyPlanOrders;
             });
+            
             combinedData.total = {
                 total_revenue: totalActualRevenue,
                 total_orders: totalActualOrders,
@@ -1321,49 +1047,60 @@
                 total_pickup_orders: totalActualPickupOrders,
                 total_cafe_orders: totalActualCafeOrders
             };
+            
             combinedData.plan = {
                 total_revenue: totalDailyPlanRevenue,
                 total_orders: totalDailyPlanOrders
             };
+            
             if (diffDays === 1 && dailyResults[0] && dailyResults[0].time !== "00:00") {
                 combinedData.time = dailyResults[0].time;
             }
+            
             return combinedData;
         }
-        // --- РЕНДЕРИНГ ---
+
+        // Визуализация
         function renderMetrics(data) {
-            const total = data.total || { 
-                total_revenue: 0, 
+            const total = data.total || {
+                total_revenue: 0,
                 total_orders: 0,
                 total_delivery_orders: 0,
                 total_pickup_orders: 0,
                 total_cafe_orders: 0
             };
-            const plan = data.plan || { total_revenue: DAILY_NETWORK_PLAN, total_orders: 1000 };
-            const avg_bill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
-            const revenueFulfill = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
+            
+            const plan = data.plan || {
+                total_revenue: DAILY_NETWORK_PLAN,
+                total_orders: 1000
+            };
+            
+            const avgBill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+            const revenuePercentage = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
+            const ordersPercentage = plan.total_orders > 0 ? (total.total_orders / plan.total_orders) * 100 : 0;
+            
             let sourceInfo = '';
             if (data._sources) {
                 const sources = Array.from(data._sources);
                 if (sources.includes('latest')) {
-                    sourceInfo = '<div class="data-source-info">📊 Данные в реальном времени (автообновление)</div>';
+                    sourceInfo = '<div class="data-source-info">📊 Данные в реальном времени</div>';
                 } else if (sources.includes('daily')) {
                     sourceInfo = '<div class="data-source-info">📁 Архивные данные</div>';
                 }
             }
+            
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
                     <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
-                    <div class="metric-label">Выручка за период</div>
+                    <div class="metric-label">Общая выручка</div>
                     ${sourceInfo}
-                    <div class="data-source-info">📈 План: ${fmt.format(plan.total_revenue.toFixed(0))} ₽</div>
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
-                    <div class="metric-value">${total.total_orders}</div>
+                    <div class="metric-value">${fmt.format(total.total_orders)}</div>
                     <div class="metric-label">Всего заказов</div>
-                    <div class="orders-breakdown">
+                    <div class="orders-breakdown" style="margin-top: 10px;">
                         <div class="order-type delivery">
                             <div class="order-type-value">${total.total_delivery_orders || 0}</div>
                             <div class="order-type-label">Доставка</div>
@@ -1379,61 +1116,102 @@
                     </div>
                 </div>
                 <div class="metric-card fade-in">
-                    <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
-                    <div class="metric-value">${fmt.format(avg_bill.toFixed(0))} ₽</div>
+                    <div class="metric-icon"><i class="fas fa-receipt"></i></div>
+                    <div class="metric-value">${fmt.format(avgBill.toFixed(0))} ₽</div>
                     <div class="metric-label">Средний чек</div>
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-percent"></i></div>
-                    <div class="metric-value ${getStatusClass(revenueFulfill)}">${revenueFulfill.toFixed(1)}%</div>
-                    <div class="metric-label">Выполнение плана (Выручка)</div>
-                </div>
-                <div class="metric-card fade-in">
-                    <div class="metric-icon"><i class="fas fa-chart-area"></i></div>
-                    <div class="metric-value">${fmt.format((total.total_revenue / total.total_orders).toFixed(0))} ₽</div>
-                    <div class="metric-label">Средний чек по заказам</div>
+                    <div class="metric-value ${getStatusClass(revenuePercentage)}">${revenuePercentage.toFixed(1)}%</div>
+                    <div class="metric-label">Выполнение плана</div>
+                    <div class="data-source-info">План: ${fmt.format(plan.total_revenue.toFixed(0))} ₽</div>
                 </div>
             `;
+            
+            // Обновление прогресс-бара
             const bar = document.getElementById('plan-bar');
             const progressText = document.getElementById('progress-text');
             const currentValue = document.getElementById('current-value');
             const planValue = document.getElementById('plan-value');
+            
             if (bar && progressText && currentValue && planValue) {
-                bar.className = `progress-fill ${getStatusClass(revenueFulfill)}`;
-                bar.style.width = Math.min(revenueFulfill, 100) + '%';
-                progressText.textContent = `${revenueFulfill.toFixed(1)}%`;
+                bar.className = `progress-fill ${getStatusClass(revenuePercentage)}`;
+                bar.style.width = `${Math.min(revenuePercentage, 100)}%`;
+                progressText.textContent = `${revenuePercentage.toFixed(1)}%`;
                 currentValue.textContent = `${fmt.format(total.total_revenue.toFixed(0))} ₽`;
                 planValue.textContent = `${fmt.format(plan.total_revenue.toFixed(0))} ₽`;
             }
-            if (revenueFulfill > 100) {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                const planCard = document.querySelector('.metric-card:last-child');
-                if (planCard) {
-                    planCard.classList.add('celebrate');
-                    setTimeout(() => planCard.classList.remove('celebrate'), 1000);
-                }
+            
+            // Анимация при перевыполнении плана
+            if (revenuePercentage > 100) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
             }
         }
+
+        function renderVenues(data, containerId) {
+            const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
+            const venues = data[key] || {};
+            const container = document.getElementById(containerId);
+            
+            if (!container) return;
+            
+            if (Object.keys(venues).length === 0) {
+                container.innerHTML = '<div class="error-msg">Нет данных по филиалам</div>';
+                return;
+            }
+            
+            const periodDays = getDiffDays(currentStartDate, currentEndDate);
+            const sortedVenues = Object.entries(venues)
+                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
+            
+            container.innerHTML = sortedVenues.map(([venue, stats]) => 
+                renderVenueCard(venue, stats, periodDays)
+            ).join('');
+        }
+
         function renderVenueCard(venue, stats, periodDays) {
             const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
             const planRevenueForPeriod = dailyPlan * periodDays;
-            const fulfill = planRevenueForPeriod > 0 ? (stats.total_revenue || 0) / planRevenueForPeriod * 100 : 0;
-            const statusClass = getStatusClass(fulfill);
-            const avgCheck = stats.total_revenue / stats.total_orders;
+            const percentage = planRevenueForPeriod > 0 ? 
+                (stats.total_revenue || 0) / planRevenueForPeriod * 100 : 0;
+            const statusClass = getStatusClass(percentage);
+            
+            const avgCheck = stats.total_orders > 0 ? 
+                (stats.total_revenue || 0) / stats.total_orders : 0;
+            
             return `
                 <div class="venue-card fade-in">
-                    <button class="venue-details-btn" onclick="openVenueModal('${venue}', ${JSON.stringify(stats).replace(/'/g, "&#39;")}, ${periodDays})">
-                        <i class="fas fa-chart-bar"></i>
-                    </button>
-                    <div class="venue-name">${venue}</div>
-                    <div class="venue-metric"><span>Выручка:</span> <span class="venue-metric-value ${statusClass}">${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</span></div>
-                    <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders || 0}</span></div>
-                    <div class="venue-metric"><span>Средний чек:</span> <span class="venue-metric-value ${statusClass}">${fmt.format(avgCheck.toFixed(0))} ₽</span></div>
-                    <div class="venue-metric"><span>Отношение к плану:</span> <span class="venue-metric-value ${statusClass}">${fulfill.toFixed(1)}%</span></div>
-                    <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format((stats.delivery_revenue || 0).toFixed(0))} ₽</span></div>
-                    <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format((stats.cafe_revenue || 0).toFixed(0))} ₽</span></div>
-                    <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format((stats.pickup_revenue || 0).toFixed(0))} ₽</span></div>
-                    <div class="orders-breakdown" style="margin-top: 10px;">
+                    <div class="venue-header">
+                        <div class="venue-name">${venue}</div>
+                        <span class="status-badge status-${statusClass}">
+                            ${percentage.toFixed(1)}%
+                        </span>
+                    </div>
+                    
+                    <div class="venue-metrics">
+                        <div class="venue-metric">
+                            <div class="venue-metric-label">Выручка</div>
+                            <div class="venue-metric-value">${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</div>
+                        </div>
+                        <div class="venue-metric">
+                            <div class="venue-metric-label">Заказы</div>
+                            <div class="venue-metric-value">${stats.total_orders || 0}</div>
+                        </div>
+                        <div class="venue-metric">
+                            <div class="venue-metric-label">Средний чек</div>
+                            <div class="venue-metric-value">${fmt.format(avgCheck.toFixed(0))} ₽</div>
+                        </div>
+                        <div class="venue-metric">
+                            <div class="venue-metric-label">План</div>
+                            <div class="venue-metric-value">${fmt.format(planRevenueForPeriod.toFixed(0))} ₽</div>
+                        </div>
+                    </div>
+                    
+                    <div class="orders-breakdown">
                         <div class="order-type delivery">
                             <div class="order-type-value">${stats.delivery_orders || 0}</div>
                             <div class="order-type-label">Доставка</div>
@@ -1447,445 +1225,320 @@
                             <div class="order-type-label">Кафе</div>
                         </div>
                     </div>
-                    <div style="margin-top: 10px;">
-                        <div class="progress-bar" style="height: 8px;">
-                            <div class="progress-fill ${statusClass}" style="width: ${Math.min(fulfill, 100)}%;"></div>
-                        </div>
-                        <small>${fulfill.toFixed(1)}% от плана (${fmt.format(planRevenueForPeriod.toFixed(0))} ₽)</small>
-                    </div>
                 </div>
             `;
         }
-        function renderVenues(data, containerId) {
-            const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
-            const venues = data[key] || {};
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            if (Object.keys(venues).length === 0) {
-                container.innerHTML = '<div class="error-msg">Нет данных по филиалам</div>';
-                return;
-            }
-            const periodDays = getDiffDays(currentStartDate, currentEndDate);
-            const sortedVenues = Object.entries(venues).sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
-        }
-        // --- ФУНКЦИИ ГРАФИКОВ ---
+
         function renderCharts(data) {
             const allVenues = { ...data.year_round, ...data.seasonal };
-            const labels = Object.keys(allVenues).length > 0 ? Object.keys(allVenues) : ['Нет данных'];
-            const revenues = labels.map(l => allVenues[l]?.total_revenue || 0);
-            const ctxBar1 = document.getElementById('barChart1')?.getContext('2d');
-            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
-            if (ctxBar1) {
-                if (barChart1) barChart1.destroy();
-                barChart1 = new Chart(ctxBar1, {
-                    type: 'bar',
-                    data: { 
-                        labels, 
-                        datasets: [{ 
-                            label: 'Выручка ₽', 
-                            data: revenues, 
-                            backgroundColor: ['#00c853', '#009688', '#ff9800', '#f44336', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
-                        }] 
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: 'Филиалы', color: textColor }, ticks: { color: textColor } },
-                            y: { beginAtZero: true, title: { display: true, text: 'Выручка ₽', color: textColor }, ticks: { color: textColor } }
-                        },
-                        plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
-                    }
-                });
-            }
-            updateBarChart2(data);
+            const labels = Object.keys(allVenues);
+            const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
             
-            // Добавляем график среднего чека
-            const avgChecks = labels.map(l => allVenues[l]?.total_revenue / allVenues[l]?.total_orders || 0);
-            const ctxBar3 = document.getElementById('barChart3')?.getContext('2d');
-            if (ctxBar3) {
-                if (barChart3) barChart3.destroy();
-                barChart3 = new Chart(ctxBar3, {
-                    type: 'bar',
-                    data: { 
-                        labels, 
-                        datasets: [{ 
-                            label: 'Средний чек ₽', 
-                            data: avgChecks, 
-                            backgroundColor: ['#00c853', '#009688', '#ff9800', '#f44336', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
-                        }] 
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: 'Филиалы', color: textColor }, ticks: { color: textColor } },
-                            y: { beginAtZero: true, title: { display: true, text: 'Средний чек ₽', color: textColor }, ticks: { color: textColor } }
-                        },
-                        plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
-                    }
-                });
-            }
-        }
-        function updateBarChart2(data) {
-            const dataType = document.getElementById('dataType').value;
-            const allVenues = data ? { ...data.year_round, ...data.seasonal } : {};
-            const labels = Object.keys(allVenues).length > 0 ? Object.keys(allVenues) : ['Нет данных'];
-            const ctxBar2 = document.getElementById('barChart2')?.getContext('2d');
+            const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
+            const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
             const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
-            let dataValues;
-            switch(dataType) {
-                case 'orders':
-                    dataValues = labels.map(l => allVenues[l]?.total_orders || 0);
-                    break;
-                case 'delivery':
-                    dataValues = labels.map(l => allVenues[l]?.delivery_revenue || 0);
-                    break;
-                case 'cafe':
-                    dataValues = labels.map(l => allVenues[l]?.cafe_revenue || 0);
-                    break;
-                case 'pickup':
-                    dataValues = labels.map(l => allVenues[l]?.pickup_revenue || 0);
-                    break;
-                default: // revenue
-                    dataValues = labels.map(l => allVenues[l]?.total_revenue || 0);
+            
+            // График выручки по филиалам
+            if (ctxRevenue && revenueChart) {
+                revenueChart.destroy();
             }
-            if (ctxBar2) {
-                if (barChart2) barChart2.destroy();
-                barChart2 = new Chart(ctxBar2, {
+            
+            if (ctxRevenue) {
+                revenueChart = new Chart(ctxRevenue, {
                     type: 'bar',
-                    data: { 
-                        labels, 
-                        datasets: [{ 
-                            label: `${dataType === 'orders' ? 'Заказы' : 'Выручка ₽'}`, 
-                            data: dataValues, 
-                            backgroundColor: ['#00c853', '#009688', '#ff9800', '#f44336', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
-                        }] 
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Выручка (₽)',
+                            data: revenues,
+                            backgroundColor: [
+                                '#1a237e', '#283593', '#303f9f', '#3949ab', 
+                                '#3f51b5', '#5c6bc0', '#7986cb', '#9fa8da'
+                            ],
+                            borderWidth: 1
+                        }]
                     },
                     options: {
                         responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: 'Филиалы', color: textColor }, ticks: { color: textColor } },
-                            y: { beginAtZero: true, title: { display: true, text: dataType === 'orders' ? 'Количество заказов' : 'Выручка ₽', color: textColor }, ticks: { color: textColor } }
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Выручка: ${fmt.format(context.raw)} ₽`;
+                                    }
+                                }
+                            }
                         },
-                        plugins: { legend: { position: 'bottom', labels: { color: textColor } } }
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return fmt.format(value) + ' ₽';
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
             }
+            
+            // График типов заказов
+            const orderTypes = {
+                'Доставка': data.total.total_delivery_orders || 0,
+                'Самовывоз': data.total.total_pickup_orders || 0,
+                'Кафе': data.total.total_cafe_orders || 0
+            };
+            
+            if (ctxOrders && ordersChart) {
+                ordersChart.destroy();
+            }
+            
+            if (ctxOrders) {
+                ordersChart = new Chart(ctxOrders, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(orderTypes),
+                        datasets: [{
+                            data: Object.values(orderTypes),
+                            backgroundColor: [
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(139, 92, 246, 0.8)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((context.raw / total) * 100);
+                                        return `${context.label}: ${context.raw} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            updateChartThemes();
         }
-        // --- УПРАВЛЕНИЕ ЗАГРУЗКОЙ ---
+
+        // Управление загрузкой
         function loadCustomData() {
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
+            
             if (!startDate || !endDate) {
-                showToast('Пожалуйста, выберите начальную и конечную дату', 'error');
+                showToast('Выберите начальную и конечную дату', 'error');
                 return;
             }
+            
             if (new Date(startDate) > new Date(endDate)) {
                 showToast('Начальная дата не может быть позже конечной', 'error');
                 return;
             }
-            const periodText = (startDate === endDate) ? 
-                `за день ${new Date(startDate).toLocaleDateString('ru-RU')}` : 
-                `за период с ${new Date(startDate).toLocaleDateString('ru-RU')} по ${new Date(endDate).toLocaleDateString('ru-RU')}`;
+            
+            const periodText = startDate === endDate ? 
+                `за ${new Date(startDate).toLocaleDateString('ru-RU')}` :
+                `с ${new Date(startDate).toLocaleDateString('ru-RU')} по ${new Date(endDate).toLocaleDateString('ru-RU')}`;
+            
             showToast(`Загрузка данных ${periodText}`);
             load(startDate, endDate);
         }
+
         async function load(startDateStr, endDateStr) {
             const updateEl = document.getElementById('last-update');
-            if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+            if (updateEl) {
+                updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+            }
+            
             currentStartDate = startDateStr;
             currentEndDate = endDateStr;
-            // Принудительно очищаем кэш для текущего бизнес-дня, чтобы всегда брать актуальные данные
+            
+            // Очистка кеша для текущего бизнес-дня
             const businessDay = getCurrentBusinessDay();
-            const todayStr = businessDay.toISOString().split('T')[0];
-            if (isCurrentBusinessDay(startDateStr) || isCurrentBusinessDay(endDateStr)) {
+            const todayStr = formatDateForInput(businessDay);
+            
+            if (startDateStr === todayStr || endDateStr === todayStr) {
                 delete dataCache[todayStr];
             }
+            
             try {
-                const data = await loadData(startDateStr, endDateStr); 
+                const data = await loadData(startDateStr, endDateStr);
                 dataCache.current = data;
-                // Проверяем, есть ли новые данные
+                
+                // Проверка на новые данные
                 const currentDataHash = JSON.stringify(data.total);
                 if (lastDataHash && lastDataHash !== currentDataHash) {
-                    showNewDataNotification();
+                    showToast('Обновлены данные', 'success');
                 }
                 lastDataHash = currentDataHash;
+                
+                // Обновление интерфейса
                 let dateDisplay;
                 if (startDateStr && endDateStr) {
-                    dateDisplay = (startDateStr === endDateStr) ? 
-                        new Date(startDateStr).toLocaleDateString('ru-RU') : 
+                    dateDisplay = startDateStr === endDateStr ? 
+                        new Date(startDateStr).toLocaleDateString('ru-RU') :
                         `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
-                } else {
-                    dateDisplay = 'Нет данных';
                 }
-                if (updateEl) updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${dateDisplay})`;
+                
+                if (updateEl) {
+                    updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${dateDisplay})`;
+                }
+                
                 renderMetrics(data);
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
-                renderCharts(data); 
-                updateChartTheme();
-            } catch (e) {
-                console.error('Ошибка загрузки:', e);
-                if (updateEl) updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+                renderCharts(data);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                if (updateEl) {
+                    updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+                }
+                
                 document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
                 document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
                 document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+                
                 showToast('Критическая ошибка загрузки данных', 'error');
             } finally {
-                document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
-                    setTimeout(() => el.classList.add('fade-in'), index * 50);
-                });
+                // Анимация появления элементов
+                setTimeout(() => {
+                    document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
+                        setTimeout(() => el.classList.add('fade-in'), index * 50);
+                    });
+                }, 100);
             }
         }
-        // --- АВТООБНОВЛЕНИЕ ---
+
+        // Автообновление
         function setupAutoRefresh() {
             if (autoRefreshInterval) {
                 clearInterval(autoRefreshInterval);
             }
+            
             autoRefreshInterval = setInterval(() => {
                 const businessDay = getCurrentBusinessDay();
-                const todayStr = businessDay.toISOString().split('T')[0];
-                // Автообновляем только если просматриваем текущий бизнес-день
+                const todayStr = formatDateForInput(businessDay);
+                
                 if (currentStartDate === todayStr && currentEndDate === todayStr) {
                     console.log('Автообновление данных...');
                     delete dataCache[todayStr];
                     load(currentStartDate, currentEndDate);
-                    showToast('Данные автоматически обновлены', 'success');
                 }
             }, AUTO_REFRESH_INTERVAL);
         }
-        // --- НОВЫЕ ФИЧИ ---
-        function openCompareModal() {
-            const modal = document.getElementById('compareModal');
-            const period1Date = document.getElementById('start-date').value;
-            const period2Date = document.getElementById('end-date').value;
-            document.getElementById('period1-date').textContent = period1Date ? new Date(period1Date).toLocaleDateString('ru-RU') : '-';
-            document.getElementById('period2-date').textContent = period2Date ? new Date(period2Date).toLocaleDateString('ru-RU') : '-';
-            modal.style.display = 'block';
-            // Загружаем данные для сравнения
-            loadCompareData(period1Date, period2Date);
-        }
-        function loadCompareData(period1Start, period1End, period2Start, period2End) {
-            // Если не указаны даты, берем текущий бизнес-день
-            if (!period1Start || !period1End) {
-                period1Start = getTodayDateString();
-                period1End = getTodayDateString();
-            }
-            if (!period2Start || !period2End) {
-                const today = new Date();
-                today.setDate(today.getDate() - 7);
-                period2Start = today.toISOString().split('T')[0];
-                today.setDate(today.getDate() + 6);
-                period2End = today.toISOString().split('T')[0];
-            }
-            // Загружаем данные для первого периода
-            loadData(period1Start, period1End).then(data1 => {
-                compareData1 = data1;
-                // Загружаем данные для второго периода
-                loadData(period2Start, period2End).then(data2 => {
-                    compareData2 = data2;
-                    // Обновляем данные сравнения
-                    updateComparisonData();
-                });
-            });
-        }
-        function updateComparisonData() {
-            if (!compareData1 || !compareData2) return;
-            
-            // Сравнение выручки
-            const revenueChange = ((compareData1.total.total_revenue - compareData2.total.total_revenue) / compareData2.total.total_revenue) * 100 || 0;
-            document.getElementById('revenue-compare-value').textContent = fmt.format(compareData1.total.total_revenue.toFixed(0)) + ' ₽';
-            document.getElementById('revenue-compare-change').textContent = `${revenueChange > 0 ? '+' : ''}${revenueChange.toFixed(1)}%`;
-            document.getElementById('revenue-compare-change').className = `compare-value-change ${revenueChange > 0 ? 'positive' : revenueChange < 0 ? 'negative' : 'zero'}`;
-            
-            // Сравнение заказов
-            const ordersChange = ((compareData1.total.total_orders - compareData2.total.total_orders) / compareData2.total.total_orders) * 100 || 0;
-            document.getElementById('orders-compare-value').textContent = compareData1.total.total_orders;
-            document.getElementById('orders-compare-change').textContent = `${ordersChange > 0 ? '+' : ''}${ordersChange.toFixed(1)}%`;
-            document.getElementById('orders-compare-change').className = `compare-value-change ${ordersChange > 0 ? 'positive' : ordersChange < 0 ? 'negative' : 'zero'}`;
-            
-            // Сравнение среднего чека
-            const avgCheck1 = compareData1.total.total_revenue / compareData1.total.total_orders;
-            const avgCheck2 = compareData2.total.total_revenue / compareData2.total.total_orders;
-            const avgCheckChange = ((avgCheck1 - avgCheck2) / avgCheck2) * 100 || 0;
-            document.getElementById('avg-check-compare-value').textContent = fmt.format(avgCheck1.toFixed(0)) + ' ₽';
-            document.getElementById('avg-check-compare-change').textContent = `${avgCheckChange > 0 ? '+' : ''}${avgCheckChange.toFixed(1)}%`;
-            document.getElementById('avg-check-compare-change').className = `compare-value-change ${avgCheckChange > 0 ? 'positive' : avgCheckChange < 0 ? 'negative' : 'zero'}`;
-            
-            // Обновляем график сравнения
-            updateCompareChart();
-        }
-        function updateCompareChart() {
-            const chartData = {
-                labels: ['Период 1', 'Период 2'],
-                datasets: [{
-                    label: 'Выручка',
-                    data: [compareData1.total.total_revenue, compareData2.total.total_revenue],
-                    backgroundColor: [var(--compare-positive), var(--compare-negative)]
-                }]
-            };
-            const ctx = document.getElementById('compareChart').getContext('2d');
-            if (compareChart) {
-                compareChart.destroy();
-            }
-            compareChart = new Chart(ctx, {
-                type: 'bar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Периоды',
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary')
-                            },
-                            ticks: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary')
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Выручка ₽',
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary')
-                            },
-                            ticks: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary')
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                color: getComputedStyle(document.body).getPropertyValue('--text-primary')
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        function switchTab(tab) {
-            document.querySelectorAll('.compare-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-        }
-        function openVenueModal(venue, stats, periodDays) {
-            const modal = document.getElementById('venueModal');
-            const modalVenueName = document.getElementById('modalVenueName');
-            const modalVenueDetails = document.getElementById('modalVenueDetails');
-            const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
-            const planRevenueForPeriod = dailyPlan * periodDays;
-            const fulfill = planRevenueForPeriod > 0 ? (stats.total_revenue || 0) / planRevenueForPeriod * 100 : 0;
-            modalVenueName.textContent = venue;
-            modalVenueDetails.innerHTML = `
-                <div class="venue-metric"><span>Выручка:</span> <span>${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</span></div>
-                <div class="venue-metric"><span>Заказы:</span> <span>${stats.total_orders || 0}</span></div>
-                <div class="venue-metric"><span>Выполнение плана:</span> <span>${fulfill.toFixed(1)}%</span></div>
-                <h4 style="margin-top: 15px;">Выручка по типам:</h4>
-                <div class="venue-metric"><span>Доставка:</span> <span>${fmt.format((stats.delivery_revenue || 0).toFixed(0))} ₽</span></div>
-                <div class="venue-metric"><span>Кафе:</span> <span>${fmt.format((stats.cafe_revenue || 0).toFixed(0))} ₽</span></div>
-                <div class="venue-metric"><span>Самовывоз:</span> <span>${fmt.format((stats.pickup_revenue || 0).toFixed(0))} ₽</span></div>
-                <h4 style="margin-top: 15px;">Заказы по типам:</h4>
-                <div class="venue-metric"><span>Доставка:</span> <span>${stats.delivery_orders || 0}</span></div>
-                <div class="venue-metric"><span>Кафе:</span> <span>${stats.cafe_orders || 0}</span></div>
-                <div class="venue-metric"><span>Самовывоз:</span> <span>${stats.pickup_orders || 0}</span></div>
-                <div style="margin-top: 15px; padding: 10px; background: rgba(0, 200, 83, 0.1); border-radius: 8px;">
-                    <strong>План:</strong> ${fmt.format(planRevenueForPeriod.toFixed(0))} ₽
-                </div>
-            `;
-            modal.style.display = 'block';
-        }
-        function showNewDataNotification() {
-            const notification = document.getElementById('new-data-notification');
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 5000);
-        }
-        // Закрытие модального окна
-        document.querySelector('.close').addEventListener('click', function() {
-            document.getElementById('compareModal').style.display = 'none';
-        });
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('compareModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-        document.getElementById('new-data-notification').addEventListener('click', function() {
-            load(currentStartDate, currentEndDate);
-            this.style.display = 'none';
-        });
-        // --- PDF Export ---
+
+        // Экспорт
         function exportPDF(filter = 'all') {
             const data = dataCache.current;
-            if (!data || !data.date) {
+            if (!data) {
                 showToast('Нет данных для экспорта', 'error');
                 return;
             }
+            
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-            function escapeText(text) {
-                return text.replace(/[а-яА-ЯёЁ]/g, (char) => {
-                    const translitMap = { 
-                        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 
-                        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 
-                        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 
-                        'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 
-                        'ъ': '"', 'ы': 'y', 'ь': "'", 'э': 'e', 'ю': 'yu', 'я': 'ya',
-                        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo', 
-                        'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 
-                        'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 
-                        'Ф': 'F', 'Х': 'Kh', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch', 
-                        'Ъ': '"', 'Ы': 'Y', 'Ь': "'", 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya' 
-                    };
-                    return translitMap[char] || char;
-                });
-            }
-            doc.setFont("helvetica");
-            doc.setFontSize(14);
-            doc.text(escapeText('Чи-Фань Отчет по Выручке'), 10, 10);
+            const doc = new jsPDF();
+            
+            // Заголовок
+            doc.setFontSize(16);
+            doc.text('Чи-Фань - Отчет по выручке', 20, 20);
+            
             doc.setFontSize(10);
-            const dateText = `Дата отчета: ${data.date} ${data.time || ''}`;
-            doc.text(dateText, 10, 15);
-            let y = 25;
+            doc.text(`Период: ${data.date}`, 20, 30);
+            doc.text(`Время обновления: ${data.time}`, 20, 35);
+            
+            let y = 45;
+            
+            // Метрики
+            doc.setFontSize(12);
+            doc.text('Основные метрики:', 20, y);
+            y += 10;
+            
+            const total = data.total || {};
+            doc.text(`Выручка: ${fmt.format(total.total_revenue || 0)} ₽`, 20, y);
+            y += 7;
+            doc.text(`Заказы: ${total.total_orders || 0}`, 20, y);
+            y += 7;
+            doc.text(`Доставка: ${total.total_delivery_orders || 0}`, 20, y);
+            y += 7;
+            doc.text(`Самовывоз: ${total.total_pickup_orders || 0}`, 20, y);
+            y += 7;
+            doc.text(`Кафе: ${total.total_cafe_orders || 0}`, 20, y);
+            y += 15;
+            
+            // Филиалы
             const venues = filter === 'year-round' ? data.year_round : 
                           filter === 'seasonal' ? data.seasonal : 
                           { ...data.year_round, ...data.seasonal };
-            const sortedVenues = Object.entries(venues || {}).sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            sortedVenues.forEach(([v, s]) => {
-                const text = `${v}: Выручка ${fmt.format((s.total_revenue || 0).toFixed(0))} ₽, Заказы ${s.total_orders || 0}`;
-                doc.text(escapeText(text), 10, y);
-                y += 7;
-                if (y > 280) {
+            
+            doc.setFontSize(12);
+            doc.text('Филиалы:', 20, y);
+            y += 10;
+            
+            const sortedVenues = Object.entries(venues || {})
+                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
+            
+            sortedVenues.forEach(([venue, stats]) => {
+                if (y > 270) {
                     doc.addPage();
-                    y = 15;
+                    y = 20;
                 }
+                
+                doc.setFontSize(10);
+                doc.text(`${venue}: ${fmt.format(stats.total_revenue || 0)} ₽ (${stats.total_orders || 0} заказов)`, 20, y);
+                y += 7;
             });
-            doc.save(`chifan_report_${currentStartDate.replace(/-/g, '_')}_${filter}.pdf`);
-            showToast('PDF экспортирован!');
+            
+            doc.save(`chifan_report_${currentStartDate}_${filter}.pdf`);
+            showToast('PDF успешно экспортирован');
         }
-        // --- Инициализация ---
-        if (localStorage.getItem('theme') === 'dark') toggleTheme();
-        // Устанавливаем даты по умолчанию - текущий бизнес-день
-        const todayStr = getTodayDateString();
-        document.getElementById('start-date').value = todayStr;
-        document.getElementById('end-date').value = todayStr;
-        // Устанавливаем активную кнопку "Сегодня" при загрузке
-        document.querySelector('.period-btn').classList.add('active');
-        // Обновляем информацию о бизнес-дне
-        updateBusinessDayInfo();
-        // Загружаем данные
-        load(todayStr, todayStr); 
-        // Запускаем автообновление
-        setupAutoRefresh();
+
+        // Инициализация
+        function init() {
+            // Установка темы
+            if (localStorage.getItem('theme') === 'dark') {
+                toggleTheme();
+            }
+            
+            // Установка дат по умолчанию
+            const todayStr = getTodayDateString();
+            document.getElementById('start-date').value = todayStr;
+            document.getElementById('end-date').value = todayStr;
+            
+            // Активная кнопка "Сегодня"
+            document.querySelector('.period-btn').classList.add('active');
+            
+            // Обновление информации о бизнес-дне
+            updateBusinessDayInfo();
+            
+            // Загрузка данных
+            load(todayStr, todayStr);
+            
+            // Запуск автообновления
+            setupAutoRefresh();
+        }
+
         function updateBusinessDayInfo() {
             const businessDayDate = getCurrentBusinessDay().toISOString().split('T')[0];
             document.getElementById('business-day-date').textContent = businessDayDate;
         }
+
+        // Запуск при загрузке страницы
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
