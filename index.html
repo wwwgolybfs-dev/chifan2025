@@ -11,24 +11,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            --primary-color: #3b82f6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
+            /* Темные цвета */
+            --primary-color: #0d1b2a;
+            --success-color: #00c853;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --bg-color: #0a111e;
+            --card-bg: #121c2b;
+            --text-primary: #ffffff;
+            --text-secondary: #c1cdd2;
+            --border-color: #1a2534;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --accent-color: #00c853;
+            --secondary-accent: #009688;
         }
         [data-theme="dark"] {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
+            --bg-color: #0a111e;
+            --card-bg: #121c2b;
+            --text-primary: #ffffff;
+            --text-secondary: #c1cdd2;
+            --border-color: #1a2534;
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -38,22 +41,27 @@
             color: var(--text-primary);
             line-height: 1.6;
             transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
         }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            z-index: 10;
+            position: relative;
         }
         h1 {
             margin: 0;
             color: var(--primary-color);
             font-weight: 700;
             font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         .theme-toggle {
             background: var(--primary-color);
@@ -62,10 +70,15 @@
             padding: 10px;
             border-radius: 50%;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         .theme-toggle:hover {
-            background: #2563eb;
+            background: #0a1522;
+            transform: scale(1.1);
+        }
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
         #last-update {
             text-align: center;
@@ -76,6 +89,11 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         #business-day-info {
             text-align: center;
@@ -83,8 +101,11 @@
             font-size: 0.9rem;
             margin-bottom: 15px;
             padding: 8px 15px;
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 3px solid var(--primary-color);
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         .export-buttons {
             display: flex;
@@ -92,19 +113,28 @@
             margin-top: 20px;
             flex-wrap: wrap;
             justify-content: center;
+            z-index: 10;
+            position: relative;
         }
         .export-btn {
-            background: var(--success-color);
+            background: var(--accent-color);
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             font-size: 0.9rem;
+            box-shadow: 0 2px 6px rgba(0, 200, 83, 0.3);
+            backdrop-filter: blur(5px);
         }
         .export-btn:hover {
-            background: #059669;
+            background: #00a845;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 200, 83, 0.4);
+        }
+        .export-btn:active {
+            transform: translateY(0);
         }
         .metrics-grid {
             display: grid;
@@ -122,6 +152,8 @@
             animation: slideIn 0.5s ease;
             opacity: 0;
             transform: translateY(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
         }
         .metric-card.fade-in {
             opacity: 1;
@@ -130,21 +162,28 @@
         .metric-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
+            border-color: rgba(255, 255, 255, 0.1);
         }
         .metric-icon {
             font-size: 2rem;
-            color: var(--primary-color);
+            color: var(--accent-color);
             margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        .metric-icon:hover {
+            transform: scale(1.2);
         }
         .metric-value {
             font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 5px;
+            transition: color 0.3s ease;
         }
         .metric-label {
             color: var(--text-secondary);
             font-size: 0.9rem;
+            transition: color 0.3s ease;
         }
         .progress-container {
             margin: 20px 0;
@@ -159,6 +198,7 @@
             margin-bottom: 10px;
             font-size: 1rem;
             font-weight: 500;
+            color: var(--text-primary);
         }
         .progress-bar {
             width: 100%;
@@ -166,19 +206,24 @@
             background: var(--border-color);
             border-radius: 10px;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
         }
         .progress-fill {
             height: 100%;
             transition: width 1s ease;
             border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
         }
-        .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #059669); }
+        .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
         .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
         .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
         .progress-text {
             text-align: center;
             font-weight: 500;
             margin-top: 10px;
+            color: var(--text-primary);
         }
         .section {
             margin-bottom: 40px;
@@ -191,6 +236,17 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+        }
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px;
         }
         .venues-grid {
             display: grid;
@@ -202,26 +258,39 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: var(--shadow);
-            transition: box-shadow 0.3s ease;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
             cursor: pointer;
             position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
         .venue-card:hover {
+            transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
         }
         .venue-name {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 10px;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
         .venue-metric {
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
             font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
         }
         .venue-metric-value {
             font-weight: 500;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
         .charts-grid {
             display: grid;
@@ -234,6 +303,7 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: var(--shadow);
+            transition: all 0.3s ease;
         }
         .chart-container canvas {
             color: var(--text-primary);
@@ -246,6 +316,9 @@
             .charts-grid { grid-template-columns: 1fr; }
             .venues-grid { grid-template-columns: 1fr; }
             body { padding: 10px; }
+            .metric-card {
+                margin-bottom: 10px;
+            }
         }
         .toast {
             position: fixed;
@@ -258,6 +331,8 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+            backdrop-filter: blur(5px);
         }
         .toast.show {
             opacity: 1;
@@ -266,9 +341,11 @@
             color: var(--danger-color);
             text-align: center;
             padding: 10px;
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(244, 67, 54, 0.1);
             border-radius: 8px;
             margin: 10px 0;
+            border: 1px solid rgba(244, 67, 54, 0.2);
+            backdrop-filter: blur(5px);
         }
         .data-selector {
             margin-bottom: 10px;
@@ -277,6 +354,7 @@
             border-radius: 4px;
             background: var(--card-bg);
             color: var(--text-primary);
+            transition: all 0.3s ease;
         }
         .date-range-selector {
             display: flex;
@@ -288,23 +366,33 @@
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
         .date-range-selector input, .date-range-selector button {
             padding: 8px 12px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
-            background: var(--bg-color);
+            background: var(--card-bg);
             color: var(--text-primary);
+            transition: all 0.3s ease;
         }
         .date-range-selector button {
-            background: var(--primary-color);
+            background: var(--accent-color);
             color: white;
             border: none;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 200, 83, 0.3);
         }
         .date-range-selector button:hover {
-            background: #2563eb;
+            background: #00a845;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 200, 83, 0.4);
+        }
+        .date-range-selector button:active {
+            transform: translateY(0);
         }
         .metric-value.good, .metric-value.warn, .metric-value.bad {
             color: inherit;
@@ -315,6 +403,7 @@
             font-size: 0.8rem;
             margin-top: 5px;
             font-style: italic;
+            transition: color 0.3s ease;
         }
         .quick-periods {
             display: flex;
@@ -329,16 +418,20 @@
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             font-size: 0.8rem;
             white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
         }
         .period-btn:hover {
             background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.4);
         }
         .period-btn.active {
             background: var(--success-color);
             box-shadow: 0 0 0 2px var(--success-color);
+            transform: scale(1.05);
         }
         .auto-refresh-info {
             text-align: center;
@@ -349,6 +442,7 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
+            transition: color 0.3s ease;
         }
         /* Новые стили для разбивки заказов */
         .orders-breakdown {
@@ -358,12 +452,14 @@
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
         }
         .order-type {
             text-align: center;
             padding: 8px;
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(0, 200, 83, 0.1);
             border-radius: 6px;
+            transition: all 0.3s ease;
         }
         .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
         .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
@@ -372,10 +468,13 @@
             font-weight: 600;
             font-size: 1.1rem;
             margin-bottom: 2px;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
         .order-type-label {
             font-size: 0.7rem;
             color: var(--text-secondary);
+            transition: color 0.3s ease;
         }
         /* Стили для модального окна */
         .modal {
@@ -386,10 +485,11 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
         }
         .modal-content {
-            background-color: var(--card-bg);
+            background: var(--card-bg);
             margin: 5% auto;
             padding: 20px;
             border-radius: 12px;
@@ -397,6 +497,8 @@
             max-width: 500px;
             box-shadow: var(--shadow);
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
         }
         .close {
             position: absolute;
@@ -406,9 +508,11 @@
             font-weight: bold;
             cursor: pointer;
             color: var(--text-secondary);
+            transition: all 0.3s ease;
         }
         .close:hover {
             color: var(--text-primary);
+            transform: scale(1.2);
         }
         .venue-details-btn {
             position: absolute;
@@ -416,10 +520,10 @@
             right: 15px;
             background: none;
             border: none;
-            color: var(--primary-color);
+            color: var(--accent-color);
             cursor: pointer;
             font-size: 1.1rem;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
         .venue-details-btn:hover {
             transform: scale(1.2);
@@ -438,14 +542,22 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--primary-color);
+            background: var(--accent-color);
             color: white;
             padding: 10px 15px;
             border-radius: 8px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
             cursor: pointer;
             z-index: 1000;
             display: none;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .new-data-notification:hover {
+            transform: scale(1.05);
+        }
+        .new-data-notification:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -1003,7 +1115,7 @@
                         datasets: [{ 
                             label: 'Выручка ₽', 
                             data: revenues, 
-                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
+                            backgroundColor: ['#00c853', '#009688', '#ff9800', '#f44336', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
                         }] 
                     },
                     options: {
@@ -1050,7 +1162,7 @@
                         datasets: [{ 
                             label: `${dataType === 'orders' ? 'Заказы' : 'Выручка ₽'}`, 
                             data: dataValues, 
-                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
+                            backgroundColor: ['#00c853', '#009688', '#ff9800', '#f44336', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#f97316'] 
                         }] 
                     },
                     options: {
@@ -1169,7 +1281,7 @@
                 <div class="venue-metric"><span>Доставка:</span> <span>${stats.delivery_orders || 0}</span></div>
                 <div class="venue-metric"><span>Кафе:</span> <span>${stats.cafe_orders || 0}</span></div>
                 <div class="venue-metric"><span>Самовывоз:</span> <span>${stats.pickup_orders || 0}</span></div>
-                <div style="margin-top: 15px; padding: 10px; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+                <div style="margin-top: 15px; padding: 10px; background: rgba(0, 200, 83, 0.1); border-radius: 8px;">
                     <strong>План:</strong> ${fmt.format(planRevenueForPeriod.toFixed(0))} ₽
                 </div>
             `;
