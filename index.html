@@ -89,11 +89,6 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 8px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
         }
         #business-day-info {
             text-align: center;
@@ -103,9 +98,6 @@
             padding: 8px 15px;
             background: rgba(255, 255, 255, 0.05);
             border-left: 3px solid var(--accent-color);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
         }
         .export-buttons {
             display: flex;
@@ -113,8 +105,6 @@
             margin-top: 20px;
             flex-wrap: wrap;
             justify-content: center;
-            z-index: 10;
-            position: relative;
         }
         .export-btn {
             background: var(--accent-color);
@@ -152,8 +142,6 @@
             animation: slideIn 0.5s ease;
             opacity: 0;
             transform: translateY(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px);
         }
         .metric-card.fade-in {
             opacity: 1;
@@ -162,7 +150,6 @@
         .metric-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
-            border-color: rgba(255, 255, 255, 0.1);
         }
         .metric-icon {
             font-size: 2rem;
@@ -178,12 +165,10 @@
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 5px;
-            transition: color 0.3s ease;
         }
         .metric-label {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            transition: color 0.3s ease;
         }
         .progress-container {
             margin: 20px 0;
@@ -198,7 +183,6 @@
             margin-bottom: 10px;
             font-size: 1rem;
             font-weight: 500;
-            color: var(--text-primary);
         }
         .progress-bar {
             width: 100%;
@@ -206,15 +190,11 @@
             background: var(--border-color);
             border-radius: 10px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
         }
         .progress-fill {
             height: 100%;
             transition: width 1s ease;
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent));
         }
         .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
         .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
@@ -223,7 +203,6 @@
             text-align: center;
             font-weight: 500;
             margin-top: 10px;
-            color: var(--text-primary);
         }
         .section {
             margin-bottom: 40px;
@@ -236,7 +215,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            position: relative;
         }
         .section-title::before {
             content: '';
@@ -452,14 +430,12 @@
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
         }
         .order-type {
             text-align: center;
             padding: 8px;
             background: rgba(0, 200, 83, 0.1);
             border-radius: 6px;
-            transition: all 0.3s ease;
         }
         .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
         .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
@@ -1199,8 +1175,9 @@
             if (updateEl) updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
             currentStartDate = startDateStr;
             currentEndDate = endDateStr;
-            // Принудительно очищаем кэш для сегодняшней даты, чтобы всегда брать актуальные данные
-            const todayStr = getTodayDateString();
+            // Принудительно очищаем кэш для текущего бизнес-дня, чтобы всегда брать актуальные данные
+            const businessDay = getCurrentBusinessDay();
+            const todayStr = businessDay.toISOString().split('T')[0];
             if (isCurrentBusinessDay(startDateStr) || isCurrentBusinessDay(endDateStr)) {
                 delete dataCache[todayStr];
             }
