@@ -1,6 +1,6 @@
 {
   "date": "2025-10-09",
-  "time": "12:30",
+  "time": "12:40",
   "year_round": {
     "Светланская": {
       "total_orders": 8,
@@ -43,36 +43,36 @@
       "cafe_revenue": 1623.0
     },
     "Тихая": {
-      "total_orders": 12,
+      "total_orders": 15,
       "delivery_orders": 1,
-      "pickup_orders": 3,
-      "cafe_orders": 8,
-      "total_revenue": 5091.0,
+      "pickup_orders": 4,
+      "cafe_orders": 10,
+      "total_revenue": 7231.0,
       "delivery_revenue": 1004.0,
-      "pickup_revenue": 1177.0,
-      "cafe_revenue": 2910.0
+      "pickup_revenue": 2368.0,
+      "cafe_revenue": 3859.0
     },
     "Чуркин": {
-      "total_orders": 23,
+      "total_orders": 28,
       "delivery_orders": 0,
-      "pickup_orders": 2,
-      "cafe_orders": 21,
-      "total_revenue": 12230.0,
+      "pickup_orders": 4,
+      "cafe_orders": 24,
+      "total_revenue": 14885.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 2090.0,
-      "cafe_revenue": 10140.0
+      "pickup_revenue": 3258.0,
+      "cafe_revenue": 11627.0
     }
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 2,
+      "total_orders": 4,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 2,
-      "total_revenue": 938.0,
+      "cafe_orders": 4,
+      "total_revenue": 1557.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 938.0
+      "cafe_revenue": 1557.0
     },
     "МГУ": {
       "total_orders": 1,
@@ -85,19 +85,19 @@
       "cafe_revenue": 738.0
     },
     "Юбилейный": {
-      "total_orders": 9,
+      "total_orders": 11,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 8,
-      "total_revenue": 4344.0,
+      "cafe_orders": 10,
+      "total_revenue": 5802.0,
       "delivery_revenue": 0,
       "pickup_revenue": 252.0,
-      "cafe_revenue": 4092.0
+      "cafe_revenue": 5550.0
     }
   },
   "total": {
-    "total_orders": 90,
-    "total_revenue": 65092.0
+    "total_orders": 102,
+    "total_revenue": 71964.0
   },
   "plan": {
     "total_revenue": 20944728.513,
