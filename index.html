@@ -647,7 +647,7 @@
         // Константы и настройки
         const DAILY_NETWORK_PLAN = 50000;
         const BASE_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/daily/';
-        const LATEST_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/revenue.json';
+        const LATEST_DATA_URL = 'main/data/revenue.json'; // Изменён путь к JSON
         const fmt = new Intl.NumberFormat('ru-RU');
         const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
         
@@ -670,10 +670,6 @@
         // Утилиты
         function getCurrentBusinessDay() {
             const now = new Date();
-            // Бизнес-день меняется в 03:00
-            if (now.getHours() < 3) {
-                return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-            }
             return new Date(now.getFullYear(), now.getMonth(), now.getDate());
         }
 
@@ -705,6 +701,12 @@
         }
 
         function getMonthEndDate(date = new Date()) {
+            const now = new Date();
+            // Если текущий месяц, возвращаем текущую дату
+            if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()) {
+                return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            }
+            // Иначе возвращаем последний день месяца
             return new Date(date.getFullYear(), date.getMonth() + 1, 0);
         }
 
@@ -876,58 +878,59 @@
             const isToday = dateStr === todayStr;
             
             const urls = isToday ? 
-                [LATEST_DATA_URL + '?t=' + Date.now(), `${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`] :
+                [`${LATEST_DATA_URL}?t=${Date.now()}`, `${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`] :
                 [`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`];
             
             for (const url of urls) {
                 try {
                     const response = await fetch(url);
-                    if (response.ok) {
-                        const data = await response.json();
-                        
-                        // Проверка даты для latest данных
-                        if (url.includes('revenue.json') && !url.includes('daily')) {
-                            if (data.date && data.date !== dateStr) {
-                                continue;
-                            }
-                        }
-                        
-                        // Расчет агрегированных данных
-                        let calculatedRevenue = 0;
-                        let calculatedOrders = 0;
-                        let calculatedDeliveryOrders = 0;
-                        let calculatedPickupOrders = 0;
-                        let calculatedCafeOrders = 0;
-                        
-                        const allVenues = { ...data.year_round, ...data.seasonal };
-                        Object.values(allVenues).forEach(stats => {
-                            calculatedRevenue += stats.total_revenue || 0;
-                            calculatedOrders += stats.total_orders || 0;
-                            calculatedDeliveryOrders += stats.delivery_orders || 0;
-                            calculatedPickupOrders += stats.pickup_orders || 0;
-                            calculatedCafeOrders += stats.cafe_orders || 0;
-                        });
-                        
-                        // Обработка плана
-                        const planRevenue = data.plan?.revenue || data.plan?.total_revenue || DAILY_NETWORK_PLAN;
-                        const planOrders = data.plan?.orders || data.plan?.total_orders || 1000;
-                        
-                        const result = {
-                            ...data,
-                            plan: { revenue: planRevenue, orders: planOrders },
-                            total: {
-                                total_revenue: calculatedRevenue || data.total?.total_revenue || 0,
-                                total_orders: calculatedOrders || data.total?.total_orders || 0,
-                                total_delivery_orders: calculatedDeliveryOrders,
-                                total_pickup_orders: calculatedPickupOrders,
-                                total_cafe_orders: calculatedCafeOrders
-                            },
-                            _source: url.includes('revenue.json') && !url.includes('daily') ? 'latest' : 'daily'
-                        };
-                        
-                        dataCache[dateStr] = result;
-                        return result;
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
+                    const data = await response.json();
+                    
+                    // Проверка даты для latest данных
+                    if (url.includes('revenue.json') && !url.includes('daily')) {
+                        if (data.date && data.date !== dateStr) {
+                            continue;
+                        }
+                    }
+                    
+                    // Расчет агрегированных данных
+                    let calculatedRevenue = 0;
+                    let calculatedOrders = 0;
+                    let calculatedDeliveryOrders = 0;
+                    let calculatedPickupOrders = 0;
+                    let calculatedCafeOrders = 0;
+                    
+                    const allVenues = { ...data.year_round, ...data.seasonal };
+                    Object.values(allVenues).forEach(stats => {
+                        calculatedRevenue += stats.total_revenue || 0;
+                        calculatedOrders += stats.total_orders || 0;
+                        calculatedDeliveryOrders += stats.delivery_orders || 0;
+                        calculatedPickupOrders += stats.pickup_orders || 0;
+                        calculatedCafeOrders += stats.cafe_orders || 0;
+                    });
+                    
+                    // Обработка плана
+                    const planRevenue = data.plan?.revenue || data.plan?.total_revenue || DAILY_NETWORK_PLAN;
+                    const planOrders = data.plan?.orders || data.plan?.total_orders || 1000;
+                    
+                    const result = {
+                        ...data,
+                        plan: { revenue: planRevenue, orders: planOrders },
+                        total: {
+                            total_revenue: calculatedRevenue || data.total?.total_revenue || 0,
+                            total_orders: calculatedOrders || data.total?.total_orders || 0,
+                            total_delivery_orders: calculatedDeliveryOrders,
+                            total_pickup_orders: calculatedPickupOrders,
+                            total_cafe_orders: calculatedCafeOrders
+                        },
+                        _source: url.includes('revenue.json') && !url.includes('daily') ? 'latest' : 'daily'
+                    };
+                    
+                    dataCache[dateStr] = result;
+                    return result;
                 } catch (error) {
                     console.warn(`Ошибка загрузки ${url}:`, error);
                 }
@@ -974,6 +977,7 @@
             const endDate = new Date(endDateStr);
             
             if (isNaN(currentDate) || isNaN(endDate) || currentDate > endDate) {
+                showToast('Неверный диапазон дат', 'error');
                 combinedData.plan = {
                     total_revenue: DAILY_NETWORK_PLAN * diffDays,
                     total_orders: 1000 * diffDays
@@ -1377,6 +1381,9 @@
             
             try {
                 const data = await loadData(startDateStr, endDateStr);
+                if (!data) {
+                    throw new Error('Данные не получены');
+                }
                 dataCache.current = data;
                 
                 // Проверка на новые данные
@@ -1409,11 +1416,11 @@
                     updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
                 }
                 
-                document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик</div>';
-                document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
-                document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки филиалов</div>';
+                document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик: ' + error.message + '</div>';
+                document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки данных по круглогодичным филиалам</div>';
+                document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки данных по сезонным филиалам</div>';
                 
-                showToast('Критическая ошибка загрузки данных', 'error');
+                showToast('Ошибка загрузки данных: ' + error.message, 'error');
             } finally {
                 // Анимация появления элементов
                 setTimeout(() => {
@@ -1536,9 +1543,3 @@
             const businessDayDate = getCurrentBusinessDay().toISOString().split('T')[0];
             document.getElementById('business-day-date').textContent = businessDayDate;
         }
-
-        // Запуск при загрузке страницы
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
-</body>
-</html>
