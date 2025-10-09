@@ -1,6 +1,6 @@
 {
   "date": "2025-10-09",
-  "time": "17:50",
+  "time": "18:00",
   "year_round": {
     "Светланская": {
       "total_orders": 54,
@@ -23,24 +23,24 @@
       "cafe_revenue": 7888.0
     },
     "Красота": {
-      "total_orders": 59,
+      "total_orders": 60,
       "delivery_orders": 22,
-      "pickup_orders": 11,
+      "pickup_orders": 12,
       "cafe_orders": 26,
-      "total_revenue": 61611.0,
+      "total_revenue": 62393.0,
       "delivery_revenue": 37233.0,
-      "pickup_revenue": 7896.0,
+      "pickup_revenue": 8678.0,
       "cafe_revenue": 16482.0
     },
     "Тобольская": {
-      "total_orders": 61,
+      "total_orders": 62,
       "delivery_orders": 13,
       "pickup_orders": 13,
-      "cafe_orders": 35,
-      "total_revenue": 46376.0,
+      "cafe_orders": 36,
+      "total_revenue": 47598.0,
       "delivery_revenue": 21917.0,
       "pickup_revenue": 6472.0,
-      "cafe_revenue": 17987.0
+      "cafe_revenue": 19209.0
     },
     "Тихая": {
       "total_orders": 46,
@@ -53,14 +53,14 @@
       "cafe_revenue": 14234.0
     },
     "Чуркин": {
-      "total_orders": 93,
+      "total_orders": 97,
       "delivery_orders": 0,
       "pickup_orders": 10,
-      "cafe_orders": 83,
-      "total_revenue": 51100.0,
+      "cafe_orders": 87,
+      "total_revenue": 54055.0,
       "delivery_revenue": 0,
       "pickup_revenue": 7276.0,
-      "cafe_revenue": 43824.0
+      "cafe_revenue": 46779.0
     }
   },
   "seasonal": {
@@ -85,19 +85,19 @@
       "cafe_revenue": 6489.0
     },
     "Юбилейный": {
-      "total_orders": 43,
+      "total_orders": 44,
       "delivery_orders": 0,
       "pickup_orders": 2,
-      "cafe_orders": 41,
-      "total_revenue": 22163.0,
+      "cafe_orders": 42,
+      "total_revenue": 22522.0,
       "delivery_revenue": 0,
       "pickup_revenue": 607.0,
-      "cafe_revenue": 21556.0
+      "cafe_revenue": 21915.0
     }
   },
   "total": {
-    "total_orders": 417,
-    "total_revenue": 268610.0
+    "total_orders": 424,
+    "total_revenue": 273928.0
   },
   "plan": {
     "total_revenue": 20944728.513,
