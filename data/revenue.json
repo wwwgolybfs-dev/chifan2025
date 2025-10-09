@@ -1,16 +1,16 @@
 {
   "date": "2025-10-09",
-  "time": "19:00",
+  "time": "19:10",
   "year_round": {
     "Светланская": {
-      "total_orders": 58,
+      "total_orders": 60,
       "delivery_orders": 0,
       "pickup_orders": 10,
-      "cafe_orders": 48,
-      "total_revenue": 30724.0,
+      "cafe_orders": 50,
+      "total_revenue": 32658.0,
       "delivery_revenue": 0,
       "pickup_revenue": 6494.0,
-      "cafe_revenue": 24230.0
+      "cafe_revenue": 26164.0
     },
     "Парк": {
       "total_orders": 26,
@@ -43,24 +43,24 @@
       "cafe_revenue": 24967.0
     },
     "Тихая": {
-      "total_orders": 51,
-      "delivery_orders": 5,
+      "total_orders": 53,
+      "delivery_orders": 6,
       "pickup_orders": 13,
-      "cafe_orders": 33,
-      "total_revenue": 31771.0,
-      "delivery_revenue": 8042.0,
+      "cafe_orders": 34,
+      "total_revenue": 36645.0,
+      "delivery_revenue": 11159.0,
       "pickup_revenue": 8079.0,
-      "cafe_revenue": 15650.0
+      "cafe_revenue": 17407.0
     },
     "Чуркин": {
-      "total_orders": 106,
+      "total_orders": 108,
       "delivery_orders": 0,
       "pickup_orders": 10,
-      "cafe_orders": 96,
-      "total_revenue": 60344.0,
+      "cafe_orders": 98,
+      "total_revenue": 61570.0,
       "delivery_revenue": 0,
       "pickup_revenue": 7276.0,
-      "cafe_revenue": 53068.0
+      "cafe_revenue": 54294.0
     }
   },
   "seasonal": {
@@ -85,19 +85,19 @@
       "cafe_revenue": 6489.0
     },
     "Юбилейный": {
-      "total_orders": 48,
+      "total_orders": 50,
       "delivery_orders": 0,
       "pickup_orders": 2,
-      "cafe_orders": 46,
-      "total_revenue": 25013.0,
+      "cafe_orders": 48,
+      "total_revenue": 25733.0,
       "delivery_revenue": 0,
       "pickup_revenue": 607.0,
-      "cafe_revenue": 24406.0
+      "cafe_revenue": 25126.0
     }
   },
   "total": {
-    "total_orders": 471,
-    "total_revenue": 313586.0
+    "total_orders": 479,
+    "total_revenue": 322340.0
   },
   "plan": {
     "total_revenue": 20944728.513,
