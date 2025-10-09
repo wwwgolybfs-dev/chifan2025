@@ -1,16 +1,16 @@
 {
   "date": "2025-10-09",
-  "time": "16:30",
+  "time": "16:40",
   "year_round": {
     "Светланская": {
-      "total_orders": 47,
+      "total_orders": 48,
       "delivery_orders": 0,
       "pickup_orders": 8,
-      "cafe_orders": 39,
-      "total_revenue": 25599.0,
+      "cafe_orders": 40,
+      "total_revenue": 26724.0,
       "delivery_revenue": 0,
       "pickup_revenue": 5540.0,
-      "cafe_revenue": 20059.0
+      "cafe_revenue": 21184.0
     },
     "Парк": {
       "total_orders": 23,
@@ -53,26 +53,26 @@
       "cafe_revenue": 10022.0
     },
     "Чуркин": {
-      "total_orders": 77,
+      "total_orders": 80,
       "delivery_orders": 0,
-      "pickup_orders": 9,
-      "cafe_orders": 68,
-      "total_revenue": 42614.0,
+      "pickup_orders": 10,
+      "cafe_orders": 70,
+      "total_revenue": 44813.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 6203.0,
-      "cafe_revenue": 36411.0
+      "pickup_revenue": 7276.0,
+      "cafe_revenue": 37537.0
     }
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 23,
+      "total_orders": 25,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 23,
-      "total_revenue": 9452.0,
+      "cafe_orders": 25,
+      "total_revenue": 11239.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 9452.0
+      "cafe_revenue": 11239.0
     },
     "МГУ": {
       "total_orders": 9,
@@ -85,19 +85,19 @@
       "cafe_revenue": 5985.0
     },
     "Юбилейный": {
-      "total_orders": 39,
+      "total_orders": 43,
       "delivery_orders": 0,
       "pickup_orders": 2,
-      "cafe_orders": 37,
-      "total_revenue": 20257.0,
+      "cafe_orders": 41,
+      "total_revenue": 22163.0,
       "delivery_revenue": 0,
       "pickup_revenue": 607.0,
-      "cafe_revenue": 19650.0
+      "cafe_revenue": 21556.0
     }
   },
   "total": {
-    "total_orders": 359,
-    "total_revenue": 232132.0
+    "total_orders": 369,
+    "total_revenue": 239149.0
   },
   "plan": {
     "total_revenue": 20944728.513,
