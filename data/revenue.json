@@ -1,6 +1,6 @@
 {
   "date": "2025-10-09",
-  "time": "18:50",
+  "time": "19:00",
   "year_round": {
     "Светланская": {
       "total_orders": 58,
@@ -13,34 +13,34 @@
       "cafe_revenue": 24230.0
     },
     "Парк": {
-      "total_orders": 25,
+      "total_orders": 26,
       "delivery_orders": 0,
       "pickup_orders": 5,
-      "cafe_orders": 20,
-      "total_revenue": 11348.0,
+      "cafe_orders": 21,
+      "total_revenue": 11727.0,
       "delivery_revenue": 0,
       "pickup_revenue": 2301.0,
-      "cafe_revenue": 9047.0
+      "cafe_revenue": 9426.0
     },
     "Красота": {
-      "total_orders": 64,
-      "delivery_orders": 23,
+      "total_orders": 65,
+      "delivery_orders": 24,
       "pickup_orders": 13,
       "cafe_orders": 28,
-      "total_revenue": 68221.0,
-      "delivery_revenue": 41982.0,
+      "total_revenue": 71457.0,
+      "delivery_revenue": 45218.0,
       "pickup_revenue": 9043.0,
       "cafe_revenue": 17196.0
     },
     "Тобольская": {
-      "total_orders": 73,
-      "delivery_orders": 15,
-      "pickup_orders": 16,
-      "cafe_orders": 42,
-      "total_revenue": 60201.0,
-      "delivery_revenue": 26973.0,
-      "pickup_revenue": 8400.0,
-      "cafe_revenue": 24828.0
+      "total_orders": 77,
+      "delivery_orders": 16,
+      "pickup_orders": 18,
+      "cafe_orders": 43,
+      "total_revenue": 62250.0,
+      "delivery_revenue": 28139.0,
+      "pickup_revenue": 9144.0,
+      "cafe_revenue": 24967.0
     },
     "Тихая": {
       "total_orders": 51,
@@ -53,14 +53,14 @@
       "cafe_revenue": 15650.0
     },
     "Чуркин": {
-      "total_orders": 103,
+      "total_orders": 106,
       "delivery_orders": 0,
       "pickup_orders": 10,
-      "cafe_orders": 93,
-      "total_revenue": 57704.0,
+      "cafe_orders": 96,
+      "total_revenue": 60344.0,
       "delivery_revenue": 0,
       "pickup_revenue": 7276.0,
-      "cafe_revenue": 50428.0
+      "cafe_revenue": 53068.0
     }
   },
   "seasonal": {
@@ -85,19 +85,19 @@
       "cafe_revenue": 6489.0
     },
     "Юбилейный": {
-      "total_orders": 47,
+      "total_orders": 48,
       "delivery_orders": 0,
       "pickup_orders": 2,
-      "cafe_orders": 45,
-      "total_revenue": 24654.0,
+      "cafe_orders": 46,
+      "total_revenue": 25013.0,
       "delivery_revenue": 0,
       "pickup_revenue": 607.0,
-      "cafe_revenue": 24047.0
+      "cafe_revenue": 24406.0
     }
   },
   "total": {
-    "total_orders": 461,
-    "total_revenue": 304923.0
+    "total_orders": 471,
+    "total_revenue": 313586.0
   },
   "plan": {
     "total_revenue": 20944728.513,
