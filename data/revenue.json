@@ -1,16 +1,16 @@
 {
   "date": "2025-10-09",
-  "time": "11:40",
+  "time": "11:50",
   "year_round": {
     "Светланская": {
-      "total_orders": 3,
+      "total_orders": 6,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 3,
-      "total_revenue": 1125.0,
+      "cafe_orders": 6,
+      "total_revenue": 2567.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 1125.0
+      "cafe_revenue": 2567.0
     },
     "Красота": {
       "total_orders": 21,
@@ -63,11 +63,21 @@
       "delivery_revenue": 0,
       "pickup_revenue": 0,
       "cafe_revenue": 0.0
+    },
+    "МГУ": {
+      "total_orders": 1,
+      "delivery_orders": 0,
+      "pickup_orders": 0,
+      "cafe_orders": 1,
+      "total_revenue": 738.0,
+      "delivery_revenue": 0,
+      "pickup_revenue": 0,
+      "cafe_revenue": 738.0
     }
   },
   "total": {
-    "total_orders": 47,
-    "total_revenue": 41363.0
+    "total_orders": 51,
+    "total_revenue": 43543.0
   },
   "plan": {
     "total_revenue": 20944728.513,
