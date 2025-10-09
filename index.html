@@ -647,7 +647,7 @@
         // Константы и настройки
         const DAILY_NETWORK_PLAN = 50000;
         const BASE_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/daily/';
-        const LATEST_DATA_URL = 'main/data/revenue.json'; // Изменён путь к JSON
+        const LATEST_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/revenue.json';
         const fmt = new Intl.NumberFormat('ru-RU');
         const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
         
@@ -1543,3 +1543,9 @@
             const businessDayDate = getCurrentBusinessDay().toISOString().split('T')[0];
             document.getElementById('business-day-date').textContent = businessDayDate;
         }
+
+        // Запуск при загрузке страницы
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
