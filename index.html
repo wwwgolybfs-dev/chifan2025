@@ -337,7 +337,10 @@
 
         function getCurrentBusinessDay() {
             const now = new Date();
-            return now.getHours() < 3 ? new Date(now.setDate(now.getDate() - 1)) : now;
+            if (now.getHours() < 3) {
+                now.setDate(now.getDate() - 1);
+            }
+            return now;
         }
 
         function formatDateForInput(date) {
@@ -404,7 +407,11 @@
             }
         }
 
-        function aggregateData(dailyDataArray) {
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function aggregateData(dailyDataArray, periodDays) {
             const aggregated = {
                 year_round: {},
                 seasonal: {},
@@ -414,8 +421,17 @@
                 time: dailyDataArray[dailyDataArray.length - 1]?.time || ''
             };
 
+            const monthlyPlans = {};
+
             dailyDataArray.forEach(dayData => {
                 if (dayData) {
+                    const month = dayData.date.substring(0, 7);
+                    if (!monthlyPlans[month]) {
+                        monthlyPlans[month] = {
+                            planRevenue: dayData.plan.total_revenue || 0,
+                            planOrders: dayData.plan.total_orders || 0
+                        };
+                    }
                     ['year_round', 'seasonal'].forEach(section => {
                         Object.entries(dayData[section] || {}).forEach(([venue, stats]) => {
                             if (!aggregated[section][venue]) {
@@ -432,13 +448,24 @@
                     aggregated.total.total_delivery_revenue += dayData.total.total_delivery_revenue || 0;
                     aggregated.total.total_pickup_revenue += dayData.total.total_pickup_revenue || 0;
                     aggregated.total.total_cafe_revenue += dayData.total.total_cafe_revenue || 0;
-                    aggregated.plan.total_revenue += dayData.plan.total_revenue || 0;
-                    aggregated.plan.total_orders += dayData.plan.total_orders || 0;
                 }
             });
 
-            aggregated.plan.total_revenue /= dailyDataArray.length;
-            aggregated.plan.total_orders /= dailyDataArray.length;
+            // Prorate plan
+            const periodMonthlyDays = {};
+            const dates = getDatesBetween(currentStartDate, currentEndDate);
+            dates.forEach(date => {
+                const month = date.substring(0, 7);
+                periodMonthlyDays[month] = (periodMonthlyDays[month] || 0) + 1;
+            });
+
+            for (const month in periodMonthlyDays) {
+                const plan = monthlyPlans[month] || { planRevenue: 0, planOrders: 0 }; // If no data, plan 0
+                const [year, m] = month.split('-').map(Number);
+                const daysInMonth = getDaysInMonth(year, m - 1);
+                aggregated.plan.total_revenue += (plan.planRevenue / daysInMonth) * periodMonthlyDays[month];
+                aggregated.plan.total_orders += (plan.planOrders / daysInMonth) * periodMonthlyDays[month];
+            }
 
             // Aggregate breakdowns
             const allVenues = { ...aggregated.year_round, ...aggregated.seasonal };
@@ -483,7 +510,7 @@
                 const validData = dailyData.filter(d => d !== null);
                 if (validData.length === 0) throw new Error('No data available');
 
-                const aggregatedData = aggregateData(validData);
+                const aggregatedData = aggregateData(validData, dates.length);
                 dataCache[cacheKey] = aggregatedData;
                 return aggregatedData;
             } catch (error) {
