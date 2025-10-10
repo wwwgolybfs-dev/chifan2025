@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            background-color: #c8cbcf; /* Светлый фон */
+            background-color: #f0f4f8; /* Светлый фон */
             transition: background-color 0.3s ease;
         }
         body.theme-dark {
@@ -77,7 +77,7 @@
             font-size: 0.75rem;
         }
         .chart-container {
-            height: 300px;
+            height: auto !important; /* Responsive height */
             animation: fadeIn 0.5s ease;
         }
         .venue-card .card-header {
@@ -157,11 +157,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="btn-list">
-                                        <button class="btn" onclick="setPeriod('today')">Сегодня</button>
-                                        <button class="btn" onclick="setPeriod('yesterday')">Вчера</button>
-                                        <button class="btn" onclick="setPeriod('thisWeek')">Неделя</button>
-                                        <button class="btn" onclick="setPeriod('thisMonth')">Месяц</button>
-                                        <button class="btn" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
+                                        <button class="btn" onclick="setPeriod('today', event)">Сегодня</button>
+                                        <button class="btn" onclick="setPeriod('yesterday', event)">Вчера</button>
+                                        <button class="btn" onclick="setPeriod('thisWeek', event)">Неделя</button>
+                                        <button class="btn" onclick="setPeriod('thisMonth', event)">Месяц</button>
+                                        <button class="btn" onclick="setPeriod('lastMonth', event)">Прошлый месяц</button>
                                     </div>
                                 </div>
                             </div>
@@ -283,7 +283,7 @@
         let autoRefreshInterval = null;
         const AUTO_REFRESH_INTERVAL = 300000; // 5 минут
         const DAILY_NETWORK_PLAN = 1000000; // Пример плана
-        const fixedDailyPlans = {};
+        const fixedDailyPlans = {}; // Добавьте индивидуальные планы, e.g. {"Красота": 100000}
         const fmt = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 0 });
         const REPO_OWNER = 'wwwgolybfs-dev';
         const REPO_NAME = 'chifan2025';
@@ -344,7 +344,7 @@
             return date.toISOString().split('T')[0];
         }
 
-        function setPeriod(period) {
+        function setPeriod(period, event) {
             const today = new Date();
             let start, end;
             
@@ -392,8 +392,16 @@
             return dates;
         }
 
-        function getDaysInMonth(year, month) {
-            return new Date(year, month + 1, 0).getDate();
+        async function fetchWithRetry(url, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Failed with status ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                }
+            }
         }
 
         function aggregateData(dailyDataArray) {
@@ -424,13 +432,13 @@
                     aggregated.total.total_delivery_revenue += dayData.total.total_delivery_revenue || 0;
                     aggregated.total.total_pickup_revenue += dayData.total.total_pickup_revenue || 0;
                     aggregated.total.total_cafe_revenue += dayData.total.total_cafe_revenue || 0;
-                    
-                    const [year, month] = dayData.date.split('-').slice(0,2).map(Number);
-                    const daysInMonth = getDaysInMonth(year, month - 1);
-                    aggregated.plan.total_revenue += (dayData.plan.total_revenue || 0) / daysInMonth;
-                    aggregated.plan.total_orders += (dayData.plan.total_orders || 0) / daysInMonth;
+                    aggregated.plan.total_revenue += dayData.plan.total_revenue || 0;
+                    aggregated.plan.total_orders += dayData.plan.total_orders || 0;
                 }
             });
+
+            aggregated.plan.total_revenue /= dailyDataArray.length;
+            aggregated.plan.total_orders /= dailyDataArray.length;
 
             // Aggregate breakdowns
             const allVenues = { ...aggregated.year_round, ...aggregated.seasonal };
@@ -446,13 +454,15 @@
                 orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_orders || 0), 0),
                 revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
                 delivery_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
-                pickup_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0)
+                pickup_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
             };
             aggregated.seasonal_total = {
                 orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_orders || 0), 0),
                 revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
                 delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
-                pickup_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0)
+                pickup_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
             };
 
             return aggregated;
@@ -467,11 +477,7 @@
                 const dailyData = await Promise.all(dates.map(async date => {
                     const path = date === getTodayDateString() ? 'data/revenue.json' : `data/daily/${date}_revenue.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        return null;
-                    }
-                    return await response.json();
+                    return await fetchWithRetry(url);
                 }));
 
                 const validData = dailyData.filter(d => d !== null);
@@ -612,7 +618,7 @@
             const planRevenueForPeriod = dailyPlan * periodDays;
             const percentage = planRevenueForPeriod > 0 ? (stats.total_revenue / planRevenueForPeriod * 100) : 0;
             const status = getStatusClass(percentage);
-            const avgBill = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
+            const avgCheck = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
 
             return `
                 <div class="col-md-4">
@@ -638,7 +644,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted">Средний чек</small>
-                                    <div>${fmt.format(avgBill.toFixed(0))} ₽</div>
+                                    <div>${fmt.format(avgCheck.toFixed(0))} ₽</div>
                                 </div>
                                 <div>
                                     <small class="text-muted">План</small>
@@ -719,13 +725,11 @@
             let cafeData = [];
             let type = 'line';
             let timeUnit = 'day';
-            let stacked = false;
 
             if (days > 31) {
                 // По месяцам
                 type = 'bar';
                 timeUnit = 'month';
-                stacked = true;
                 const monthlyData = { revenue: {}, delivery: {}, pickup: {}, cafe: {} };
                 validData.forEach(dayData => {
                     if (dayData) {
@@ -792,7 +796,6 @@
                     },
                     options: {
                         responsive: true,
-                        stacked: stacked,
                         plugins: {
                             legend: {
                                 display: true,
@@ -808,7 +811,6 @@
                         },
                         scales: {
                             y: {
-                                stacked: stacked,
                                 beginAtZero: true,
                                 ticks: {
                                     callback: function(value) {
@@ -821,7 +823,6 @@
                                 }
                             },
                             x: {
-                                stacked: stacked,
                                 ticks: {
                                     color: textColor
                                 },
@@ -1086,7 +1087,7 @@
             doc.text('Чи-Фань - Отчет по выручке', 20, 20);
             
             doc.setFontSize(10);
-            doc.text(`Период: ${data.date}`, 20, 30);
+            doc.text(`Период: ${currentStartDate} - ${currentEndDate}`, 20, 30);
             doc.text(`Время обновления: ${data.time}`, 20, 35);
             
             let y = 45;
@@ -1143,9 +1144,10 @@
             }
             
             // Установка дат по умолчанию
-            const todayStr = getTodayDateString();
-            document.getElementById('start-date').value = todayStr;
-            document.getElementById('end-date').value = todayStr;
+            const businessDay = getCurrentBusinessDay();
+            const businessDayStr = formatDateForInput(businessDay);
+            document.getElementById('start-date').value = businessDayStr;
+            document.getElementById('end-date').value = businessDayStr;
             
             // Активная кнопка "Сегодня"
             document.querySelector('.btn-list .btn').classList.add('btn-primary');
@@ -1154,14 +1156,15 @@
             updateBusinessDayInfo();
             
             // Загрузка данных
-            load(todayStr, todayStr);
+            load(businessDayStr, businessDayStr);
             
             // Запуск автообновления
             setupAutoRefresh();
         }
 
         function updateBusinessDayInfo() {
-            const businessDayDate = getTodayDateString();
+            const businessDay = getCurrentBusinessDay();
+            const businessDayDate = formatDateForInput(businessDay);
             document.getElementById('business-day-date').textContent = businessDayDate;
         }
 
