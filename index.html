@@ -4,741 +4,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Чи-Фань — Аналитика выручки</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root {
-            --primary-color: #1a237e;
-            --secondary-color: #283593;
-            --success-color: #00c853;
-            --warning-color: #ff9800;
-            --danger-color: #f44336;
-            --info-color: #2196f3;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --border-color: #dee2e6;
-            --shadow: 0 2px 4px rgba(0,0,0,0.1);
-            --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
-            --accent-color: #1a237e;
-            --border-radius: 6px;
-            --font-size-base: 0.9rem;
-            --padding-base: 12px;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-primary: #e0e0e0;
-            --text-secondary: #9e9e9e;
-            --border-color: #333333;
-            --shadow: 0 2px 4px rgba(0,0,0,0.3);
-            --shadow-hover: 0 4px 8px rgba(0,0,0,0.4);
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: var(--bg-color);
-            color: var(--text-primary);
-            line-height: 1.4;
-            transition: background 0.3s ease, color 0.3s ease;
-            font-size: var(--font-size-base);
+            background-color: var(--tblr-bg);
+            color: var(--tblr-body-color);
         }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 10px;
+        .card {
+            box-shadow: var(--tblr-shadow-card);
         }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        h1 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.6rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .theme-toggle {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-        }
-
-        .theme-toggle:hover {
-            background: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .info-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-size: 0.85rem;
-        }
-
-        .date-range-selector {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding: 8px;
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        .date-range-selector label {
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .date-range-selector input, 
-        .date-range-selector button,
-        .data-selector {
-            padding: 6px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            font-size: 0.85rem;
-        }
-
-        .date-range-selector button {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .date-range-selector button:hover {
-            background: var(--secondary-color);
-        }
-
-        .quick-periods {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .period-btn {
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-        }
-
-        .period-btn:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .period-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .metric-card {
-            background: var(--card-bg);
-            padding: var(--padding-base);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-left: 3px solid var(--accent-color);
-        }
-
-        .metric-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .metric-icon {
-            font-size: 1.4rem;
-            color: var(--accent-color);
-            margin-bottom: 6px;
-        }
-
         .metric-value {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: bold;
         }
-
         .metric-label {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin-bottom: 6px;
+            font-size: 0.875rem;
+            color: var(--tblr-muted);
         }
-
         .metric-breakdown {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .metric-change {
             font-size: 0.75rem;
-            padding: 3px 6px;
-            border-radius: 3px;
-            display: inline-block;
+            color: var(--tblr-muted);
         }
-
-        .metric-change.positive {
-            background: rgba(0, 200, 83, 0.1);
-            color: var(--success-color);
-        }
-
-        .metric-change.negative {
-            background: rgba(244, 67, 54, 0.1);
-            color: var(--danger-color);
-        }
-
-        .progress-container {
-            background: var(--card-bg);
-            padding: var(--padding-base);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 15px;
-        }
-
-        .progress-header {
+        .orders-breakdown {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 0.85rem;
+            justify-content: space-around;
+            margin-top: 10px;
         }
-
-        .progress-bar {
-            height: 16px;
-            background: var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 6px;
+        .order-type {
+            text-align: center;
+            padding: 5px 10px;
+            border-radius: 4px;
         }
-
-        .progress-fill {
-            height: 100%;
-            transition: width 1s ease;
-            border-radius: 8px;
+        .order-type.delivery { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .order-type.pickup { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .order-type.cafe { background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
         }
-
-        .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
-        .progress-fill.warn { background: linear-gradient(90deg, var(--warning-color), #d97706); }
-        .progress-fill.bad { background: linear-gradient(90deg, var(--danger-color), #dc2626); }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
+        .status-good { background-color: rgba(0, 200, 83, 0.1); color: var(--tblr-success); }
+        .status-warn { background-color: rgba(255, 152, 0, 0.1); color: var(--tblr-warning); }
+        .status-bad { background-color: rgba(244, 67, 54, 0.1); color: var(--tblr-danger); }
         .chart-container {
-            background: var(--card-bg);
-            padding: var(--padding-base);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            height: 300px;
         }
-
-        .chart-title {
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .venues-section {
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 10px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .venues-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 10px;
-        }
-
-        .venue-card {
-            background: var(--card-bg);
-            padding: var(--padding-base);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-top: 2px solid var(--accent-color);
-        }
-
-        .venue-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .venue-header {
+        .venue-card .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
         }
-
-        .venue-name {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .venue-details-btn {
-            background: none;
-            border: none;
-            color: var(--accent-color);
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
         .venue-metrics {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-
-        .venue-metric {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .venue-metric-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 2px;
-        }
-
-        .venue-metric-value {
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-        }
-
-        .orders-breakdown {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .order-type {
-            text-align: center;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
-        .order-type.pickup { background: rgba(245, 158, 11, 0.1); }
-        .order-type.cafe { background: rgba(139, 92, 246, 0.1); }
-
-        .order-type-value {
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 2px;
-        }
-
-        .order-type-label {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-        }
-
-        .export-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .export-btn {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.85rem;
-        }
-
-        .export-btn:hover {
-            background: var(--secondary-color);
-        }
-
-        .toast {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: var(--success-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: var(--border-radius);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-            font-size: 0.85rem;
-        }
-
-        .toast.show {
-            opacity: 1;
-        }
-
-        .error-msg {
-            color: var(--danger-color);
-            text-align: center;
-            padding: 8px;
-            background: rgba(244, 67, 54, 0.1);
-            border-radius: var(--border-radius);
-            margin: 8px 0;
-            border: 1px solid rgba(244, 67, 54, 0.2);
-            font-size: 0.85rem;
-        }
-
-        .data-source-info {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            margin-top: 4px;
-            font-style: italic;
-        }
-
-        .auto-refresh-info {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .comparison-selector {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
-        }
-
-        .comparison-option {
-            padding: 6px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .comparison-option.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        /* Новый раздел: Summary Tables */
-        .summary-tables {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 10px;
-            margin-bottom: 15px;
         }
-
-        .summary-table-container {
-            background: var(--card-bg);
-            padding: var(--padding-base);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            overflow-x: auto;
-        }
-
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-            text-align: right;
-        }
-
-        .summary-table th, .summary-table td {
-            padding: 4px 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .summary-table th {
-            background: var(--accent-color);
-            color: white;
-            text-align: left;
-        }
-
-        .summary-table td:first-child {
-            text-align: left;
-            font-weight: 500;
-        }
-
-        .summary-table .sub-row td:first-child {
-            padding-left: 15px;
-        }
-
-        .summary-table .total-row {
-            font-weight: 600;
-            background: rgba(0,0,0,0.05);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 8px;
-            }
-            
-            .date-range-selector {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .quick-periods {
-                justify-content: center;
-            }
-            
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .venues-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .summary-tables {
-                grid-template-columns: 1fr;
-            }
-            
-            .summary-table {
-                font-size: 0.75rem;
-            }
-        }
-
-        @media (min-width: 1920px) {  /* Для ТВ/больших экранов */
-            :root {
-                --font-size-base: 1.1rem;
-                --padding-base: 16px;
-            }
-            
-            h1 {
-                font-size: 2.2rem;
-            }
-            
-            .metric-value {
-                font-size: 2rem;
-            }
-            
-            .venue-name {
-                font-size: 1.3rem;
-            }
-            
-            .summary-table {
-                font-size: 1rem;
-            }
-        }
-
         .fade-in {
             animation: fadeIn 0.5s ease;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .status-badge {
-            padding: 3px 6px;
-            border-radius: 3px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .status-good {
-            background: rgba(0, 200, 83, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-warn {
-            background: rgba(255, 152, 0, 0.1);
-            color: var(--warning-color);
-        }
-
-        .status-bad {
-            background: rgba(244, 67, 54, 0.1);
-            color: var(--danger-color);
-        }
     </style>
 </head>
-<body data-theme="dark">
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-chart-line"></i> Чи-Фань — Аналитика выручки</h1>
-            <button class="theme-toggle" onclick="toggleTheme()">
-                <i class="fas fa-moon"></i> Тема
-            </button>
-        </header>
-
-        <div class="info-panel">
-            <div id="last-update">
-                <i class="fas fa-clock"></i> Загрузка данных...
+<body class="theme-dark">
+    <div class="page">
+        <div class="page-wrapper">
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                    <div class="row g-2 align-items-center">
+                        <div class="col">
+                            <h2 class="page-title">
+                                <i class="ti ti-chart-line me-2"></i> Чи-Фань — Аналитика выручки
+                            </h2>
+                        </div>
+                        <div class="col-auto ms-auto d-print-none">
+                            <button class="btn btn-ghost-secondary" onclick="toggleTheme()">
+                                <i class="ti ti-moon"></i> Тема
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="business-day-info">
-                <i class="fas fa-calendar-day"></i> Бизнес-день: <span id="business-day-date"></span>
+
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="ti ti-clock me-2 text-muted"></i>
+                                        <span id="last-update">Загрузка данных...</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="ti ti-calendar me-2 text-muted"></i>
+                                        <span id="business-day-info">Бизнес-день: <span id="business-day-date"></span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">С:</span>
+                                        <input type="date" class="form-control" id="start-date">
+                                        <span class="input-group-text">По:</span>
+                                        <input type="date" class="form-control" id="end-date">
+                                        <button class="btn btn-primary" onclick="loadCustomData()">
+                                            <i class="ti ti-download me-2"></i> Загрузить
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="btn-list">
+                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('today')">Сегодня</button>
+                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('yesterday')">Вчера</button>
+                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('thisWeek')">Неделя</button>
+                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('thisMonth')">Месяц</button>
+                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-cards mb-3" id="metrics"></div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Прогресс по плану</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Факт: <span id="current-value">0 ₽</span></span>
+                                <span>План: <span id="plan-value">0 ₽</span></span>
+                            </div>
+                            <div class="progress progress-sm mb-2">
+                                <div id="plan-bar" class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <div id="progress-text" class="text-center">0%</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Выручка по филиалам</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="revenueChart" class="chart-container"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Типы заказов</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="ordersChart" class="chart-container" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="ti ti-building me-2"></i> Круглогодичные филиалы</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cards" id="year-round"></div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="ti ti-leaf me-2"></i> Сезонные филиалы</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row row-cards" id="seasonal"></div>
+                        </div>
+                    </div>
+
+                    <div class="btn-list">
+                        <button class="btn btn-primary" onclick="exportPDF('all')">
+                            <i class="ti ti-file-text me-2"></i> Экспорт PDF (Все)
+                        </button>
+                        <button class="btn btn-ghost-primary" onclick="exportPDF('year-round')">
+                            <i class="ti ti-file-text me-2"></i> PDF Круглогодичные
+                        </button>
+                        <button class="btn btn-ghost-primary" onclick="exportPDF('seasonal')">
+                            <i class="ti ti-file-text me-2"></i> PDF Сезонные
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="date-range-selector">
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <label for="start-date">С:</label>
-                <input type="date" id="start-date">
-                <label for="end-date">По:</label>
-                <input type="date" id="end-date">
-                <button onclick="loadCustomData()">
-                    <i class="fas fa-download"></i> Загрузить
-                </button>
-            </div>
-            
-            <div class="quick-periods">
-                <button class="period-btn" onclick="setPeriod('today')">Сегодня</button>
-                <button class="period-btn" onclick="setPeriod('yesterday')">Вчера</button>
-                <button class="period-btn" onclick="setPeriod('thisWeek')">Неделя</button>
-                <button class="period-btn" onclick="setPeriod('thisMonth')">Месяц</button>
-                <button class="period-btn" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
-            </div>
-        </div>
-
-        <div class="comparison-selector">
-            <span>Сравнение:</span>
-            <div class="comparison-option active" onclick="setComparisonType('none')">Нет</div>
-            <div class="comparison-option" onclick="setComparisonType('previous_period')">С предыдущим периодом</div>
-            <div class="comparison-option" onclick="setComparisonType('previous_year')">С прошлым годом</div>
-        </div>
-
-        <div class="metrics-grid" id="metrics"></div>
-
-        <div class="progress-container">
-            <h3><i class="fas fa-chart-line"></i> Прогресс по плану</h3>
-            <div class="progress-header">
-                <span>Факт: <span id="current-value">0 ₽</span></span>
-                <span>План: <span id="plan-value">0 ₽</span></span>
-            </div>
-            <div class="progress-bar">
-                <div id="plan-bar" class="progress-fill"></div>
-            </div>
-            <div id="progress-text" class="progress-text">0%</div>
-        </div>
-
-        <div class="charts-grid">
-            <div class="chart-container">
-                <div class="chart-title">Выручка по филиалам</div>
-                <canvas id="revenueChart"></canvas>
-            </div>
-            <div class="chart-container" style="max-width: 300px; margin: 0 auto;">
-                <div class="chart-title">Типы заказов</div>
-                <canvas id="ordersChart" height="150"></canvas>
-            </div>
-        </div>
-
-        <div class="venues-section">
-            <h3 class="section-title"><i class="fas fa-building"></i> Круглогодичные филиалы</h3>
-            <div class="venues-grid" id="year-round"></div>
-        </div>
-
-        <div class="venues-section">
-            <h3 class="section-title"><i class="fas fa-leaf"></i> Сезонные филиалы</h3>
-            <div class="venues-grid" id="seasonal"></div>
-        </div>
-
-        <div class="export-buttons">
-            <button class="export-btn" onclick="exportPDF('all')">
-                <i class="fas fa-file-pdf"></i> Экспорт PDF (Все)
-            </button>
-            <button class="export-btn" onclick="exportPDF('year-round')">
-                <i class="fas fa-file-pdf"></i> PDF Круглогодичные
-            </button>
-            <button class="export-btn" onclick="exportPDF('seasonal')">
-                <i class="fas fa-file-pdf"></i> PDF Сезонные
-            </button>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body"></div>
+        </div>
+    </div>
 
     <script>
         let revenueChart, ordersChart;
@@ -758,17 +237,20 @@
 
         function toggleTheme() {
             const body = document.body;
-            const isDark = body.dataset.theme === 'dark';
-            body.dataset.theme = isDark ? 'light' : 'dark';
-            localStorage.setItem('theme', body.dataset.theme);
+            body.classList.toggle('theme-dark');
+            body.classList.toggle('theme-light');
+            localStorage.setItem('theme', body.classList.contains('theme-dark') ? 'dark' : 'light');
             updateChartThemes();
         }
 
         function updateChartThemes() {
-            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
+            const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
             if (revenueChart) {
                 revenueChart.options.scales.y.ticks.color = textColor;
                 revenueChart.options.scales.x.ticks.color = textColor;
+                revenueChart.options.scales.y.grid.color = gridColor;
+                revenueChart.options.scales.x.grid.color = gridColor;
                 revenueChart.update();
             }
             if (ordersChart) {
@@ -779,10 +261,10 @@
 
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? 'var(--danger-color)' : 'var(--success-color)';
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            toast.querySelector('.toast-body').textContent = message;
+            toast.classList.add('bg-' + (type === 'error' ? 'danger' : 'success'));
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
         }
 
         function getTodayDateString() {
@@ -830,7 +312,7 @@
             document.getElementById('start-date').value = startStr;
             document.getElementById('end-date').value = endStr;
             
-            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.btn-ghost-secondary').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
             load(startStr, endStr);
@@ -839,7 +321,7 @@
         function setComparisonType(type) {
             document.querySelectorAll('.comparison-option').forEach(opt => opt.classList.remove('active'));
             event.target.classList.add('active');
-            // Здесь можно добавить логику сравнения, но для простоты пропустим
+            // Здесь можно добавить логику сравнения
         }
 
         function getDatesBetween(startDate, endDate) {
@@ -940,9 +422,9 @@
         }
 
         function getStatusClass(percentage) {
-            if (percentage >= 100) return 'good';
-            if (percentage >= 80) return 'warn';
-            return 'bad';
+            if (percentage >= 100) return 'status-success';
+            if (percentage >= 80) return 'status-warning';
+            return 'status-danger';
         }
 
         function renderMetrics(data) {
@@ -954,52 +436,75 @@
             const avgBillSeasonal = data.seasonal_total.orders > 0 ? data.seasonal_total.revenue / data.seasonal_total.orders : 0;
 
             document.getElementById('metrics').innerHTML = `
-                <div class="metric-card fade-in">
-                    <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
-                    <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
-                    <div class="metric-label">Выручка</div>
-                    <div class="metric-breakdown">
-                        Круглогодичные: ${fmt.format(data.year_round_total.revenue.toFixed(0))} ₽<br>
-                        Сезонные: ${fmt.format(data.seasonal_total.revenue.toFixed(0))} ₽
-                    </div>
-                </div>
-                <div class="metric-card fade-in">
-                    <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
-                    <div class="metric-value">${total.total_orders || 0}</div>
-                    <div class="metric-label">Заказы</div>
-                    <div class="metric-breakdown">
-                        Круглогодичные: ${data.year_round_total.orders}<br>
-                        Сезонные: ${data.seasonal_total.orders}
-                    </div>
-                    <div class="orders-breakdown">
-                        <div class="order-type delivery">
-                            <div class="order-type-value">${total.total_delivery_orders || 0}</div>
-                            <div class="order-type-label">Доставка</div>
-                        </div>
-                        <div class="order-type pickup">
-                            <div class="order-type-value">${total.total_pickup_orders || 0}</div>
-                            <div class="order-type-label">Самовывоз</div>
-                        </div>
-                        <div class="order-type cafe">
-                            <div class="order-type-value">${total.total_cafe_orders || 0}</div>
-                            <div class="order-type-label">Кафе</div>
+                <div class="col-md-3">
+                    <div class="card fade-in">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ti ti-currency-ruble text-primary me-2"></i>
+                                <h3 class="card-title mb-0">Выручка</h3>
+                            </div>
+                            <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
+                            <div class="metric-breakdown">
+                                Круглогодичные: ${fmt.format(data.year_round_total.revenue.toFixed(0))} ₽<br>
+                                Сезонные: ${fmt.format(data.seasonal_total.revenue.toFixed(0))} ₽
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="metric-card fade-in">
-                    <div class="metric-icon"><i class="fas fa-receipt"></i></div>
-                    <div class="metric-value">${fmt.format(avgBillTotal.toFixed(0))} ₽</div>
-                    <div class="metric-label">Средний чек</div>
-                    <div class="metric-breakdown">
-                        Круглогодичные: ${fmt.format(avgBillYear.toFixed(0))} ₽<br>
-                        Сезонные: ${fmt.format(avgBillSeasonal.toFixed(0))} ₽
+                <div class="col-md-3">
+                    <div class="card fade-in">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ti ti-shopping-cart text-primary me-2"></i>
+                                <h3 class="card-title mb-0">Заказы</h3>
+                            </div>
+                            <div class="metric-value">${total.total_orders || 0}</div>
+                            <div class="metric-breakdown">
+                                Круглогодичные: ${data.year_round_total.orders}<br>
+                                Сезонные: ${data.seasonal_total.orders}
+                            </div>
+                            <div class="orders-breakdown mt-3">
+                                <div class="badge bg-green-lt">
+                                    Доставка<br>${total.total_delivery_orders || 0}
+                                </div>
+                                <div class="badge bg-yellow-lt">
+                                    Самовывоз<br>${total.total_pickup_orders || 0}
+                                </div>
+                                <div class="badge bg-purple-lt">
+                                    Кафе<br>${total.total_cafe_orders || 0}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="metric-card fade-in">
-                    <div class="metric-icon"><i class="fas fa-percent"></i></div>
-                    <div class="metric-value ${getStatusClass(revenuePercentage)}">${revenuePercentage.toFixed(1)}%</div>
-                    <div class="metric-label">Выполнение плана</div>
-                    <div class="data-source-info">План: ${fmt.format(plan.total_revenue.toFixed(0))} ₽</div>
+                <div class="col-md-3">
+                    <div class="card fade-in">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ti ti-receipt text-primary me-2"></i>
+                                <h3 class="card-title mb-0">Средний чек</h3>
+                            </div>
+                            <div class="metric-value">${fmt.format(avgBillTotal.toFixed(0))} ₽</div>
+                            <div class="metric-breakdown">
+                                Круглогодичные: ${fmt.format(avgBillYear.toFixed(0))} ₽<br>
+                                Сезонные: ${fmt.format(avgBillSeasonal.toFixed(0))} ₽
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card fade-in">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="ti ti-percentage text-primary me-2"></i>
+                                <h3 class="card-title mb-0">Выполнение плана</h3>
+                            </div>
+                            <div class="metric-value text-${getStatusClass(revenuePercentage)}">${revenuePercentage.toFixed(1)}%</div>
+                            <div class="metric-breakdown">
+                                План: ${fmt.format(plan.total_revenue.toFixed(0))} ₽
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
             
@@ -1010,7 +515,7 @@
             const planValue = document.getElementById('plan-value');
             
             if (bar && progressText && currentValue && planValue) {
-                bar.className = `progress-fill ${getStatusClass(revenuePercentage)}`;
+                bar.classList.add('bg-' + getStatusClass(revenuePercentage));
                 bar.style.width = `${Math.min(revenuePercentage, 100)}%`;
                 progressText.textContent = `${revenuePercentage.toFixed(1)}%`;
                 currentValue.textContent = `${fmt.format(total.total_revenue.toFixed(0))} ₽`;
@@ -1035,7 +540,7 @@
             if (!container) return;
             
             if (Object.keys(venues).length === 0) {
-                container.innerHTML = '<div class="error-msg">Нет данных по филиалам</div>';
+                container.innerHTML = '<div class="empty">Нет данных по филиалам</div>';
                 return;
             }
             
@@ -1043,65 +548,52 @@
             const sortedVenues = Object.entries(venues)
                 .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
             
-            container.innerHTML = sortedVenues.map(([venue, stats]) => 
-                renderVenueCard(venue, stats, periodDays)
-            ).join('');
-        }
-
-        function renderVenueCard(venue, stats, periodDays) {
-            const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
-            const planRevenueForPeriod = dailyPlan * periodDays;
-            const percentage = planRevenueForPeriod > 0 ? 
-                (stats.total_revenue || 0) / planRevenueForPeriod * 100 : 0;
-            const statusClass = getStatusClass(percentage);
-            
-            const avgCheck = stats.total_orders > 0 ? 
-                (stats.total_revenue || 0) / stats.total_orders : 0;
-            
-            return `
-                <div class="venue-card fade-in">
-                    <div class="venue-header">
-                        <div class="venue-name">${venue}</div>
-                        <span class="status-badge status-${statusClass}">
-                            ${percentage.toFixed(1)}%
-                        </span>
-                    </div>
-                    
-                    <div class="venue-metrics">
-                        <div class="venue-metric">
-                            <div class="venue-metric-label">Выручка</div>
-                            <div class="venue-metric-value">${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</div>
+            container.innerHTML = sortedVenues.map(([venue, stats]) => `
+                <div class="col-md-4">
+                    <div class="card venue-card fade-in">
+                        <div class="card-header">
+                            <h3 class="card-title mb-0">${venue}</h3>
+                            <span class="badge bg-${getStatusClass((stats.total_revenue / (fixedDailyPlans[venue] || DAILY_NETWORK_PLAN * periodDays) * 100))} ms-2">
+                                ${((stats.total_revenue / (fixedDailyPlans[venue] || DAILY_NETWORK_PLAN * periodDays) * 100).toFixed(1)}%
+                            </span>
                         </div>
-                        <div class="venue-metric">
-                            <div class="venue-metric-label">Заказы</div>
-                            <div class="venue-metric-value">${stats.total_orders || 0}</div>
-                        </div>
-                        <div class="venue-metric">
-                            <div class="venue-metric-label">Средний чек</div>
-                            <div class="venue-metric-value">${fmt.format(avgCheck.toFixed(0))} ₽</div>
-                        </div>
-                        <div class="venue-metric">
-                            <div class="venue-metric-label">План</div>
-                            <div class="venue-metric-value">${fmt.format(planRevenueForPeriod.toFixed(0))} ₽</div>
-                        </div>
-                    </div>
-                    
-                    <div class="orders-breakdown">
-                        <div class="order-type delivery">
-                            <div class="order-type-value">${stats.delivery_orders || 0}</div>
-                            <div class="order-type-label">Доставка</div>
-                        </div>
-                        <div class="order-type pickup">
-                            <div class="order-type-value">${stats.pickup_orders || 0}</div>
-                            <div class="order-type-label">Самовывоз</div>
-                        </div>
-                        <div class="order-type cafe">
-                            <div class="order-type-value">${stats.cafe_orders || 0}</div>
-                            <div class="order-type-label">Кафе</div>
+                        <div class="card-body">
+                            <div class="venue-metrics">
+                                <div>
+                                    <small class="text-muted">Выручка</small>
+                                    <div>${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Заказы</small>
+                                    <div>${stats.total_orders || 0}</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Средний чек</small>
+                                    <div>${fmt.format((stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0).toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">План</small>
+                                    <div>${fmt.format((fixedDailyPlans[venue] || DAILY_NETWORK_PLAN * periodDays).toFixed(0))} ₽</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around mt-3">
+                                <div class="text-center">
+                                    <small class="text-muted">Доставка</small>
+                                    <div>${stats.delivery_orders || 0}</div>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted">Самовывоз</small>
+                                    <div>${stats.pickup_orders || 0}</div>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted">Кафе</small>
+                                    <div>${stats.cafe_orders || 0}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `;
+            `).join('');
         }
 
         function renderCharts(data) {
@@ -1111,7 +603,8 @@
             
             const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
             const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
-            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
+            const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
             
             // График выручки по филиалам
             if (ctxRevenue && revenueChart) {
@@ -1126,10 +619,7 @@
                         datasets: [{
                             label: 'Выручка (₽)',
                             data: revenues,
-                            backgroundColor: [
-                                '#1a237e', '#283593', '#303f9f', '#3949ab', 
-                                '#3f51b5', '#5c6bc0', '#7986cb', '#9fa8da'
-                            ],
+                            backgroundColor: 'var(--tblr-primary)',
                             borderWidth: 1
                         }]
                     },
@@ -1155,11 +645,17 @@
                                         return fmt.format(value) + ' ₽';
                                     },
                                     color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
                                 }
                             },
                             x: {
                                 ticks: {
                                     color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
                                 }
                             }
                         }
@@ -1186,9 +682,9 @@
                         datasets: [{
                             data: Object.values(orderTypes),
                             backgroundColor: [
-                                'rgba(16, 185, 129, 0.8)',
-                                'rgba(245, 158, 11, 0.8)',
-                                'rgba(139, 92, 246, 0.8)'
+                                'var(--tblr-green)',
+                                'var(--tblr-yellow)',
+                                'var(--tblr-purple)'
                             ],
                             borderWidth: 1
                         }]
@@ -1199,7 +695,9 @@
                             legend: {
                                 position: 'bottom',
                                 labels: {
-                                    color: textColor
+                                    color: textColor,
+                                    padding: 10,
+                                    boxWidth: 12
                                 }
                             },
                             tooltip: {
@@ -1211,7 +709,8 @@
                                     }
                                 }
                             }
-                        }
+                        },
+                        cutout: '60%'
                     }
                 });
             }
@@ -1245,7 +744,7 @@
         async function load(startDateStr, endDateStr) {
             const updateEl = document.getElementById('last-update');
             if (updateEl) {
-                updateEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+                updateEl.innerHTML = '<i class="ti ti-refresh ti-spin"></i> Загрузка...';
             }
             
             currentStartDate = startDateStr;
@@ -1282,7 +781,7 @@
                 }
                 
                 if (updateEl) {
-                    updateEl.innerHTML = `<i class="fas fa-check-circle"></i> Обновлено: ${data.time} (${dateDisplay})`;
+                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${data.time} (${dateDisplay})`;
                 }
                 
                 renderMetrics(data);
@@ -1293,18 +792,18 @@
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
                 if (updateEl) {
-                    updateEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ошибка загрузки';
+                    updateEl.innerHTML = '<i class="ti ti-alert-triangle"></i> Ошибка загрузки';
                 }
                 
-                document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик: ' + error.message + '</div>';
-                document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки данных по круглогодичным филиалам</div>';
-                document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки данных по сезонным филиалам</div>';
+                document.getElementById('metrics').innerHTML = '<div class="alert alert-danger">Ошибка загрузки метрик: ' + error.message + '</div>';
+                document.getElementById('year-round').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по круглогодичным филиалам</div>';
+                document.getElementById('seasonal').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по сезонным филиалам</div>';
                 
                 showToast('Ошибка загрузки данных: ' + error.message, 'error');
             } finally {
                 // Анимация появления элементов
                 setTimeout(() => {
-                    document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
+                    document.querySelectorAll('.card').forEach((el, index) => {
                         setTimeout(() => el.classList.add('fade-in'), index * 50);
                     });
                 }, 100);
@@ -1398,7 +897,9 @@
         function init() {
             // Установка темы
             if (localStorage.getItem('theme') === 'dark') {
-                toggleTheme();
+                document.body.classList.add('theme-dark');
+            } else {
+                document.body.classList.add('theme-light');
             }
             
             // Установка дат по умолчанию
@@ -1407,7 +908,7 @@
             document.getElementById('end-date').value = todayStr;
             
             // Активная кнопка "Сегодня"
-            document.querySelector('.period-btn').classList.add('active');
+            document.querySelector('.btn-ghost-secondary').classList.add('active');
             
             // Обновление информации о бизнес-дне
             updateBusinessDayInfo();
