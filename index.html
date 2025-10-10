@@ -221,6 +221,11 @@
             margin-bottom: 6px;
         }
 
+        .metric-breakdown {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
         .metric-change {
             font-size: 0.75rem;
             padding: 3px 6px;
@@ -640,7 +645,7 @@
         }
     </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
     <div class="container">
         <header>
             <h1><i class="fas fa-chart-line"></i> Чи-Фань — Аналитика выручки</h1>
@@ -704,25 +709,9 @@
                 <div class="chart-title">Выручка по филиалам</div>
                 <canvas id="revenueChart"></canvas>
             </div>
-            <div class="chart-container">
+            <div class="chart-container" style="max-width: 300px; margin: 0 auto;">
                 <div class="chart-title">Типы заказов</div>
-                <canvas id="ordersChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Новый раздел: Summary Tables -->
-        <div class="summary-tables">
-            <div class="summary-table-container">
-                <h3 class="section-title"><i class="fas fa-table"></i> Круглогодичные</h3>
-                <table class="summary-table" id="year-round-summary"></table>
-            </div>
-            <div class="summary-table-container">
-                <h3 class="section-title"><i class="fas fa-table"></i> Сезонные</h3>
-                <table class="summary-table" id="seasonal-summary"></table>
-            </div>
-            <div class="summary-table-container">
-                <h3 class="section-title"><i class="fas fa-table"></i> Общее</h3>
-                <table class="summary-table" id="total-summary"></table>
+                <canvas id="ordersChart" height="150"></canvas>
             </div>
         </div>
 
@@ -899,6 +888,16 @@
             aggregated.total.total_pickup_revenue = Object.values(allVenues).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0);
             aggregated.total.total_cafe_revenue = Object.values(allVenues).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0);
 
+            // Aggregate for year_round and seasonal totals
+            aggregated.year_round_total = {
+                orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + v.total_orders, 0),
+                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + v.total_revenue, 0)
+            };
+            aggregated.seasonal_total = {
+                orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + v.total_orders, 0),
+                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + v.total_revenue, 0)
+            };
+
             // Scale plan for period days
             const days = dailyDataArray.length;
             aggregated.plan.total_revenue *= days;
@@ -950,18 +949,28 @@
             const total = data.total || {};
             const plan = data.plan || {};
             const revenuePercentage = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
-            const avgBill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+            const avgBillTotal = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+            const avgBillYear = data.year_round_total.orders > 0 ? data.year_round_total.revenue / data.year_round_total.orders : 0;
+            const avgBillSeasonal = data.seasonal_total.orders > 0 ? data.seasonal_total.revenue / data.seasonal_total.orders : 0;
 
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
                     <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
                     <div class="metric-label">Выручка</div>
+                    <div class="metric-breakdown">
+                        Круглогодичные: ${fmt.format(data.year_round_total.revenue.toFixed(0))} ₽<br>
+                        Сезонные: ${fmt.format(data.seasonal_total.revenue.toFixed(0))} ₽
+                    </div>
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
                     <div class="metric-value">${total.total_orders || 0}</div>
                     <div class="metric-label">Заказы</div>
+                    <div class="metric-breakdown">
+                        Круглогодичные: ${data.year_round_total.orders}<br>
+                        Сезонные: ${data.seasonal_total.orders}
+                    </div>
                     <div class="orders-breakdown">
                         <div class="order-type delivery">
                             <div class="order-type-value">${total.total_delivery_orders || 0}</div>
@@ -979,8 +988,12 @@
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-receipt"></i></div>
-                    <div class="metric-value">${fmt.format(avgBill.toFixed(0))} ₽</div>
+                    <div class="metric-value">${fmt.format(avgBillTotal.toFixed(0))} ₽</div>
                     <div class="metric-label">Средний чек</div>
+                    <div class="metric-breakdown">
+                        Круглогодичные: ${fmt.format(avgBillYear.toFixed(0))} ₽<br>
+                        Сезонные: ${fmt.format(avgBillSeasonal.toFixed(0))} ₽
+                    </div>
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-percent"></i></div>
@@ -1012,94 +1025,6 @@
                     origin: { y: 0.6 }
                 });
             }
-        }
-
-        function renderSummaryTable(data, type) {
-            let venues, totalOrders = 0, totalRevenue = 0, cafeOrders = 0, cafeRevenue = 0,
-                pickupOrders = 0, pickupRevenue = 0, deliveryOrders = 0, deliveryRevenue = 0;
-            
-            if (type === 'year_round') {
-                venues = data.year_round || {};
-            } else if (type === 'seasonal') {
-                venues = data.seasonal || {};
-            } else {  // total
-                venues = { ...data.year_round, ...data.seasonal };
-            }
-            
-            let html = `
-                <thead>
-                    <tr>
-                        <th>Филиал</th>
-                        <th>Кол</th>
-                        <th>Выручка</th>
-                    </tr>
-                </thead>
-                <tbody>
-            `;
-            
-            const sortedVenues = Object.entries(venues)
-                .sort((a, b) => b[1].total_revenue - a[1].total_revenue);
-            
-            sortedVenues.forEach(([venue, stats]) => {
-                html += `
-                    <tr>
-                        <td>${venue}</td>
-                        <td>${stats.total_orders}</td>
-                        <td>${fmt.format(stats.total_revenue.toFixed(0))}</td>
-                    </tr>
-                    <tr class="sub-row">
-                        <td>Кафе</td>
-                        <td>${stats.cafe_orders}</td>
-                        <td>${fmt.format(stats.cafe_revenue.toFixed(0))}</td>
-                    </tr>
-                    <tr class="sub-row">
-                        <td>Самовывоз</td>
-                        <td>${stats.pickup_orders}</td>
-                        <td>${fmt.format(stats.pickup_revenue.toFixed(0))}</td>
-                    </tr>
-                    <tr class="sub-row">
-                        <td>Доставка</td>
-                        <td>${stats.delivery_orders}</td>
-                        <td>${fmt.format(stats.delivery_revenue.toFixed(0))}</td>
-                    </tr>
-                `;
-                
-                totalOrders += stats.total_orders;
-                totalRevenue += stats.total_revenue;
-                cafeOrders += stats.cafe_orders;
-                cafeRevenue += stats.cafe_revenue;
-                pickupOrders += stats.pickup_orders;
-                pickupRevenue += stats.pickup_revenue;
-                deliveryOrders += stats.delivery_orders;
-                deliveryRevenue += stats.delivery_revenue;
-            });
-            
-            html += `
-                <tr class="total-row">
-                    <td>Итого</td>
-                    <td>${totalOrders}</td>
-                    <td>${fmt.format(totalRevenue.toFixed(0))}</td>
-                </tr>
-                <tr class="sub-row total-row">
-                    <td>Кафе</td>
-                    <td>${cafeOrders}</td>
-                    <td>${fmt.format(cafeRevenue.toFixed(0))}</td>
-                </tr>
-                <tr class="sub-row total-row">
-                    <td>Самовывоз</td>
-                    <td>${pickupOrders}</td>
-                    <td>${fmt.format(pickupRevenue.toFixed(0))}</td>
-                </tr>
-                <tr class="sub-row total-row">
-                    <td>Доставка</td>
-                    <td>${deliveryOrders}</td>
-                    <td>${fmt.format(deliveryRevenue.toFixed(0))}</td>
-                </tr>
-            </tbody>`;
-            
-            const tableId = type === 'year_round' ? 'year-round-summary' :
-                            type === 'seasonal' ? 'seasonal-summary' : 'total-summary';
-            document.getElementById(tableId).innerHTML = html;
         }
 
         function renderVenues(data, containerId) {
@@ -1361,9 +1286,6 @@
                 }
                 
                 renderMetrics(data);
-                renderSummaryTable(data, 'year_round');
-                renderSummaryTable(data, 'seasonal');
-                renderSummaryTable(data, 'total');
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
                 renderCharts(data);
@@ -1377,15 +1299,12 @@
                 document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик: ' + error.message + '</div>';
                 document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки данных по круглогодичным филиалам</div>';
                 document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки данных по сезонным филиалам</div>';
-                document.getElementById('year-round-summary').innerHTML = '<div class="error-msg">Ошибка загрузки таблицы</div>';
-                document.getElementById('seasonal-summary').innerHTML = '<div class="error-msg">Ошибка загрузки таблицы</div>';
-                document.getElementById('total-summary').innerHTML = '<div class="error-msg">Ошибка загрузки таблицы</div>';
                 
                 showToast('Ошибка загрузки данных: ' + error.message, 'error');
             } finally {
                 // Анимация появления элементов
                 setTimeout(() => {
-                    document.querySelectorAll('.metric-card, .venue-card, .summary-table-container').forEach((el, index) => {
+                    document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
                         setTimeout(() => el.classList.add('fade-in'), index * 50);
                     });
                 }, 100);
