@@ -11,10 +11,35 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        body {
+            background-color: #f0f4f8; /* Светлый фон */
+            transition: background-color 0.3s ease;
+        }
+        body.theme-dark {
+            background-color: #0f172a; /* Темный фон */
+        }
+        .card {
+            background-color: #ffffff; /* Светлые карточки */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        body.theme-dark .card {
+            background-color: #1e293b; /* Темные карточки */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
         .metric-value {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--tblr-primary);
+            animation: fadeInValue 1s ease;
+        }
+        @keyframes fadeInValue {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
         .metric-label {
             font-size: 0.875rem;
@@ -28,11 +53,20 @@
             display: flex;
             justify-content: space-around;
             margin-top: 10px;
+            animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .order-type {
             text-align: center;
             padding: 5px 10px;
             border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+        .order-type:hover {
+            transform: scale(1.05);
         }
         .order-type.delivery { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
         .order-type.pickup { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
@@ -44,6 +78,7 @@
         }
         .chart-container {
             height: 300px;
+            animation: fadeIn 0.5s ease;
         }
         .venue-card .card-header {
             display: flex;
@@ -358,14 +393,11 @@
             const aggregated = {
                 year_round: {},
                 seasonal: {},
-                total: { total_orders: 0, total_revenue: 0 },
+                total: { total_orders: 0, total_revenue: 0, total_delivery_revenue: 0, total_pickup_revenue: 0, total_cafe_revenue: 0 },
                 plan: { total_revenue: 0, total_orders: 0 },
                 date: dailyDataArray[0]?.date || '',
                 time: dailyDataArray[dailyDataArray.length - 1]?.time || ''
             };
-
-            let planPerDay = 0;
-            let planCount = 0;
 
             dailyDataArray.forEach(dayData => {
                 if (dayData) {
@@ -382,14 +414,15 @@
                     });
                     aggregated.total.total_orders += dayData.total.total_orders || 0;
                     aggregated.total.total_revenue += dayData.total.total_revenue || 0;
-                    
-                    planPerDay += dayData.plan.total_revenue || 0;
-                    planCount++;
+                    aggregated.total.total_delivery_revenue += dayData.total.total_delivery_revenue || 0;
+                    aggregated.total.total_pickup_revenue += dayData.total.total_pickup_revenue || 0;
+                    aggregated.total.total_cafe_revenue += dayData.total.total_cafe_revenue || 0;
+                    aggregated.plan.total_revenue += dayData.plan.total_revenue || 0;
+                    aggregated.plan.total_orders += dayData.plan.total_orders || 0;
                 }
             });
 
-            aggregated.plan.total_revenue = planPerDay / planCount * dailyDataArray.length; // Средний план * дни
-            aggregated.plan.total_orders = planPerDay / planCount * dailyDataArray.length; // Аналогично для заказов, если нужно
+            aggregated.plan.total_revenue = aggregated.plan.total_revenue / dailyDataArray.length * dailyDataArray.length; // Корректировка, если нужно
 
             // Aggregate breakdowns
             const allVenues = { ...aggregated.year_round, ...aggregated.seasonal };
@@ -672,7 +705,10 @@
             const validData = dailyData.filter(d => d !== null);
             const days = getDiffDays(startDate, endDate);
             let labels = [];
-            let data = [];
+            let revenueData = [];
+            let deliveryData = [];
+            let pickupData = [];
+            let cafeData = [];
             let type = 'line';
             let timeUnit = 'day';
 
@@ -680,20 +716,28 @@
                 // По месяцам
                 type = 'bar';
                 timeUnit = 'month';
-                const monthlyData = {};
+                const monthlyData = { revenue: {}, delivery: {}, pickup: {}, cafe: {} };
                 validData.forEach(dayData => {
                     if (dayData) {
                         const month = dayData.date.substring(0, 7); // YYYY-MM
-                        if (!monthlyData[month]) monthlyData[month] = 0;
-                        monthlyData[month] += dayData.total.total_revenue || 0;
+                        monthlyData.revenue[month] = (monthlyData.revenue[month] || 0) + (dayData.total.total_revenue || 0);
+                        monthlyData.delivery[month] = (monthlyData.delivery[month] || 0) + (dayData.total.total_delivery_revenue || 0);
+                        monthlyData.pickup[month] = (monthlyData.pickup[month] || 0) + (dayData.total.total_pickup_revenue || 0);
+                        monthlyData.cafe[month] = (monthlyData.cafe[month] || 0) + (dayData.total.total_cafe_revenue || 0);
                     }
                 });
-                labels = Object.keys(monthlyData).sort();
-                data = labels.map(month => monthlyData[month]);
+                labels = Object.keys(monthlyData.revenue).sort();
+                revenueData = labels.map(month => monthlyData.revenue[month]);
+                deliveryData = labels.map(month => monthlyData.delivery[month]);
+                pickupData = labels.map(month => monthlyData.pickup[month]);
+                cafeData = labels.map(month => monthlyData.cafe[month]);
             } else {
                 // По дням
                 labels = dates; // Все даты, даже если data null - 0
-                data = dailyData.map(day => day ? (day.total.total_revenue || 0) : 0);
+                revenueData = dailyData.map(day => day ? (day.total.total_revenue || 0) : 0);
+                deliveryData = dailyData.map(day => day ? (day.total.total_delivery_revenue || 0) : 0);
+                pickupData = dailyData.map(day => day ? (day.total.total_pickup_revenue || 0) : 0);
+                cafeData = dailyData.map(day => day ? (day.total.total_cafe_revenue || 0) : 0);
             }
 
             if (ctxTime) {
@@ -701,25 +745,52 @@
                     type: type,
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Выручка (₽)',
-                            data: data,
-                            backgroundColor: labels.map((_, i) => getColor(i)),
-                            borderColor: 'var(--tblr-primary)',
-                            borderWidth: 2,
-                            fill: true
-                        }]
+                        datasets: [
+                            {
+                                label: 'Выручка (₽)',
+                                data: revenueData,
+                                backgroundColor: 'var(--tblr-primary)',
+                                borderColor: 'var(--tblr-primary)',
+                                borderWidth: 2,
+                                fill: true
+                            },
+                            {
+                                label: 'Доставка',
+                                data: deliveryData,
+                                backgroundColor: '#10b981',
+                                borderColor: '#10b981',
+                                borderWidth: 2,
+                                fill: true
+                            },
+                            {
+                                label: 'Самовывоз',
+                                data: pickupData,
+                                backgroundColor: '#f59e0b',
+                                borderColor: '#f59e0b',
+                                borderWidth: 2,
+                                fill: true
+                            },
+                            {
+                                label: 'Кафе',
+                                data: cafeData,
+                                backgroundColor: '#8b5cf6',
+                                borderColor: '#8b5cf6',
+                                borderWidth: 2,
+                                fill: true
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'bottom'
                             },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return `Выручка: ${fmt.format(context.raw)} ₽`;
+                                        return `${context.dataset.label}: ${fmt.format(context.raw)} ₽`;
                                     }
                                 }
                             }
