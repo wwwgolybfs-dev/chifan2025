@@ -11,13 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root {
-            --tblr-primary: #00c853; /* Зеленый для основной палитры */
-            --tblr-primary-rgb: 0, 200, 83;
-            --tblr-success: #00a845;
-            --tblr-warning: #d97706;
-            --tblr-danger: #dc2626;
-        }
         .metric-value {
             font-size: 1.5rem;
             font-weight: bold;
@@ -50,7 +43,7 @@
             font-size: 0.75rem;
         }
         .chart-container {
-            height: 300px;
+            height: 250px;
         }
         .venue-card .card-header {
             display: flex;
@@ -60,7 +53,8 @@
         .venue-metrics {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 5px;
+            font-size: 0.85rem;
         }
         .fade-in {
             animation: fadeIn 0.5s ease;
@@ -168,23 +162,23 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Выручка по филиалам</h3>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="revenueChart" class="chart-container"></canvas>
+                                    <canvas id="revenueChart" class="chart-container" height="250"></canvas>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">Типы заказов</h3>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="ordersChart" class="chart-container" height="200"></canvas>
+                                    <canvas id="ordersChart" class="chart-container" height="250"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -385,12 +379,14 @@
             aggregated.year_round_total = {
                 orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_orders || 0), 0),
                 revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
-                delivery_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0)
+                delivery_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0)
             };
             aggregated.seasonal_total = {
                 orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_orders || 0), 0),
                 revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
-                delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0)
+                delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0)
             };
 
             return aggregated;
@@ -407,7 +403,6 @@
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     const response = await fetch(url);
                     if (!response.ok) {
-                        console.error(`Failed to fetch ${url}: ${response.status}`);
                         return null;
                     }
                     return await response.json();
@@ -562,7 +557,7 @@
                                 ${percentage.toFixed(1)}%
                             </span>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-3">
                             <div class="venue-metrics">
                                 <div>
                                     <small class="text-muted">Выручка</small>
@@ -589,7 +584,7 @@
                                     <div>${fmt.format(stats.pickup_revenue.toFixed(0))} ₽</div>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-around mt-3">
+                            <div class="d-flex justify-content-around mt-2">
                                 <div class="text-center order-type delivery">
                                     <small class="text-muted d-block">Доставка</small>
                                     <strong>${stats.delivery_orders || 0}</strong>
@@ -659,16 +654,18 @@
                 timeUnit = 'month';
                 const monthlyData = {};
                 validData.forEach(dayData => {
-                    const month = dayData.date.substring(0, 7); // YYYY-MM
-                    if (!monthlyData[month]) monthlyData[month] = 0;
-                    monthlyData[month] += dayData.total.total_revenue || 0;
+                    if (dayData) {
+                        const month = dayData.date.substring(0, 7); // YYYY-MM
+                        if (!monthlyData[month]) monthlyData[month] = 0;
+                        monthlyData[month] += dayData.total.total_revenue || 0;
+                    }
                 });
                 labels = Object.keys(monthlyData).sort();
                 data = labels.map(month => monthlyData[month]);
             } else {
                 // По дням
-                labels = validData.map(day => day.date);
-                data = validData.map(day => day.total.total_revenue || 0);
+                labels = dates; // Все даты, даже если data null - 0
+                data = dailyData.map(day => day ? (day.total.total_revenue || 0) : 0);
             }
 
             if (ctxTime) {
@@ -679,7 +676,7 @@
                         datasets: [{
                             label: 'Выручка (₽)',
                             data: data,
-                            backgroundColor: 'var(--tblr-primary)',
+                            backgroundColor: labels.map((_, i) => getColor(i)),
                             borderColor: 'var(--tblr-primary)',
                             borderWidth: 2,
                             fill: true
@@ -726,11 +723,15 @@
             }
         }
 
+        function getColor(index) {
+            const colors = ['#1a237e', '#283593', '#303f9f', '#3949ab', '#3f51b5', '#5c6bc0', '#7986cb', '#9fa8da', '#b39ddb', '#c7a4ff'];
+            return colors[index % colors.length];
+        }
+
         function renderCharts(data) {
             const allVenues = { ...data.year_round, ...data.seasonal };
             const labels = Object.keys(allVenues);
             const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
-            const colors = ['#1a237e', '#283593', '#303f9f', '#3949ab', '#3f51b5', '#5c6bc0', '#7986cb', '#9fa8da', '#b39ddb', '#c7a4ff'];
             
             const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
             const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
@@ -750,7 +751,7 @@
                         datasets: [{
                             label: 'Выручка (₽)',
                             data: revenues,
-                            backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+                            backgroundColor: labels.map((_, i) => getColor(i)),
                             borderWidth: 1
                         }]
                     },
