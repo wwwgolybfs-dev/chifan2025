@@ -133,71 +133,85 @@
                         </div>
                     </div>
 
-                    <div class="row row-cards mb-3" id="metrics"></div>
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-dashboard" role="tab">Дашборд</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-analytics" role="tab">Аналитика</button>
+                        </li>
+                    </ul>
 
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Прогресс по плану</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Факт: <span id="current-value">0 ₽</span></span>
-                                <span>План: <span id="plan-value">0 ₽</span></span>
-                            </div>
-                            <div class="progress progress-sm mb-2">
-                                <div id="plan-bar" class="progress-bar" style="width: 0%"></div>
-                            </div>
-                            <div id="progress-text" class="text-center">0%</div>
-                        </div>
-                    </div>
+                    <div class="tab-content">
+                        <div class="tab-pane active show" id="tab-dashboard" role="tabpanel">
+                            <div class="row row-cards mb-3" id="metrics"></div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-8">
-                            <div class="card">
+                            <div class="card mb-3">
                                 <div class="card-header">
-                                    <h3 class="card-title">Выручка по филиалам</h3>
+                                    <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Прогресс по плану</h3>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="revenueChart" class="chart-container"></canvas>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Факт: <span id="current-value">0 ₽</span></span>
+                                        <span>План: <span id="plan-value">0 ₽</span></span>
+                                    </div>
+                                    <div class="progress progress-sm mb-2">
+                                        <div id="plan-bar" class="progress-bar" style="width: 0%"></div>
+                                    </div>
+                                    <div id="progress-text" class="text-center">0%</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card">
+
+                            <div class="card mb-3">
                                 <div class="card-header">
-                                    <h3 class="card-title">Типы заказов</h3>
+                                    <h3 class="card-title"><i class="ti ti-building me-2"></i> Круглогодичные филиалы</h3>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="ordersChart" class="chart-container" height="200"></canvas>
+                                    <div class="row row-cards" id="year-round"></div>
+                                </div>
+                            </div>
+
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h3 class="card-title"><i class="ti ti-leaf me-2"></i> Сезонные филиалы</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row row-cards" id="seasonal"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="tab-pane" id="tab-analytics" role="tabpanel">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Выручка по времени</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="timeChart" class="chart-container"></canvas>
+                                </div>
+                            </div>
 
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Выручка по времени</h3>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="timeChart" class="chart-container"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="ti ti-building me-2"></i> Круглогодичные филиалы</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row row-cards" id="year-round"></div>
-                        </div>
-                    </div>
-
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h3 class="card-title"><i class="ti ti-leaf me-2"></i> Сезонные филиалы</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row row-cards" id="seasonal"></div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Выручка по филиалам</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="revenueChart" class="chart-container" height="250"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Типы заказов</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="ordersChart" class="chart-container" height="250"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -255,6 +269,9 @@
             }
             if (ordersChart) {
                 ordersChart.options.plugins.legend.labels.color = textColor;
+                ordersChart.options.plugins.tooltip.backgroundColor = getComputedStyle(document.body).getPropertyValue('--tblr-bg-surface').trim();
+                ordersChart.options.plugins.tooltip.titleColor = textColor;
+                ordersChart.options.plugins.tooltip.bodyColor = textColor;
                 ordersChart.update();
             }
             if (timeChart) {
@@ -337,10 +354,6 @@
             return dates;
         }
 
-        function getDaysInMonth(year, month) {
-            return new Date(year, month + 1, 0).getDate();
-        }
-
         function aggregateData(dailyDataArray) {
             const aggregated = {
                 year_round: {},
@@ -350,6 +363,9 @@
                 date: dailyDataArray[0]?.date || '',
                 time: dailyDataArray[dailyDataArray.length - 1]?.time || ''
             };
+
+            let planPerDay = 0;
+            let planCount = 0;
 
             dailyDataArray.forEach(dayData => {
                 if (dayData) {
@@ -367,15 +383,13 @@
                     aggregated.total.total_orders += dayData.total.total_orders || 0;
                     aggregated.total.total_revenue += dayData.total.total_revenue || 0;
                     
-                    // Prorate plan
-                    const [year, month] = dayData.date.split('-').slice(0,2).map(Number);
-                    const daysInMonth = getDaysInMonth(year, month - 1);
-                    const dailyPlanRevenue = (dayData.plan.total_revenue || 0) / daysInMonth;
-                    const dailyPlanOrders = (dayData.plan.total_orders || 0) / daysInMonth;
-                    aggregated.plan.total_revenue += dailyPlanRevenue;
-                    aggregated.plan.total_orders += dailyPlanOrders;
+                    planPerDay += dayData.plan.total_revenue || 0;
+                    planCount++;
                 }
             });
+
+            aggregated.plan.total_revenue = planPerDay / planCount * dailyDataArray.length; // Средний план * дни
+            aggregated.plan.total_orders = planPerDay / planCount * dailyDataArray.length; // Аналогично для заказов, если нужно
 
             // Aggregate breakdowns
             const allVenues = { ...aggregated.year_round, ...aggregated.seasonal };
@@ -568,7 +582,10 @@
                                 ${percentage.toFixed(1)}%
                             </span>
                         </div>
-                        <div class="card-body p-3">
+                        <div class="card-body">
+                            <div class="progress progress-xs mb-3">
+                                <div class="progress-bar bg-${status}" style="width: ${Math.min(percentage, 100)}%"></div>
+                            </div>
                             <div class="venue-metrics">
                                 <div>
                                     <small class="text-muted">Выручка</small>
@@ -595,7 +612,7 @@
                                     <div>${fmt.format(stats.pickup_revenue.toFixed(0))} ₽</div>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-around mt-2">
+                            <div class="d-flex justify-content-around mt-3">
                                 <div class="text-center order-type delivery">
                                     <small class="text-muted d-block">Доставка</small>
                                     <strong>${stats.delivery_orders || 0}</strong>
@@ -825,9 +842,7 @@
                         datasets: [{
                             data: Object.values(orderTypes),
                             backgroundColor: [
-                                'var(--tblr-green)',
-                                'var(--tblr-yellow)',
-                                'var(--tblr-purple)'
+                                '#10b981', '#f59e0b', '#8b5cf6'
                             ],
                             borderWidth: 1
                         }]
