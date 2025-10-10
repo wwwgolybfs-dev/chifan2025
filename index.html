@@ -14,6 +14,7 @@
         .metric-value {
             font-size: 1.5rem;
             font-weight: bold;
+            color: var(--tblr-primary);
         }
         .metric-label {
             font-size: 0.875rem;
@@ -21,7 +22,10 @@
         }
         .metric-breakdown {
             font-size: 0.75rem;
-            color: var(--tblr-muted);
+            color: var(--tblr-body-color);
+        }
+        .metric-breakdown strong {
+            color: var(--tblr-success);
         }
         .orders-breakdown {
             display: flex;
@@ -60,6 +64,9 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        .row-cards .card {
+            min-height: 200px; /* Выравнивание высоты карточек */
         }
     </style>
 </head>
@@ -147,6 +154,15 @@
                         </div>
                     </div>
 
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Выручка по времени</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="timeChart" class="chart-container"></canvas>
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-8">
                             <div class="card">
@@ -211,7 +227,7 @@
     </div>
 
     <script>
-        let revenueChart, ordersChart;
+        let revenueChart, ordersChart, timeChart;
         let currentStartDate, currentEndDate;
         let dataCache = {};
         let lastDataHash = null;
@@ -243,6 +259,13 @@
             if (ordersChart) {
                 ordersChart.options.plugins.legend.labels.color = textColor;
                 ordersChart.update();
+            }
+            if (timeChart) {
+                timeChart.options.scales.y.ticks.color = textColor;
+                timeChart.options.scales.x.ticks.color = textColor;
+                timeChart.options.scales.y.grid.color = gridColor;
+                timeChart.options.scales.x.grid.color = gridColor;
+                timeChart.update();
             }
         }
 
@@ -355,11 +378,13 @@
             // Aggregate for year_round and seasonal totals
             aggregated.year_round_total = {
                 orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_orders || 0), 0),
-                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0)
+                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0)
             };
             aggregated.seasonal_total = {
                 orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_orders || 0), 0),
-                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0)
+                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0)
             };
 
             // Scale plan for period days
@@ -428,7 +453,8 @@
                             <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
                             <div class="metric-breakdown">
                                 Круглогодичные: ${fmt.format(data.year_round_total.revenue.toFixed(0))} ₽<br>
-                                Сезонные: ${fmt.format(data.seasonal_total.revenue.toFixed(0))} ₽
+                                Сезонные: ${fmt.format(data.seasonal_total.revenue.toFixed(0))} ₽<br>
+                                Доставка: ${fmt.format(total.total_delivery_revenue.toFixed(0))} ₽
                             </div>
                         </div>
                     </div>
@@ -591,10 +617,103 @@
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
         }
 
+        function renderTimeChart(dailyDataArray) {
+            const ctxTime = document.getElementById('timeChart')?.getContext('2d');
+            const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
+            const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
+
+            if (ctxTime && timeChart) {
+                timeChart.destroy();
+            }
+
+            const days = getDiffDays(currentStartDate, currentEndDate);
+            let labels = [];
+            let data = [];
+            let type = 'line';
+            let timeUnit = 'day';
+
+            if (days > 31) {
+                // По месяцам
+                type = 'bar';
+                timeUnit = 'month';
+                const monthlyData = {};
+                dailyDataArray.forEach(dayData => {
+                    const month = dayData.date.substring(0, 7); // YYYY-MM
+                    if (!monthlyData[month]) monthlyData[month] = 0;
+                    monthlyData[month] += dayData.total.total_revenue || 0;
+                });
+                labels = Object.keys(monthlyData).sort();
+                data = labels.map(month => monthlyData[month]);
+            } else {
+                // По дням
+                labels = dailyDataArray.map(day => day.date);
+                data = dailyDataArray.map(day => day.total.total_revenue || 0);
+            }
+
+            if (ctxTime) {
+                timeChart = new Chart(ctxTime, {
+                    type: type,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Выручка (₽)',
+                            data: data,
+                            backgroundColor: 'var(--tblr-primary)',
+                            borderColor: 'var(--tblr-primary)',
+                            borderWidth: 1,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Выручка: ${fmt.format(context.raw)} ₽`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return fmt.format(value) + ' ₽';
+                                    },
+                                    color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
+                                }
+                            },
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: timeUnit
+                                },
+                                ticks: {
+                                    color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
         function renderCharts(data) {
             const allVenues = { ...data.year_round, ...data.seasonal };
             const labels = Object.keys(allVenues);
             const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
+            const colors = ['var(--tblr-blue)', 'var(--tblr-azure)', 'var(--tblr-indigo)', 'var(--tblr-purple)', 'var(--tblr-pink)', 'var(--tblr-red)', 'var(--tblr-orange)', 'var(--tblr-yellow)', 'var(--tblr-lime)', 'var(--tblr-green)', 'var(--tblr-teal)', 'var(--tblr-cyan)'];
             
             const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
             const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
@@ -614,7 +733,7 @@
                         datasets: [{
                             label: 'Выручка (₽)',
                             data: revenues,
-                            backgroundColor: 'var(--tblr-primary)',
+                            backgroundColor: labels.map((_, i) => colors[i % colors.length]),
                             borderWidth: 1
                         }]
                     },
