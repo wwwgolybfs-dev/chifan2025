@@ -1,16 +1,16 @@
 {
   "date": "2025-10-10",
-  "time": "17:40",
+  "time": "17:50",
   "year_round": {
     "Светланская": {
-      "total_orders": 37,
+      "total_orders": 38,
       "delivery_orders": 0,
       "pickup_orders": 13,
-      "cafe_orders": 24,
-      "total_revenue": 19766.0,
+      "cafe_orders": 25,
+      "total_revenue": 20135.0,
       "delivery_revenue": 0,
       "pickup_revenue": 8903.0,
-      "cafe_revenue": 10863.0
+      "cafe_revenue": 11232.0
     },
     "Парк": {
       "total_orders": 24,
@@ -23,34 +23,34 @@
       "cafe_revenue": 12375.0
     },
     "Красота": {
-      "total_orders": 61,
+      "total_orders": 62,
       "delivery_orders": 34,
       "pickup_orders": 13,
-      "cafe_orders": 14,
-      "total_revenue": 65833.0,
+      "cafe_orders": 15,
+      "total_revenue": 66842.0,
       "delivery_revenue": 51111.0,
       "pickup_revenue": 6342.0,
-      "cafe_revenue": 8380.0
+      "cafe_revenue": 9389.0
     },
     "Тобольская": {
-      "total_orders": 69,
+      "total_orders": 72,
       "delivery_orders": 10,
       "pickup_orders": 9,
-      "cafe_orders": 50,
-      "total_revenue": 50362.0,
+      "cafe_orders": 53,
+      "total_revenue": 51399.0,
       "delivery_revenue": 16752.0,
       "pickup_revenue": 5209.0,
-      "cafe_revenue": 28401.0
+      "cafe_revenue": 29438.0
     },
     "Тихая": {
-      "total_orders": 37,
+      "total_orders": 39,
       "delivery_orders": 5,
-      "pickup_orders": 8,
-      "cafe_orders": 24,
-      "total_revenue": 23274.0,
+      "pickup_orders": 9,
+      "cafe_orders": 25,
+      "total_revenue": 23982.0,
       "delivery_revenue": 6569.0,
-      "pickup_revenue": 4907.0,
-      "cafe_revenue": 11798.0
+      "pickup_revenue": 5276.0,
+      "cafe_revenue": 12137.0
     },
     "Чуркин": {
       "total_orders": 108,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 417,
-    "total_revenue": 274683.0
+    "total_orders": 424,
+    "total_revenue": 277806.0
   },
   "plan": {
     "total_revenue": 20944728.513,
