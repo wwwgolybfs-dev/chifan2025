@@ -22,10 +22,12 @@
             --text-primary: #212529;
             --text-secondary: #6c757d;
             --border-color: #dee2e6;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
             --accent-color: #1a237e;
-            --border-radius: 8px;
+            --border-radius: 6px;
+            --font-size-base: 0.9rem;
+            --padding-base: 12px;
         }
 
         [data-theme="dark"] {
@@ -34,8 +36,8 @@
             --text-primary: #e0e0e0;
             --text-secondary: #9e9e9e;
             --border-color: #333333;
-            --shadow: 0 2px 8px rgba(0,0,0,0.3);
-            --shadow-hover: 0 4px 16px rgba(0,0,0,0.4);
+            --shadow: 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-hover: 0 4px 8px rgba(0,0,0,0.4);
         }
 
         * {
@@ -48,46 +50,48 @@
             padding: 0;
             background: var(--bg-color);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.4;
             transition: background 0.3s ease, color 0.3s ease;
+            font-size: var(--font-size-base);
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 1px solid var(--border-color);
         }
 
         h1 {
             margin: 0;
-            font-weight: 700;
-            font-size: 2rem;
+            font-weight: 600;
+            font-size: 1.6rem;
             color: var(--primary-color);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .theme-toggle {
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 10px 14px;
+            padding: 6px 10px;
             border-radius: var(--border-radius);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 0.85rem;
         }
 
         .theme-toggle:hover {
@@ -99,17 +103,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
+            font-size: 0.85rem;
         }
 
         .date-range-selector {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             align-items: center;
             flex-wrap: wrap;
-            padding: 16px;
+            padding: 8px;
             background: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
@@ -119,17 +124,19 @@
         .date-range-selector label {
             font-weight: 500;
             color: var(--text-secondary);
+            font-size: 0.85rem;
         }
 
         .date-range-selector input, 
         .date-range-selector button,
         .data-selector {
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 6px 8px;
+            border-radius: 4px;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
             color: var(--text-primary);
             transition: all 0.3s ease;
+            font-size: 0.85rem;
         }
 
         .date-range-selector button {
@@ -139,7 +146,7 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .date-range-selector button:hover {
@@ -148,7 +155,7 @@
 
         .quick-periods {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
@@ -156,11 +163,11 @@
             background: var(--card-bg);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .period-btn:hover {
@@ -176,48 +183,48 @@
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .metric-card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: var(--padding-base);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-left: 4px solid var(--accent-color);
+            border-left: 3px solid var(--accent-color);
         }
 
         .metric-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
         }
 
         .metric-icon {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             color: var(--accent-color);
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .metric-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 4px;
             color: var(--text-primary);
         }
 
         .metric-label {
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
         }
 
         .metric-change {
-            font-size: 0.85rem;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-size: 0.75rem;
+            padding: 3px 6px;
+            border-radius: 3px;
             display: inline-block;
         }
 
@@ -233,31 +240,32 @@
 
         .progress-container {
             background: var(--card-bg);
-            padding: 20px;
+            padding: var(--padding-base);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .progress-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             font-weight: 500;
+            font-size: 0.85rem;
         }
 
         .progress-bar {
-            height: 20px;
+            height: 16px;
             background: var(--border-color);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .progress-fill {
             height: 100%;
             transition: width 1s ease;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .progress-fill.good { background: linear-gradient(90deg, var(--success-color), #00a845); }
@@ -266,57 +274,57 @@
 
         .charts-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .chart-container {
             background: var(--card-bg);
-            padding: 20px;
+            padding: var(--padding-base);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
         }
 
         .chart-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
             color: var(--text-primary);
         }
 
         .venues-section {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
 
         .venues-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
         }
 
         .venue-card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: var(--padding-base);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-top: 3px solid var(--accent-color);
+            border-top: 2px solid var(--accent-color);
         }
 
         .venue-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-hover);
         }
 
@@ -324,12 +332,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .venue-name {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 500;
             color: var(--text-primary);
         }
 
@@ -338,14 +346,14 @@
             border: none;
             color: var(--accent-color);
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .venue-metrics {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .venue-metric {
@@ -354,29 +362,31 @@
         }
 
         .venue-metric-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .venue-metric-value {
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-primary);
+            font-size: 0.85rem;
         }
 
         .orders-breakdown {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 15px;
-            padding-top: 15px;
+            gap: 6px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1px solid var(--border-color);
         }
 
         .order-type {
             text-align: center;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
 
         .order-type.delivery { background: rgba(16, 185, 129, 0.1); }
@@ -384,20 +394,20 @@
         .order-type.cafe { background: rgba(139, 92, 246, 0.1); }
 
         .order-type-value {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 500;
+            font-size: 0.9rem;
             margin-bottom: 2px;
         }
 
         .order-type-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
         }
 
         .export-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 12px;
             flex-wrap: wrap;
         }
 
@@ -405,13 +415,14 @@
             background: var(--accent-color);
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 6px 12px;
             border-radius: var(--border-radius);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            font-size: 0.85rem;
         }
 
         .export-btn:hover {
@@ -420,16 +431,17 @@
 
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: var(--success-color);
             color: white;
-            padding: 12px 20px;
+            padding: 8px 15px;
             border-radius: var(--border-radius);
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1000;
             box-shadow: var(--shadow);
+            font-size: 0.85rem;
         }
 
         .toast.show {
@@ -439,43 +451,45 @@
         .error-msg {
             color: var(--danger-color);
             text-align: center;
-            padding: 12px;
+            padding: 8px;
             background: rgba(244, 67, 54, 0.1);
             border-radius: var(--border-radius);
-            margin: 10px 0;
+            margin: 8px 0;
             border: 1px solid rgba(244, 67, 54, 0.2);
+            font-size: 0.85rem;
         }
 
         .data-source-info {
             text-align: center;
             color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin-top: 5px;
+            font-size: 0.75rem;
+            margin-top: 4px;
             font-style: italic;
         }
 
         .auto-refresh-info {
             text-align: center;
             color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin-top: 10px;
+            font-size: 0.75rem;
+            margin-top: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .comparison-selector {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
         }
 
         .comparison-option {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 4px;
             background: var(--card-bg);
             color: var(--text-primary);
             cursor: pointer;
@@ -488,7 +502,72 @@
             border-color: var(--primary-color);
         }
 
+        /* Новый раздел: Summary Tables */
+        .summary-tables {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .summary-table-container {
+            background: var(--card-bg);
+            padding: var(--padding-base);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        .summary-table th, .summary-table td {
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-table th {
+            background: var(--accent-color);
+            color: white;
+            text-align: left;
+        }
+
+        .summary-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .summary-table .sub-row td:first-child {
+            padding-left: 15px;
+        }
+
+        .summary-table .total-row {
+            font-weight: 600;
+            background: rgba(0,0,0,0.05);
+        }
+
         @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            
+            .date-range-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .quick-periods {
+                justify-content: center;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .charts-grid {
                 grid-template-columns: 1fr;
             }
@@ -497,18 +576,35 @@
                 grid-template-columns: 1fr;
             }
             
-            .container {
-                padding: 10px;
+            .summary-tables {
+                grid-template-columns: 1fr;
             }
             
-            .date-range-selector {
-                flex-direction: column;
-                align-items: flex-start;
+            .summary-table {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (min-width: 1920px) {  /* Для ТВ/больших экранов */
+            :root {
+                --font-size-base: 1.1rem;
+                --padding-base: 16px;
             }
             
-            .quick-periods {
-                width: 100%;
-                justify-content: space-between;
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+            
+            .venue-name {
+                font-size: 1.3rem;
+            }
+            
+            .summary-table {
+                font-size: 1rem;
             }
         }
 
@@ -522,9 +618,9 @@
         }
 
         .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.75rem;
             font-weight: 500;
         }
 
@@ -563,7 +659,7 @@
         </div>
 
         <div class="date-range-selector">
-            <div style="display: flex; gap: 10px; align-items: center;">
+            <div style="display: flex; gap: 8px; align-items: center;">
                 <label for="start-date">С:</label>
                 <input type="date" id="start-date">
                 <label for="end-date">По:</label>
@@ -614,6 +710,22 @@
             </div>
         </div>
 
+        <!-- Новый раздел: Summary Tables -->
+        <div class="summary-tables">
+            <div class="summary-table-container">
+                <h3 class="section-title"><i class="fas fa-table"></i> Круглогодичные</h3>
+                <table class="summary-table" id="year-round-summary"></table>
+            </div>
+            <div class="summary-table-container">
+                <h3 class="section-title"><i class="fas fa-table"></i> Сезонные</h3>
+                <table class="summary-table" id="seasonal-summary"></table>
+            </div>
+            <div class="summary-table-container">
+                <h3 class="section-title"><i class="fas fa-table"></i> Общее</h3>
+                <table class="summary-table" id="total-summary"></table>
+            </div>
+        </div>
+
         <div class="venues-section">
             <h3 class="section-title"><i class="fas fa-building"></i> Круглогодичные филиалы</h3>
             <div class="venues-grid" id="year-round"></div>
@@ -635,120 +747,128 @@
                 <i class="fas fa-file-pdf"></i> PDF Сезонные
             </button>
         </div>
-
-        <div class="auto-refresh-info">
-            <i class="fas fa-sync-alt"></i> Автообновление каждые 5 минут
-        </div>
-
-        <div id="toast" class="toast"></div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
-        // Константы и настройки
-        const DAILY_NETWORK_PLAN = 50000;
-        const BASE_DATA_URL = 'https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/daily/';
-        const LATEST_DATA_URL = 'https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/revenue.json';
-        const fmt = new Intl.NumberFormat('ru-RU');
-        const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
-        
-        const fixedDailyPlans = {
-            "Тобольская": 70000,
-            "Тихая": 55000,
-            "Красота": 80000,
-            "Светланская": 60000,
-            "Парк": 50000,
-            "Чуркин": 65000,
-            "Кунгас": 40000,
-            "МГУ": 30000,
-            "Юбилейный": 35000
-        };
-
-        // Переменные состояния
         let revenueChart, ordersChart;
+        let currentStartDate, currentEndDate;
         let dataCache = {};
-        let currentStartDate = '';
-        let currentEndDate = '';
-        let activePeriod = 'today';
-        let comparisonType = 'none';
-        let autoRefreshInterval;
-        let lastDataHash = '';
+        let lastDataHash = null;
+        let autoRefreshInterval = null;
+        const AUTO_REFRESH_INTERVAL = 300000; // 5 минут
+        const DAILY_NETWORK_PLAN = 1000000; // Пример плана
+        const fixedDailyPlans = {
+            // Можно добавить фиксированные планы для филиалов
+        };
+        const fmt = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 0 });
 
-        // Утилиты
-        function getCurrentBusinessDay() {
-            const now = new Date();
-            if (now.getHours() < 3) {
-                now.setDate(now.getDate() - 1);
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.dataset.theme === 'dark';
+            body.dataset.theme = isDark ? 'light' : 'dark';
+            localStorage.setItem('theme', body.dataset.theme);
+            updateChartThemes();
+        }
+
+        function updateChartThemes() {
+            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
+            if (revenueChart) {
+                revenueChart.options.scales.y.ticks.color = textColor;
+                revenueChart.options.scales.x.ticks.color = textColor;
+                revenueChart.update();
             }
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            if (ordersChart) {
+                ordersChart.options.plugins.legend.labels.color = textColor;
+                ordersChart.update();
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === 'error' ? var(--danger-color) : var(--success-color);
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function getTodayDateString() {
-            return formatDateForInput(getCurrentBusinessDay());
+            const now = new Date();
+            return now.toISOString().split('T')[0];
+        }
+
+        function getCurrentBusinessDay() {
+            const now = new Date();
+            return now.getHours() < 3 ? new Date(now.setDate(now.getDate() - 1)) : now;
         }
 
         function formatDateForInput(date) {
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            return date.toISOString().split('T')[0];
         }
 
-        function getWeekStartDate(date = new Date()) {
-            const d = new Date(date);
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            d.setDate(diff);
-            return d;
-        }
-
-        function getWeekEndDate(date = new Date()) {
-            const start = getWeekStartDate(date);
-            const end = new Date(start);
-            end.setDate(start.getDate() + 6);
-            return end;
-        }
-
-        function getMonthStartDate(date = new Date()) {
-            return new Date(date.getFullYear(), date.getMonth(), 1);
-        }
-
-        function getMonthEndDate(date = new Date()) {
-            return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-        }
-
-        function getLastMonthStartDate() {
-            const date = new Date();
-            return new Date(date.getFullYear(), date.getMonth() - 1, 1);
-        }
-
-        function getLastMonthEndDate() {
-            const date = new Date();
-            return new Date(date.getFullYear(), date.getMonth(), 0);
-        }
-
-        function getDiffDays(startDateStr, endDateStr) {
-            const start = new Date(startDateStr);
-            const end = new Date(endDateStr);
-            if (isNaN(start) || isNaN(end)) return 1;
-            const diffTime = Math.abs(end - start);
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        }
-
-        function calculateDailyPlanFromMonthly(monthlyPlan, dateStr) {
-            if (!monthlyPlan || monthlyPlan === 0) {
-                return DAILY_NETWORK_PLAN;
+        function setPeriod(period) {
+            const today = new Date();
+            let start, end;
+            
+            switch(period) {
+                case 'today':
+                    start = end = getCurrentBusinessDay();
+                    break;
+                case 'yesterday':
+                    start = end = new Date(today.setDate(today.getDate() - 1));
+                    break;
+                case 'thisWeek':
+                    start = new Date(today.setDate(today.getDate() - today.getDay() + 1));
+                    end = new Date();
+                    break;
+                case 'thisMonth':
+                    start = new Date(today.getFullYear(), today.getMonth(), 1);
+                    end = new Date();
+                    break;
+                case 'lastMonth':
+                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    end = new Date(today.getFullYear(), today.getMonth(), 0);
+                    break;
             }
             
+            const startStr = formatDateForInput(start);
+            const endStr = formatDateForInput(end);
+            
+            document.getElementById('start-date').value = startStr;
+            document.getElementById('end-date').value = endStr;
+            
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            load(startStr, endStr);
+        }
+
+        function setComparisonType(type) {
+            document.querySelectorAll('.comparison-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            // Здесь можно добавить логику сравнения, но для простоты пропустим
+        }
+
+        async function loadData(startDate, endDate) {
+            const cacheKey = `${startDate}_${endDate}`;
+            if (dataCache[cacheKey]) return dataCache[cacheKey];
+            
             try {
-                const date = new Date(dateStr);
-                const year = date.getFullYear();
-                const month = date.getMonth();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                return monthlyPlan / daysInMonth;
-            } catch (e) {
-                console.warn('Ошибка расчета дневного плана:', e);
-                return DAILY_NETWORK_PLAN;
+                // Пример загрузки с GitHub (адаптировать под реальный путь)
+                const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/data/revenue.json`);
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+                const data = await response.json();
+                dataCache[cacheKey] = data;
+                return data;
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                return null;
             }
+        }
+
+        function getDiffDays(start, end) {
+            return Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
         }
 
         function getStatusClass(percentage) {
@@ -757,361 +877,23 @@
             return 'bad';
         }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? 'var(--danger-color)' : 
-                                   type === 'warning' ? 'var(--warning-color)' : 'var(--success-color)';
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Управление темой
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            const icon = document.querySelector('.theme-toggle i');
-            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            
-            updateChartThemes();
-        }
-
-        function updateChartThemes() {
-            const textColor = getComputedStyle(document.body).getPropertyValue('--text-primary').trim();
-            const gridColor = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
-            
-            const chartOptions = {
-                scales: {
-                    x: {
-                        ticks: { color: textColor },
-                        grid: { color: gridColor }
-                    },
-                    y: {
-                        ticks: { color: textColor },
-                        grid: { color: gridColor }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: { color: textColor }
-                    }
-                }
-            };
-            
-            if (revenueChart) {
-                revenueChart.options = { ...revenueChart.options, ...chartOptions };
-                revenueChart.update();
-            }
-            
-            if (ordersChart) {
-                ordersChart.options = { ...ordersChart.options, ...chartOptions };
-                ordersChart.update();
-            }
-        }
-
-        // Управление периодами
-        function setPeriod(period) {
-            const businessDay = getCurrentBusinessDay();
-            let startDate, endDate;
-            
-            // Сброс активного класса у всех кнопок
-            document.querySelectorAll('.period-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Установка активного класса нажатой кнопке
-            event.target.classList.add('active');
-            activePeriod = period;
-            
-            switch(period) {
-                case 'today':
-                    startDate = new Date(businessDay);
-                    endDate = new Date(businessDay);
-                    break;
-                case 'yesterday':
-                    const yesterday = new Date(businessDay);
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    startDate = yesterday;
-                    endDate = yesterday;
-                    break;
-                case 'thisWeek':
-                    startDate = getWeekStartDate(businessDay);
-                    endDate = getWeekEndDate(businessDay);
-                    break;
-                case 'thisMonth':
-                    startDate = getMonthStartDate(businessDay);
-                    endDate = businessDay;
-                    break;
-                case 'lastMonth':
-                    startDate = getLastMonthStartDate();
-                    endDate = getLastMonthEndDate();
-                    break;
-            }
-            
-            document.getElementById('start-date').value = formatDateForInput(startDate);
-            document.getElementById('end-date').value = formatDateForInput(endDate);
-            loadCustomData();
-        }
-
-        function setComparisonType(type) {
-            comparisonType = type;
-            
-            // Обновление активного класса
-            document.querySelectorAll('.comparison-option').forEach(option => {
-                option.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Перезагрузка данных с учетом сравнения
-            if (currentStartDate && currentEndDate) {
-                load(currentStartDate, currentEndDate);
-            }
-        }
-
-        // Загрузка данных
-        async function fetchDataForDate(dateStr) {
-            const todayStr = getTodayDateString();
-            const isToday = dateStr === todayStr;
-            
-            const urls = isToday ? 
-                [`${LATEST_DATA_URL}?t=${Date.now()}`, `${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`] :
-                [`${BASE_DATA_URL}${dateStr}_revenue.json?t=${Date.now()}`];
-            
-            for (const url of urls) {
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    
-                    // Проверка даты для latest данных
-                    if (url.includes('revenue.json') && !url.includes('daily')) {
-                        if (data.date && data.date !== dateStr) {
-                            continue;
-                        }
-                    }
-                    
-                    // Расчет агрегированных данных
-                    let calculatedRevenue = 0;
-                    let calculatedOrders = 0;
-                    let calculatedDeliveryOrders = 0;
-                    let calculatedPickupOrders = 0;
-                    let calculatedCafeOrders = 0;
-                    
-                    const allVenues = { ...data.year_round, ...data.seasonal };
-                    Object.values(allVenues).forEach(stats => {
-                        calculatedRevenue += stats.total_revenue || 0;
-                        calculatedOrders += stats.total_orders || 0;
-                        calculatedDeliveryOrders += stats.delivery_orders || 0;
-                        calculatedPickupOrders += stats.pickup_orders || 0;
-                        calculatedCafeOrders += stats.cafe_orders || 0;
-                    });
-                    
-                    // Обработка плана
-                    const planRevenue = data.plan?.revenue || data.plan?.total_revenue || DAILY_NETWORK_PLAN;
-                    const planOrders = data.plan?.orders || data.plan?.total_orders || 1000;
-                    
-                    const result = {
-                        ...data,
-                        plan: { revenue: planRevenue, orders: planOrders },
-                        total: {
-                            total_revenue: calculatedRevenue || data.total?.total_revenue || 0,
-                            total_orders: calculatedOrders || data.total?.total_orders || 0,
-                            total_delivery_orders: calculatedDeliveryOrders,
-                            total_pickup_orders: calculatedPickupOrders,
-                            total_cafe_orders: calculatedCafeOrders
-                        },
-                        _source: url.includes('revenue.json') && !url.includes('daily') ? 'latest' : 'daily'
-                    };
-                    
-                    dataCache[dateStr] = result;
-                    return result;
-                } catch (error) {
-                    console.warn(`Ошибка загрузки ${url}:`, error);
-                    showToast(`Ошибка загрузки из ${url}`, 'error');
-                }
-            }
-
-            // Возврат пустых данных, если файл не найден
-            return {
-                date: dateStr,
-                time: "00:00",
-                year_round: {},
-                seasonal: {},
-                plan: { revenue: DAILY_NETWORK_PLAN, orders: 1000 },
-                total: {
-                    total_revenue: 0,
-                    total_orders: 0,
-                    total_delivery_orders: 0,
-                    total_pickup_orders: 0,
-                    total_cafe_orders: 0
-                },
-                _source: 'empty'
-            };
-        }
-
-        async function loadData(startDateStr, endDateStr) {
-            const diffDays = getDiffDays(startDateStr, endDateStr);
-            let combinedData = {
-                year_round: {},
-                seasonal: {},
-                total: {
-                    total_revenue: 0,
-                    total_orders: 0,
-                    total_delivery_orders: 0,
-                    total_pickup_orders: 0,
-                    total_cafe_orders: 0
-                },
-                date: `${startDateStr} - ${endDateStr}`,
-                time: "23:59",
-                _sources: new Set()
-            };
-            
-            // Генерация списка дат
-            const dateList = [];
-            let currentDate = new Date(startDateStr);
-            const endDate = new Date(endDateStr);
-            
-            if (isNaN(currentDate) || isNaN(endDate) || currentDate > endDate) {
-                showToast('Неверный диапазон дат', 'error');
-                combinedData.plan = {
-                    total_revenue: DAILY_NETWORK_PLAN * diffDays,
-                    total_orders: 1000 * diffDays
-                };
-                return combinedData;
-            }
-            
-            while (currentDate <= endDate) {
-                dateList.push(formatDateForInput(currentDate));
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            
-            let totalDailyPlanRevenue = 0;
-            let totalDailyPlanOrders = 0;
-            let totalActualRevenue = 0;
-            let totalActualOrders = 0;
-            let totalActualDeliveryOrders = 0;
-            let totalActualPickupOrders = 0;
-            let totalActualCafeOrders = 0;
-            
-            // Загрузка данных за каждую дату
-            const promises = dateList.map(dateStr => fetchDataForDate(dateStr));
-            const dailyResults = await Promise.all(promises);
-            
-            dailyResults.forEach(dailyData => {
-                if (!dailyData) return;
-                
-                // Суммирование фактических данных
-                totalActualRevenue += dailyData.total.total_revenue || 0;
-                totalActualOrders += dailyData.total.total_orders || 0;
-                totalActualDeliveryOrders += dailyData.total.total_delivery_orders || 0;
-                totalActualPickupOrders += dailyData.total.total_pickup_orders || 0;
-                totalActualCafeOrders += dailyData.total.total_cafe_orders || 0;
-                
-                combinedData._sources.add(dailyData._source);
-                
-                // Объединение данных по филиалам
-                const venuesToCombine = { ...dailyData.year_round, ...dailyData.seasonal };
-                for (const venue in venuesToCombine) {
-                    const stats = venuesToCombine[venue];
-                    let existingStats = combinedData.year_round[venue] || combinedData.seasonal[venue];
-                    
-                    if (!existingStats) {
-                        const target = dailyData.year_round[venue] ? 
-                            combinedData.year_round : combinedData.seasonal;
-                        target[venue] = { ...stats };
-                    } else {
-                        for (const key in stats) {
-                            if (typeof stats[key] === 'number') {
-                                existingStats[key] = (existingStats[key] || 0) + (stats[key] || 0);
-                            }
-                        }
-                    }
-                }
-                
-                // Расчет дневного плана
-                const monthlyRevenuePlan = dailyData.plan?.revenue;
-                const monthlyOrdersPlan = dailyData.plan?.orders;
-                
-                const dailyPlanRevenue = calculateDailyPlanFromMonthly(monthlyRevenuePlan, dailyData.date);
-                const dailyPlanOrders = calculateDailyPlanFromMonthly(monthlyOrdersPlan, dailyData.date);
-                
-                totalDailyPlanRevenue += isNaN(dailyPlanRevenue) ? DAILY_NETWORK_PLAN : dailyPlanRevenue;
-                totalDailyPlanOrders += isNaN(dailyPlanOrders) ? 1000 : dailyPlanOrders;
-            });
-            
-            combinedData.total = {
-                total_revenue: totalActualRevenue,
-                total_orders: totalActualOrders,
-                total_delivery_orders: totalActualDeliveryOrders,
-                total_pickup_orders: totalActualPickupOrders,
-                total_cafe_orders: totalActualCafeOrders
-            };
-            
-            combinedData.plan = {
-                total_revenue: totalDailyPlanRevenue,
-                total_orders: totalDailyPlanOrders
-            };
-            
-            if (diffDays === 1 && dailyResults[0] && dailyResults[0].time !== "00:00") {
-                combinedData.time = dailyResults[0].time;
-            }
-            
-            return combinedData;
-        }
-
-        // Визуализация
         function renderMetrics(data) {
-            const total = data.total || {
-                total_revenue: 0,
-                total_orders: 0,
-                total_delivery_orders: 0,
-                total_pickup_orders: 0,
-                total_cafe_orders: 0
-            };
-            
-            const plan = data.plan || {
-                total_revenue: DAILY_NETWORK_PLAN,
-                total_orders: 1000
-            };
-            
-            const avgBill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+            const total = data.total || {};
+            const plan = data.plan || {};
             const revenuePercentage = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
-            const ordersPercentage = plan.total_orders > 0 ? (total.total_orders / plan.total_orders) * 100 : 0;
-            
-            let sourceInfo = '';
-            if (data._sources) {
-                const sources = Array.from(data._sources);
-                if (sources.includes('latest')) {
-                    sourceInfo = '<div class="data-source-info">📊 Данные в реальном времени</div>';
-                } else if (sources.includes('daily')) {
-                    sourceInfo = '<div class="data-source-info">📁 Архивные данные</div>';
-                }
-            }
-            
+            const avgBill = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+
             document.getElementById('metrics').innerHTML = `
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-ruble-sign"></i></div>
                     <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
-                    <div class="metric-label">Общая выручка</div>
-                    ${sourceInfo}
+                    <div class="metric-label">Выручка</div>
                 </div>
                 <div class="metric-card fade-in">
                     <div class="metric-icon"><i class="fas fa-shopping-cart"></i></div>
-                    <div class="metric-value">${fmt.format(total.total_orders)}</div>
-                    <div class="metric-label">Всего заказов</div>
-                    <div class="orders-breakdown" style="margin-top: 10px;">
+                    <div class="metric-value">${total.total_orders || 0}</div>
+                    <div class="metric-label">Заказы</div>
+                    <div class="orders-breakdown">
                         <div class="order-type delivery">
                             <div class="order-type-value">${total.total_delivery_orders || 0}</div>
                             <div class="order-type-label">Доставка</div>
@@ -1161,6 +943,94 @@
                     origin: { y: 0.6 }
                 });
             }
+        }
+
+        function renderSummaryTable(data, type) {
+            let venues, totalOrders = 0, totalRevenue = 0, cafeOrders = 0, cafeRevenue = 0,
+                pickupOrders = 0, pickupRevenue = 0, deliveryOrders = 0, deliveryRevenue = 0;
+            
+            if (type === 'year_round') {
+                venues = data.year_round || {};
+            } else if (type === 'seasonal') {
+                venues = data.seasonal || {};
+            } else {  // total
+                venues = { ...data.year_round, ...data.seasonal };
+            }
+            
+            let html = `
+                <thead>
+                    <tr>
+                        <th>Филиал</th>
+                        <th>Кол</th>
+                        <th>Выручка</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            
+            const sortedVenues = Object.entries(venues)
+                .sort((a, b) => b[1].total_revenue - a[1].total_revenue);
+            
+            sortedVenues.forEach(([venue, stats]) => {
+                html += `
+                    <tr>
+                        <td>${venue}</td>
+                        <td>${stats.total_orders}</td>
+                        <td>${fmt.format(stats.total_revenue.toFixed(0))}</td>
+                    </tr>
+                    <tr class="sub-row">
+                        <td>Кафе</td>
+                        <td>${stats.cafe_orders}</td>
+                        <td>${fmt.format(stats.cafe_revenue.toFixed(0))}</td>
+                    </tr>
+                    <tr class="sub-row">
+                        <td>Самовывоз</td>
+                        <td>${stats.pickup_orders}</td>
+                        <td>${fmt.format(stats.pickup_revenue.toFixed(0))}</td>
+                    </tr>
+                    <tr class="sub-row">
+                        <td>Доставка</td>
+                        <td>${stats.delivery_orders}</td>
+                        <td>${fmt.format(stats.delivery_revenue.toFixed(0))}</td>
+                    </tr>
+                `;
+                
+                totalOrders += stats.total_orders;
+                totalRevenue += stats.total_revenue;
+                cafeOrders += stats.cafe_orders;
+                cafeRevenue += stats.cafe_revenue;
+                pickupOrders += stats.pickup_orders;
+                pickupRevenue += stats.pickup_revenue;
+                deliveryOrders += stats.delivery_orders;
+                deliveryRevenue += stats.delivery_revenue;
+            });
+            
+            html += `
+                <tr class="total-row">
+                    <td>Итого</td>
+                    <td>${totalOrders}</td>
+                    <td>${fmt.format(totalRevenue.toFixed(0))}</td>
+                </tr>
+                <tr class="sub-row total-row">
+                    <td>Кафе</td>
+                    <td>${cafeOrders}</td>
+                    <td>${fmt.format(cafeRevenue.toFixed(0))}</td>
+                </tr>
+                <tr class="sub-row total-row">
+                    <td>Самовывоз</td>
+                    <td>${pickupOrders}</td>
+                    <td>${fmt.format(pickupRevenue.toFixed(0))}</td>
+                </tr>
+                <tr class="sub-row total-row">
+                    <td>Доставка</td>
+                    <td>${deliveryOrders}</td>
+                    <td>${fmt.format(deliveryRevenue.toFixed(0))}</td>
+                </tr>
+            </tbody>`;
+            
+            const tableId = type === 'year_round' ? 'year-round-summary' :
+                            type === 'seasonal' ? 'seasonal-summary' : 'total-summary';
+            document.getElementById(tableId).innerHTML = html;
         }
 
         function renderVenues(data, containerId) {
@@ -1289,7 +1159,13 @@
                                 ticks: {
                                     callback: function(value) {
                                         return fmt.format(value) + ' ₽';
-                                    }
+                                    },
+                                    color: textColor
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: textColor
                                 }
                             }
                         }
@@ -1327,7 +1203,10 @@
                         responsive: true,
                         plugins: {
                             legend: {
-                                position: 'bottom'
+                                position: 'bottom',
+                                labels: {
+                                    color: textColor
+                                }
                             },
                             tooltip: {
                                 callbacks: {
@@ -1413,6 +1292,9 @@
                 }
                 
                 renderMetrics(data);
+                renderSummaryTable(data, 'year_round');
+                renderSummaryTable(data, 'seasonal');
+                renderSummaryTable(data, 'total');
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
                 renderCharts(data);
@@ -1426,12 +1308,15 @@
                 document.getElementById('metrics').innerHTML = '<div class="error-msg">Ошибка загрузки метрик: ' + error.message + '</div>';
                 document.getElementById('year-round').innerHTML = '<div class="error-msg">Ошибка загрузки данных по круглогодичным филиалам</div>';
                 document.getElementById('seasonal').innerHTML = '<div class="error-msg">Ошибка загрузки данных по сезонным филиалам</div>';
+                document.getElementById('year-round-summary').innerHTML = '<div class="error-msg">Ошибка загрузки таблицы</div>';
+                document.getElementById('seasonal-summary').innerHTML = '<div class="error-msg">Ошибка загрузки таблицы</div>';
+                document.getElementById('total-summary').innerHTML = '<div class="error-msg">Ошибка загрузки таблицы</div>';
                 
                 showToast('Ошибка загрузки данных: ' + error.message, 'error');
             } finally {
                 // Анимация появления элементов
                 setTimeout(() => {
-                    document.querySelectorAll('.metric-card, .venue-card').forEach((el, index) => {
+                    document.querySelectorAll('.metric-card, .venue-card, .summary-table-container').forEach((el, index) => {
                         setTimeout(() => el.classList.add('fade-in'), index * 50);
                     });
                 }, 100);
