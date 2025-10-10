@@ -43,7 +43,7 @@
             font-size: 0.75rem;
         }
         .chart-container {
-            height: 250px;
+            height: 300px;
         }
         .venue-card .card-header {
             display: flex;
@@ -53,8 +53,7 @@
         .venue-metrics {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 5px;
-            font-size: 0.85rem;
+            gap: 10px;
         }
         .fade-in {
             animation: fadeIn 0.5s ease;
@@ -152,35 +151,35 @@
                         </div>
                     </div>
 
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Выручка по филиалам</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="revenueChart" class="chart-container"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Типы заказов</h3>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="ordersChart" class="chart-container" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card mb-3">
                         <div class="card-header">
                             <h3 class="card-title"><i class="ti ti-chart-line me-2"></i> Выручка по времени</h3>
                         </div>
                         <div class="card-body">
                             <canvas id="timeChart" class="chart-container"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Выручка по филиалам</h3>
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="revenueChart" class="chart-container" height="250"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Типы заказов</h3>
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="ordersChart" class="chart-container" height="250"></canvas>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -338,6 +337,10 @@
             return dates;
         }
 
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
         function aggregateData(dailyDataArray) {
             const aggregated = {
                 year_round: {},
@@ -349,21 +352,29 @@
             };
 
             dailyDataArray.forEach(dayData => {
-                ['year_round', 'seasonal'].forEach(section => {
-                    Object.entries(dayData[section] || {}).forEach(([venue, stats]) => {
-                        if (!aggregated[section][venue]) {
-                            aggregated[section][venue] = { ...stats, total_revenue: stats.total_revenue || 0, total_orders: stats.total_orders || 0, delivery_orders: stats.delivery_orders || 0, pickup_orders: stats.pickup_orders || 0, cafe_orders: stats.cafe_orders || 0, delivery_revenue: stats.delivery_revenue || 0, pickup_revenue: stats.pickup_revenue || 0, cafe_revenue: stats.cafe_revenue || 0 };
-                        } else {
-                            Object.keys(stats).forEach(key => {
-                                aggregated[section][venue][key] += stats[key] || 0;
-                            });
-                        }
+                if (dayData) {
+                    ['year_round', 'seasonal'].forEach(section => {
+                        Object.entries(dayData[section] || {}).forEach(([venue, stats]) => {
+                            if (!aggregated[section][venue]) {
+                                aggregated[section][venue] = { ...stats, total_revenue: stats.total_revenue || 0, total_orders: stats.total_orders || 0, delivery_orders: stats.delivery_orders || 0, pickup_orders: stats.pickup_orders || 0, cafe_orders: stats.cafe_orders || 0, delivery_revenue: stats.delivery_revenue || 0, pickup_revenue: stats.pickup_revenue || 0, cafe_revenue: stats.cafe_revenue || 0 };
+                            } else {
+                                Object.keys(stats).forEach(key => {
+                                    aggregated[section][venue][key] += stats[key] || 0;
+                                });
+                            }
+                        });
                     });
-                });
-                aggregated.total.total_orders += dayData.total.total_orders || 0;
-                aggregated.total.total_revenue += dayData.total.total_revenue || 0;
-                aggregated.plan.total_revenue += dayData.plan.total_revenue || 0;
-                aggregated.plan.total_orders += dayData.plan.total_orders || 0;
+                    aggregated.total.total_orders += dayData.total.total_orders || 0;
+                    aggregated.total.total_revenue += dayData.total.total_revenue || 0;
+                    
+                    // Prorate plan
+                    const [year, month] = dayData.date.split('-').slice(0,2).map(Number);
+                    const daysInMonth = getDaysInMonth(year, month - 1);
+                    const dailyPlanRevenue = (dayData.plan.total_revenue || 0) / daysInMonth;
+                    const dailyPlanOrders = (dayData.plan.total_orders || 0) / daysInMonth;
+                    aggregated.plan.total_revenue += dailyPlanRevenue;
+                    aggregated.plan.total_orders += dailyPlanOrders;
+                }
             });
 
             // Aggregate breakdowns
