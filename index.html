@@ -646,8 +646,8 @@
     <script>
         // Константы и настройки
         const DAILY_NETWORK_PLAN = 50000;
-        const BASE_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/daily/';
-        const LATEST_DATA_URL = 'https://wwwgolybfs-dev.github.io/chifan2025/data/revenue.json';
+        const BASE_DATA_URL = 'main/data/daily/';
+        const LATEST_DATA_URL = 'main/data/revenue.json';
         const fmt = new Intl.NumberFormat('ru-RU');
         const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
         
@@ -674,11 +674,14 @@
         }
 
         function getTodayDateString() {
-            return getCurrentBusinessDay().toISOString().split('T')[0];
+            return formatDateForInput(getCurrentBusinessDay());
         }
 
         function formatDateForInput(date) {
-            return date.toISOString().split('T')[0];
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function getWeekStartDate(date = new Date()) {
@@ -1540,7 +1543,7 @@
         }
 
         function updateBusinessDayInfo() {
-            const businessDayDate = getCurrentBusinessDay().toISOString().split('T')[0];
+            const businessDayDate = getTodayDateString();
             document.getElementById('business-day-date').textContent = businessDayDate;
         }
 
