@@ -11,6 +11,13 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        :root {
+            --tblr-primary: #00c853; /* Зеленый для основной палитры */
+            --tblr-primary-rgb: 0, 200, 83;
+            --tblr-success: #00a845;
+            --tblr-warning: #d97706;
+            --tblr-danger: #dc2626;
+        }
         .metric-value {
             font-size: 1.5rem;
             font-weight: bold;
@@ -23,9 +30,6 @@
         .metric-breakdown {
             font-size: 0.75rem;
             color: var(--tblr-body-color);
-        }
-        .metric-breakdown strong {
-            color: var(--tblr-success);
         }
         .orders-breakdown {
             display: flex;
@@ -66,7 +70,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .row-cards .card {
-            min-height: 200px; /* Выравнивание высоты карточек */
+            min-height: 180px; /* Выравнивание высоты */
         }
     </style>
 </head>
@@ -345,7 +349,7 @@
                 year_round: {},
                 seasonal: {},
                 total: { total_orders: 0, total_revenue: 0 },
-                plan: dailyDataArray[0]?.plan || { total_revenue: 0, total_orders: 0 },
+                plan: { total_revenue: 0, total_orders: 0 },
                 date: dailyDataArray[0]?.date || '',
                 time: dailyDataArray[dailyDataArray.length - 1]?.time || ''
             };
@@ -364,6 +368,8 @@
                 });
                 aggregated.total.total_orders += dayData.total.total_orders || 0;
                 aggregated.total.total_revenue += dayData.total.total_revenue || 0;
+                aggregated.plan.total_revenue += dayData.plan.total_revenue || 0;
+                aggregated.plan.total_orders += dayData.plan.total_orders || 0;
             });
 
             // Aggregate breakdowns
@@ -386,11 +392,6 @@
                 revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
                 delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0)
             };
-
-            // Scale plan for period days
-            const days = dailyDataArray.length;
-            aggregated.plan.total_revenue *= days;
-            aggregated.plan.total_orders *= days;
 
             return aggregated;
         }
@@ -441,6 +442,7 @@
             const avgBillTotal = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
             const avgBillYear = data.year_round_total.orders > 0 ? data.year_round_total.revenue / data.year_round_total.orders : 0;
             const avgBillSeasonal = data.seasonal_total.orders > 0 ? data.seasonal_total.revenue / data.seasonal_total.orders : 0;
+            const avgBillDelivery = total.total_delivery_orders > 0 ? total.total_delivery_revenue / total.total_delivery_orders : 0;
 
             document.getElementById('metrics').innerHTML = `
                 <div class="col-md-3">
@@ -472,15 +474,15 @@
                                 Сезонные: ${data.seasonal_total.orders}
                             </div>
                             <div class="d-flex justify-content-around mt-3">
-                                <div class="text-center">
+                                <div class="text-center order-type delivery">
                                     <small class="text-muted d-block">Доставка</small>
                                     <strong>${total.total_delivery_orders || 0}</strong>
                                 </div>
-                                <div class="text-center">
+                                <div class="text-center order-type pickup">
                                     <small class="text-muted d-block">Самовывоз</small>
                                     <strong>${total.total_pickup_orders || 0}</strong>
                                 </div>
-                                <div class="text-center">
+                                <div class="text-center order-type cafe">
                                     <small class="text-muted d-block">Кафе</small>
                                     <strong>${total.total_cafe_orders || 0}</strong>
                                 </div>
@@ -498,7 +500,8 @@
                             <div class="metric-value">${fmt.format(avgBillTotal.toFixed(0))} ₽</div>
                             <div class="metric-breakdown">
                                 Круглогодичные: ${fmt.format(avgBillYear.toFixed(0))} ₽<br>
-                                Сезонные: ${fmt.format(avgBillSeasonal.toFixed(0))} ₽
+                                Сезонные: ${fmt.format(avgBillSeasonal.toFixed(0))} ₽<br>
+                                Доставка: ${fmt.format(avgBillDelivery.toFixed(0))} ₽
                             </div>
                         </div>
                     </div>
@@ -577,17 +580,25 @@
                                     <small class="text-muted">План</small>
                                     <div>${fmt.format(planRevenueForPeriod.toFixed(0))} ₽</div>
                                 </div>
+                                <div>
+                                    <small class="text-muted">Доставка выр</small>
+                                    <div>${fmt.format(stats.delivery_revenue.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Самовывоз выр</small>
+                                    <div>${fmt.format(stats.pickup_revenue.toFixed(0))} ₽</div>
+                                </div>
                             </div>
                             <div class="d-flex justify-content-around mt-3">
-                                <div class="text-center">
+                                <div class="text-center order-type delivery">
                                     <small class="text-muted d-block">Доставка</small>
                                     <strong>${stats.delivery_orders || 0}</strong>
                                 </div>
-                                <div class="text-center">
+                                <div class="text-center order-type pickup">
                                     <small class="text-muted d-block">Самовывоз</small>
                                     <strong>${stats.pickup_orders || 0}</strong>
                                 </div>
-                                <div class="text-center">
+                                <div class="text-center order-type cafe">
                                     <small class="text-muted d-block">Кафе</small>
                                     <strong>${stats.cafe_orders || 0}</strong>
                                 </div>
@@ -617,7 +628,7 @@
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
         }
 
-        function renderTimeChart(dailyDataArray) {
+        async function renderTimeChart(startDate, endDate) {
             const ctxTime = document.getElementById('timeChart')?.getContext('2d');
             const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
             const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
@@ -626,7 +637,17 @@
                 timeChart.destroy();
             }
 
-            const days = getDiffDays(currentStartDate, currentEndDate);
+            const dates = getDatesBetween(startDate, endDate);
+            const dailyData = await Promise.all(dates.map(async date => {
+                const path = date === getTodayDateString() ? 'data/revenue.json' : `data/daily/${date}_revenue.json`;
+                const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
+                const response = await fetch(url);
+                if (!response.ok) return null;
+                return await response.json();
+            }));
+
+            const validData = dailyData.filter(d => d !== null);
+            const days = getDiffDays(startDate, endDate);
             let labels = [];
             let data = [];
             let type = 'line';
@@ -637,7 +658,7 @@
                 type = 'bar';
                 timeUnit = 'month';
                 const monthlyData = {};
-                dailyDataArray.forEach(dayData => {
+                validData.forEach(dayData => {
                     const month = dayData.date.substring(0, 7); // YYYY-MM
                     if (!monthlyData[month]) monthlyData[month] = 0;
                     monthlyData[month] += dayData.total.total_revenue || 0;
@@ -646,8 +667,8 @@
                 data = labels.map(month => monthlyData[month]);
             } else {
                 // По дням
-                labels = dailyDataArray.map(day => day.date);
-                data = dailyDataArray.map(day => day.total.total_revenue || 0);
+                labels = validData.map(day => day.date);
+                data = validData.map(day => day.total.total_revenue || 0);
             }
 
             if (ctxTime) {
@@ -660,8 +681,8 @@
                             data: data,
                             backgroundColor: 'var(--tblr-primary)',
                             borderColor: 'var(--tblr-primary)',
-                            borderWidth: 1,
-                            fill: false
+                            borderWidth: 2,
+                            fill: true
                         }]
                     },
                     options: {
@@ -692,10 +713,6 @@
                                 }
                             },
                             x: {
-                                type: 'time',
-                                time: {
-                                    unit: timeUnit
-                                },
                                 ticks: {
                                     color: textColor
                                 },
@@ -713,7 +730,7 @@
             const allVenues = { ...data.year_round, ...data.seasonal };
             const labels = Object.keys(allVenues);
             const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
-            const colors = ['var(--tblr-blue)', 'var(--tblr-azure)', 'var(--tblr-indigo)', 'var(--tblr-purple)', 'var(--tblr-pink)', 'var(--tblr-red)', 'var(--tblr-orange)', 'var(--tblr-yellow)', 'var(--tblr-lime)', 'var(--tblr-green)', 'var(--tblr-teal)', 'var(--tblr-cyan)'];
+            const colors = ['#1a237e', '#283593', '#303f9f', '#3949ab', '#3f51b5', '#5c6bc0', '#7986cb', '#9fa8da', '#b39ddb', '#c7a4ff'];
             
             const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
             const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
@@ -901,6 +918,7 @@
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
                 renderCharts(data);
+                await renderTimeChart(currentStartDate, currentEndDate);
                 
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
