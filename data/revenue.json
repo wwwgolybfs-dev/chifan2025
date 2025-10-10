@@ -1,16 +1,16 @@
 {
   "date": "2025-10-10",
-  "time": "20:00",
+  "time": "20:10",
   "year_round": {
     "Светланская": {
-      "total_orders": 48,
+      "total_orders": 49,
       "delivery_orders": 0,
       "pickup_orders": 13,
-      "cafe_orders": 35,
-      "total_revenue": 27072.0,
+      "cafe_orders": 36,
+      "total_revenue": 27945.0,
       "delivery_revenue": 0,
       "pickup_revenue": 8903.0,
-      "cafe_revenue": 18169.0
+      "cafe_revenue": 19042.0
     },
     "Парк": {
       "total_orders": 31,
@@ -43,12 +43,12 @@
       "cafe_revenue": 35250.0
     },
     "Тихая": {
-      "total_orders": 57,
-      "delivery_orders": 9,
+      "total_orders": 58,
+      "delivery_orders": 10,
       "pickup_orders": 13,
       "cafe_orders": 35,
-      "total_revenue": 41605.0,
-      "delivery_revenue": 12609.0,
+      "total_revenue": 44614.0,
+      "delivery_revenue": 15618.0,
       "pickup_revenue": 8499.0,
       "cafe_revenue": 20497.0
     },
@@ -65,14 +65,14 @@
   },
   "seasonal": {
     "Кунгас": {
-      "total_orders": 54,
+      "total_orders": 55,
       "delivery_orders": 0,
       "pickup_orders": 1,
-      "cafe_orders": 53,
-      "total_revenue": 28957.0,
+      "cafe_orders": 54,
+      "total_revenue": 29680.0,
       "delivery_revenue": 0,
       "pickup_revenue": 710.0,
-      "cafe_revenue": 28247.0
+      "cafe_revenue": 28970.0
     },
     "МГУ": {
       "total_orders": 15,
@@ -85,19 +85,19 @@
       "cafe_revenue": 6997.0
     },
     "Юбилейный": {
-      "total_orders": 78,
+      "total_orders": 86,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 78,
-      "total_revenue": 34680.0,
+      "cafe_orders": 86,
+      "total_revenue": 39320.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 34680.0
+      "cafe_revenue": 39320.0
     }
   },
   "total": {
-    "total_orders": 579,
-    "total_revenue": 386024.0
+    "total_orders": 590,
+    "total_revenue": 395269.0
   },
   "plan": {
     "total_revenue": 20944728.513,
