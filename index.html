@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -646,8 +647,8 @@
     <script>
         // Константы и настройки
         const DAILY_NETWORK_PLAN = 50000;
-        const BASE_DATA_URL = 'main/data/daily/';
-        const LATEST_DATA_URL = 'main/data/revenue.json';
+        const BASE_DATA_URL = './main/data/daily/';
+        const LATEST_DATA_URL = './main/data/revenue.json';
         const fmt = new Intl.NumberFormat('ru-RU');
         const AUTO_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 минут
         
@@ -670,6 +671,9 @@
         // Утилиты
         function getCurrentBusinessDay() {
             const now = new Date();
+            if (now.getHours() < 3) {
+                now.setDate(now.getDate() - 1);
+            }
             return new Date(now.getFullYear(), now.getMonth(), now.getDate());
         }
 
@@ -704,12 +708,6 @@
         }
 
         function getMonthEndDate(date = new Date()) {
-            const now = new Date();
-            // Если текущий месяц, возвращаем текущую дату
-            if (date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()) {
-                return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            }
-            // Иначе возвращаем последний день месяца
             return new Date(date.getFullYear(), date.getMonth() + 1, 0);
         }
 
@@ -847,7 +845,7 @@
                     break;
                 case 'thisMonth':
                     startDate = getMonthStartDate(businessDay);
-                    endDate = getMonthEndDate(businessDay);
+                    endDate = businessDay;
                     break;
                 case 'lastMonth':
                     startDate = getLastMonthStartDate();
@@ -936,9 +934,11 @@
                     return result;
                 } catch (error) {
                     console.warn(`Ошибка загрузки ${url}:`, error);
+                    showToast(`Ошибка загрузки данных из ${url}`, 'error');
                 }
             }
             
+            showToast('Данные не найдены для ' + dateStr, 'warning');
             // Возврат пустых данных, если файл не найден
             return {
                 date: dateStr,
