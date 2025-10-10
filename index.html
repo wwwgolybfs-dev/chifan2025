@@ -6,17 +6,11 @@
     <title>Чи-Фань — Аналитика выручки</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body {
-            background-color: var(--tblr-bg);
-            color: var(--tblr-body-color);
-        }
-        .card {
-            box-shadow: var(--tblr-shadow-card);
-        }
         .metric-value {
             font-size: 1.5rem;
             font-weight: bold;
@@ -47,9 +41,6 @@
             border-radius: 4px;
             font-size: 0.75rem;
         }
-        .status-good { background-color: rgba(0, 200, 83, 0.1); color: var(--tblr-success); }
-        .status-warn { background-color: rgba(255, 152, 0, 0.1); color: var(--tblr-warning); }
-        .status-bad { background-color: rgba(244, 67, 54, 0.1); color: var(--tblr-danger); }
         .chart-container {
             height: 300px;
         }
@@ -72,7 +63,7 @@
         }
     </style>
 </head>
-<body class="theme-dark">
+<body>
     <div class="page">
         <div class="page-wrapper">
             <div class="page-header d-print-none">
@@ -127,11 +118,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="btn-list">
-                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('today')">Сегодня</button>
-                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('yesterday')">Вчера</button>
-                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('thisWeek')">Неделя</button>
-                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('thisMonth')">Месяц</button>
-                                        <button class="btn btn-ghost-secondary" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
+                                        <button class="btn" onclick="setPeriod('today')">Сегодня</button>
+                                        <button class="btn" onclick="setPeriod('yesterday')">Вчера</button>
+                                        <button class="btn" onclick="setPeriod('thisWeek')">Неделя</button>
+                                        <button class="btn" onclick="setPeriod('thisMonth')">Месяц</button>
+                                        <button class="btn" onclick="setPeriod('lastMonth')">Прошлый месяц</button>
                                     </div>
                                 </div>
                             </div>
@@ -201,10 +192,10 @@
                         <button class="btn btn-primary" onclick="exportPDF('all')">
                             <i class="ti ti-file-text me-2"></i> Экспорт PDF (Все)
                         </button>
-                        <button class="btn btn-ghost-primary" onclick="exportPDF('year-round')">
+                        <button class="btn" onclick="exportPDF('year-round')">
                             <i class="ti ti-file-text me-2"></i> PDF Круглогодичные
                         </button>
-                        <button class="btn btn-ghost-primary" onclick="exportPDF('seasonal')">
+                        <button class="btn" onclick="exportPDF('seasonal')">
                             <i class="ti ti-file-text me-2"></i> PDF Сезонные
                         </button>
                     </div>
@@ -227,19 +218,15 @@
         let autoRefreshInterval = null;
         const AUTO_REFRESH_INTERVAL = 300000; // 5 минут
         const DAILY_NETWORK_PLAN = 1000000; // Пример плана
-        const fixedDailyPlans = {
-            // Можно добавить фиксированные планы для филиалов
-        };
+        const fixedDailyPlans = {};
         const fmt = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 0 });
         const REPO_OWNER = 'wwwgolybfs-dev';
         const REPO_NAME = 'chifan2025';
         const BRANCH = 'main';
 
         function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('theme-dark');
-            body.classList.toggle('theme-light');
-            localStorage.setItem('theme', body.classList.contains('theme-dark') ? 'dark' : 'light');
+            document.body.classList.toggle('theme-dark');
+            localStorage.setItem('theme', document.body.classList.contains('theme-dark') ? 'dark' : 'light');
             updateChartThemes();
         }
 
@@ -261,7 +248,7 @@
 
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            toast.querySelector('.toast-body').textContent = message;
+            toast.queryList('.toast-body').textContent = message;
             toast.classList.add('bg-' + (type === 'error' ? 'danger' : 'success'));
             const bsToast = new bootstrap.Toast(toast);
             bsToast.show();
@@ -312,16 +299,10 @@
             document.getElementById('start-date').value = startStr;
             document.getElementById('end-date').value = endStr;
             
-            document.querySelectorAll('.btn-ghost-secondary').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            event.target.parentNode.querySelectorAll('.btn').forEach(btn => btn.classList.remove('btn-primary'));
+            event.target.classList.add('btn-primary');
             
             load(startStr, endStr);
-        }
-
-        function setComparisonType(type) {
-            document.querySelectorAll('.comparison-option').forEach(opt => opt.classList.remove('active'));
-            event.target.classList.add('active');
-            // Здесь можно добавить логику сравнения
         }
 
         function getDatesBetween(startDate, endDate) {
@@ -349,16 +330,16 @@
                 ['year_round', 'seasonal'].forEach(section => {
                     Object.entries(dayData[section] || {}).forEach(([venue, stats]) => {
                         if (!aggregated[section][venue]) {
-                            aggregated[section][venue] = { ...stats };
+                            aggregated[section][venue] = { ...stats, total_revenue: stats.total_revenue || 0, total_orders: stats.total_orders || 0, delivery_orders: stats.delivery_orders || 0, pickup_orders: stats.pickup_orders || 0, cafe_orders: stats.cafe_orders || 0, delivery_revenue: stats.delivery_revenue || 0, pickup_revenue: stats.pickup_revenue || 0, cafe_revenue: stats.cafe_revenue || 0 };
                         } else {
                             Object.keys(stats).forEach(key => {
-                                aggregated[section][venue][key] += stats[key];
+                                aggregated[section][venue][key] += stats[key] || 0;
                             });
                         }
                     });
                 });
-                aggregated.total.total_orders += dayData.total.total_orders;
-                aggregated.total.total_revenue += dayData.total.total_revenue;
+                aggregated.total.total_orders += dayData.total.total_orders || 0;
+                aggregated.total.total_revenue += dayData.total.total_revenue || 0;
             });
 
             // Aggregate breakdowns
@@ -372,12 +353,12 @@
 
             // Aggregate for year_round and seasonal totals
             aggregated.year_round_total = {
-                orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + v.total_orders, 0),
-                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + v.total_revenue, 0)
+                orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0)
             };
             aggregated.seasonal_total = {
-                orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + v.total_orders, 0),
-                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + v.total_revenue, 0)
+                orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0)
             };
 
             // Scale plan for period days
@@ -422,9 +403,9 @@
         }
 
         function getStatusClass(percentage) {
-            if (percentage >= 100) return 'status-success';
-            if (percentage >= 80) return 'status-warning';
-            return 'status-danger';
+            if (percentage >= 100) return 'success';
+            if (percentage >= 80) return 'warning';
+            return 'danger';
         }
 
         function renderMetrics(data) {
@@ -463,15 +444,18 @@
                                 Круглогодичные: ${data.year_round_total.orders}<br>
                                 Сезонные: ${data.seasonal_total.orders}
                             </div>
-                            <div class="orders-breakdown mt-3">
-                                <div class="badge bg-green-lt">
-                                    Доставка<br>${total.total_delivery_orders || 0}
+                            <div class="d-flex justify-content-around mt-3">
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Доставка</small>
+                                    <strong>${total.total_delivery_orders || 0}</strong>
                                 </div>
-                                <div class="badge bg-yellow-lt">
-                                    Самовывоз<br>${total.total_pickup_orders || 0}
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Самовывоз</small>
+                                    <strong>${total.total_pickup_orders || 0}</strong>
                                 </div>
-                                <div class="badge bg-purple-lt">
-                                    Кафе<br>${total.total_cafe_orders || 0}
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Кафе</small>
+                                    <strong>${total.total_cafe_orders || 0}</strong>
                                 </div>
                             </div>
                         </div>
@@ -532,36 +516,27 @@
             }
         }
 
-        function renderVenues(data, containerId) {
-            const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
-            const venues = data[key] || {};
-            const container = document.getElementById(containerId);
-            
-            if (!container) return;
-            
-            if (Object.keys(venues).length === 0) {
-                container.innerHTML = '<div class="empty">Нет данных по филиалам</div>';
-                return;
-            }
-            
-            const periodDays = getDiffDays(currentStartDate, currentEndDate);
-            const sortedVenues = Object.entries(venues)
-                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            
-            container.innerHTML = sortedVenues.map(([venue, stats]) => `
+        function renderVenueCard(venue, stats, periodDays) {
+            const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
+            const planRevenueForPeriod = dailyPlan * periodDays;
+            const percentage = planRevenueForPeriod > 0 ? (stats.total_revenue / planRevenueForPeriod * 100) : 0;
+            const status = getStatusClass(percentage);
+            const avgCheck = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
+
+            return `
                 <div class="col-md-4">
                     <div class="card venue-card fade-in">
                         <div class="card-header">
                             <h3 class="card-title mb-0">${venue}</h3>
-                            <span class="badge bg-${getStatusClass((stats.total_revenue / (fixedDailyPlans[venue] || DAILY_NETWORK_PLAN * periodDays) * 100))} ms-2">
-                                ${((stats.total_revenue / (fixedDailyPlans[venue] || DAILY_NETWORK_PLAN * periodDays) * 100).toFixed(1)}%
+                            <span class="badge bg-${status} ms-2">
+                                ${percentage.toFixed(1)}%
                             </span>
                         </div>
                         <div class="card-body">
                             <div class="venue-metrics">
                                 <div>
                                     <small class="text-muted">Выручка</small>
-                                    <div>${fmt.format((stats.total_revenue || 0).toFixed(0))} ₽</div>
+                                    <div>${fmt.format(stats.total_revenue.toFixed(0))} ₽</div>
                                 </div>
                                 <div>
                                     <small class="text-muted">Заказы</small>
@@ -569,31 +544,31 @@
                                 </div>
                                 <div>
                                     <small class="text-muted">Средний чек</small>
-                                    <div>${fmt.format((stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0).toFixed(0))} ₽</div>
+                                    <div>${fmt.format(avgCheck.toFixed(0))} ₽</div>
                                 </div>
                                 <div>
                                     <small class="text-muted">План</small>
-                                    <div>${fmt.format((fixedDailyPlans[venue] || DAILY_NETWORK_PLAN * periodDays).toFixed(0))} ₽</div>
+                                    <div>${fmt.format(planRevenueForPeriod.toFixed(0))} ₽</div>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-around mt-3">
                                 <div class="text-center">
-                                    <small class="text-muted">Доставка</small>
-                                    <div>${stats.delivery_orders || 0}</div>
+                                    <small class="text-muted d-block">Доставка</small>
+                                    <strong>${stats.delivery_orders || 0}</strong>
                                 </div>
                                 <div class="text-center">
-                                    <small class="text-muted">Самовывоз</small>
-                                    <div>${stats.pickup_orders || 0}</div>
+                                    <small class="text-muted d-block">Самовывоз</small>
+                                    <strong>${stats.pickup_orders || 0}</strong>
                                 </div>
                                 <div class="text-center">
-                                    <small class="text-muted">Кафе</small>
-                                    <div>${stats.cafe_orders || 0}</div>
+                                    <small class="text-muted d-block">Кафе</small>
+                                    <strong>${stats.cafe_orders || 0}</strong>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
         }
 
         function renderCharts(data) {
@@ -718,7 +693,6 @@
             updateChartThemes();
         }
 
-        // Управление загрузкой
         function loadCustomData() {
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
@@ -785,8 +759,8 @@
                 }
                 
                 renderMetrics(data);
-                renderVenues(data, 'year-round');
-                renderVenues(data, 'seasonal');
+                document.getElementById('year-round').innerHTML = getVenuesHTML(data, 'year_round');
+                document.getElementById('seasonal').innerHTML = getVenuesHTML(data, 'seasonal');
                 renderCharts(data);
                 
             } catch (error) {
@@ -810,6 +784,13 @@
             }
         }
 
+        function getVenuesHTML(data, key) {
+            const venues = data[key] || {};
+            const periodDays = getDiffDays(currentStartDate, currentEndDate);
+            const sortedVenues = Object.entries(venues).sort((a, b) => b[1].total_revenue - a[1].total_revenue);
+            return sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
+        }
+
         // Автообновление
         function setupAutoRefresh() {
             if (autoRefreshInterval) {
@@ -828,78 +809,11 @@
             }, AUTO_REFRESH_INTERVAL);
         }
 
-        // Экспорт
-        function exportPDF(filter = 'all') {
-            const data = dataCache.current;
-            if (!data) {
-                showToast('Нет данных для экспорта', 'error');
-                return;
-            }
-            
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Заголовок
-            doc.setFontSize(16);
-            doc.text('Чи-Фань - Отчет по выручке', 20, 20);
-            
-            doc.setFontSize(10);
-            doc.text(`Период: ${data.date}`, 20, 30);
-            doc.text(`Время обновления: ${data.time}`, 20, 35);
-            
-            let y = 45;
-            
-            // Метрики
-            doc.setFontSize(12);
-            doc.text('Основные метрики:', 20, y);
-            y += 10;
-            
-            const total = data.total || {};
-            doc.text(`Выручка: ${fmt.format(total.total_revenue || 0)} ₽`, 20, y);
-            y += 7;
-            doc.text(`Заказы: ${total.total_orders || 0}`, 20, y);
-            y += 7;
-            doc.text(`Доставка: ${total.total_delivery_orders || 0}`, 20, y);
-            y += 7;
-            doc.text(`Самовывоз: ${total.total_pickup_orders || 0}`, 20, y);
-            y += 7;
-            doc.text(`Кафе: ${total.total_cafe_orders || 0}`, 20, y);
-            y += 15;
-            
-            // Филиалы
-            const venues = filter === 'year-round' ? data.year_round : 
-                          filter === 'seasonal' ? data.seasonal : 
-                          { ...data.year_round, ...data.seasonal };
-            
-            doc.setFontSize(12);
-            doc.text('Филиалы:', 20, y);
-            y += 10;
-            
-            const sortedVenues = Object.entries(venues || {})
-                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            
-            sortedVenues.forEach(([venue, stats]) => {
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                
-                doc.setFontSize(10);
-                doc.text(`${venue}: ${fmt.format(stats.total_revenue || 0)} ₽ (${stats.total_orders || 0} заказов)`, 20, y);
-                y += 7;
-            });
-            
-            doc.save(`chifan_report_${currentStartDate}_${filter}.pdf`);
-            showToast('PDF успешно экспортирован');
-        }
-
         // Инициализация
         function init() {
             // Установка темы
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('theme-dark');
-            } else {
-                document.body.classList.add('theme-light');
             }
             
             // Установка дат по умолчанию
@@ -908,7 +822,7 @@
             document.getElementById('end-date').value = todayStr;
             
             // Активная кнопка "Сегодня"
-            document.querySelector('.btn-ghost-secondary').classList.add('active');
+            document.querySelector('.btn-list .btn').classList.add('btn-primary');
             
             // Обновление информации о бизнес-дне
             updateBusinessDayInfo();
