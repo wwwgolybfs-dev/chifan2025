@@ -517,6 +517,61 @@
             }
         }
 
+        function renderVenueCard(venue, stats, periodDays) {
+            const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN;
+            const planRevenueForPeriod = dailyPlan * periodDays;
+            const percentage = planRevenueForPeriod > 0 ? (stats.total_revenue / planRevenueForPeriod * 100) : 0;
+            const status = getStatusClass(percentage);
+            const avgCheck = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
+
+            return `
+                <div class="col-md-4">
+                    <div class="card venue-card fade-in">
+                        <div class="card-header">
+                            <h3 class="card-title mb-0">${venue}</h3>
+                            <span class="badge bg-${status} ms-2">
+                                ${percentage.toFixed(1)}%
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="venue-metrics">
+                                <div>
+                                    <small class="text-muted">Выручка</small>
+                                    <div>${fmt.format(stats.total_revenue.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Заказы</small>
+                                    <div>${stats.total_orders || 0}</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Средний чек</small>
+                                    <div>${fmt.format(avgCheck.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">План</small>
+                                    <div>${fmt.format(planRevenueForPeriod.toFixed(0))} ₽</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around mt-3">
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Доставка</small>
+                                    <strong>${stats.delivery_orders || 0}</strong>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Самовывоз</small>
+                                    <strong>${stats.pickup_orders || 0}</strong>
+                                </div>
+                                <div class="text-center">
+                                    <small class="text-muted d-block">Кафе</small>
+                                    <strong>${stats.cafe_orders || 0}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderVenues(data, containerId) {
             const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
             const venues = data[key] || {};
@@ -534,6 +589,128 @@
                 .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
             
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
+        }
+
+        function renderCharts(data) {
+            const allVenues = { ...data.year_round, ...data.seasonal };
+            const labels = Object.keys(allVenues);
+            const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
+            
+            const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
+            const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
+            const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
+            const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
+            
+            // График выручки по филиалам
+            if (ctxRevenue && revenueChart) {
+                revenueChart.destroy();
+            }
+            
+            if (ctxRevenue) {
+                revenueChart = new Chart(ctxRevenue, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Выручка (₽)',
+                            data: revenues,
+                            backgroundColor: 'var(--tblr-primary)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Выручка: ${fmt.format(context.raw)} ₽`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return fmt.format(value) + ' ₽';
+                                    },
+                                    color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: textColor
+                                },
+                                grid: {
+                                    color: gridColor
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // График типов заказов
+            const orderTypes = {
+                'Доставка': data.total.total_delivery_orders || 0,
+                'Самовывоз': data.total.total_pickup_orders || 0,
+                'Кафе': data.total.total_cafe_orders || 0
+            };
+            
+            if (ctxOrders && ordersChart) {
+                ordersChart.destroy();
+            }
+            
+            if (ctxOrders) {
+                ordersChart = new Chart(ctxOrders, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(orderTypes),
+                        datasets: [{
+                            data: Object.values(orderTypes),
+                            backgroundColor: [
+                                'var(--tblr-green)',
+                                'var(--tblr-yellow)',
+                                'var(--tblr-purple)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: textColor,
+                                    padding: 10,
+                                    boxWidth: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((context.raw / total) * 100);
+                                        return `${context.label}: ${context.raw} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+            
+            updateChartThemes();
         }
 
         function loadCustomData() {
