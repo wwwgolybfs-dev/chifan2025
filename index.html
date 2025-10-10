@@ -273,6 +273,9 @@
     </div>
 
     <script>
+        Chart.defaults.animation.duration = 1000;
+        Chart.defaults.animation.easing = 'easeOutBounce';
+
         let revenueChart, ordersChart, timeChart;
         let currentStartDate, currentEndDate;
         let dataCache = {};
@@ -389,6 +392,10 @@
             return dates;
         }
 
+        function getDaysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
         function aggregateData(dailyDataArray) {
             const aggregated = {
                 year_round: {},
@@ -417,12 +424,13 @@
                     aggregated.total.total_delivery_revenue += dayData.total.total_delivery_revenue || 0;
                     aggregated.total.total_pickup_revenue += dayData.total.total_pickup_revenue || 0;
                     aggregated.total.total_cafe_revenue += dayData.total.total_cafe_revenue || 0;
-                    aggregated.plan.total_revenue += dayData.plan.total_revenue || 0;
-                    aggregated.plan.total_orders += dayData.plan.total_orders || 0;
+                    
+                    const [year, month] = dayData.date.split('-').slice(0,2).map(Number);
+                    const daysInMonth = getDaysInMonth(year, month - 1);
+                    aggregated.plan.total_revenue += (dayData.plan.total_revenue || 0) / daysInMonth;
+                    aggregated.plan.total_orders += (dayData.plan.total_orders || 0) / daysInMonth;
                 }
             });
-
-            aggregated.plan.total_revenue = aggregated.plan.total_revenue / dailyDataArray.length * dailyDataArray.length; // Корректировка, если нужно
 
             // Aggregate breakdowns
             const allVenues = { ...aggregated.year_round, ...aggregated.seasonal };
@@ -604,7 +612,7 @@
             const planRevenueForPeriod = dailyPlan * periodDays;
             const percentage = planRevenueForPeriod > 0 ? (stats.total_revenue / planRevenueForPeriod * 100) : 0;
             const status = getStatusClass(percentage);
-            const avgCheck = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
+            const avgBill = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
 
             return `
                 <div class="col-md-4">
@@ -630,7 +638,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted">Средний чек</small>
-                                    <div>${fmt.format(avgCheck.toFixed(0))} ₽</div>
+                                    <div>${fmt.format(avgBill.toFixed(0))} ₽</div>
                                 </div>
                                 <div>
                                     <small class="text-muted">План</small>
@@ -711,11 +719,13 @@
             let cafeData = [];
             let type = 'line';
             let timeUnit = 'day';
+            let stacked = false;
 
             if (days > 31) {
                 // По месяцам
                 type = 'bar';
                 timeUnit = 'month';
+                stacked = true;
                 const monthlyData = { revenue: {}, delivery: {}, pickup: {}, cafe: {} };
                 validData.forEach(dayData => {
                     if (dayData) {
@@ -782,6 +792,7 @@
                     },
                     options: {
                         responsive: true,
+                        stacked: stacked,
                         plugins: {
                             legend: {
                                 display: true,
@@ -797,6 +808,7 @@
                         },
                         scales: {
                             y: {
+                                stacked: stacked,
                                 beginAtZero: true,
                                 ticks: {
                                     callback: function(value) {
@@ -809,6 +821,7 @@
                                 }
                             },
                             x: {
+                                stacked: stacked,
                                 ticks: {
                                     color: textColor
                                 },
@@ -1157,4 +1170,3 @@
     </script>
 </body>
 </html>
-
