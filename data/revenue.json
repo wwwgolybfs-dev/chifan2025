@@ -1,16 +1,16 @@
 {
   "date": "2025-10-11",
-  "time": "15:40",
+  "time": "15:50",
   "year_round": {
     "Светланская": {
-      "total_orders": 43,
+      "total_orders": 45,
       "delivery_orders": 0,
-      "pickup_orders": 8,
-      "cafe_orders": 35,
-      "total_revenue": 22127.0,
+      "pickup_orders": 9,
+      "cafe_orders": 36,
+      "total_revenue": 23113.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 5912.0,
-      "cafe_revenue": 16215.0
+      "pickup_revenue": 6430.0,
+      "cafe_revenue": 16683.0
     },
     "Парк": {
       "total_orders": 5,
@@ -23,34 +23,34 @@
       "cafe_revenue": 1369.0
     },
     "Красота": {
-      "total_orders": 67,
-      "delivery_orders": 40,
-      "pickup_orders": 10,
-      "cafe_orders": 17,
-      "total_revenue": 76307.0,
-      "delivery_revenue": 59229.0,
-      "pickup_revenue": 6159.0,
-      "cafe_revenue": 10919.0
+      "total_orders": 72,
+      "delivery_orders": 42,
+      "pickup_orders": 12,
+      "cafe_orders": 18,
+      "total_revenue": 79751.0,
+      "delivery_revenue": 61559.0,
+      "pickup_revenue": 6918.0,
+      "cafe_revenue": 11274.0
     },
     "Тобольская": {
-      "total_orders": 54,
-      "delivery_orders": 22,
+      "total_orders": 55,
+      "delivery_orders": 23,
       "pickup_orders": 6,
       "cafe_orders": 26,
-      "total_revenue": 52087.0,
-      "delivery_revenue": 32068.0,
+      "total_revenue": 53565.0,
+      "delivery_revenue": 33546.0,
       "pickup_revenue": 5237.0,
       "cafe_revenue": 14782.0
     },
     "Тихая": {
-      "total_orders": 33,
-      "delivery_orders": 8,
-      "pickup_orders": 6,
-      "cafe_orders": 19,
-      "total_revenue": 25877.0,
-      "delivery_revenue": 12316.0,
-      "pickup_revenue": 4693.0,
-      "cafe_revenue": 8868.0
+      "total_orders": 37,
+      "delivery_orders": 9,
+      "pickup_orders": 7,
+      "cafe_orders": 21,
+      "total_revenue": 31079.0,
+      "delivery_revenue": 14453.0,
+      "pickup_revenue": 6254.0,
+      "cafe_revenue": 10372.0
     },
     "Чуркин": {
       "total_orders": 79,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 308,
-    "total_revenue": 247789.0
+    "total_orders": 320,
+    "total_revenue": 258899.0
   },
   "plan": {
     "total_revenue": 20944728.513,
