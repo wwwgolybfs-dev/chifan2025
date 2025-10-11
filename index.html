@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чи-Фань — Аналитика выручки</title>
+    <title>Чи-Фань — Аналитика выручки и продаж</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             background-color: #f0f4f8;
@@ -64,11 +63,10 @@
             text-align: center;
             padding: 5px 10px;
             border-radius: 4px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease;
         }
         .order-type:hover {
             transform: scale(1.05);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .order-type.delivery { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
         .order-type.pickup { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
@@ -102,22 +100,21 @@
         .row-cards .card {
             min-height: 180px;
         }
-        .progress-bar {
-            background: linear-gradient(to right, #1a237e, #8b5cf6) !important;
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-        body.theme-dark .ti {
-            filter: invert(1);
+        .sales-table th, .sales-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
         }
-        .theme-switcher {
-            transition: transform 0.3s ease;
+        .sales-table th {
+            background-color: #f8f9fa;
         }
-        .theme-switcher.rotated {
-            transform: rotate(180deg);
-        }
-        @media (max-width: 768px) {
-            .row-cards {
-                flex-direction: column;
-            }
+        body.theme-dark .sales-table th {
+            background-color: #2d3748;
         }
     </style>
 </head>
@@ -129,11 +126,11 @@
                     <div class="row g-2 align-items-center">
                         <div class="col">
                             <h2 class="page-title">
-                                <i class="ti ti-chart-line me-2"></i> Чи-Фань — Аналитика выручки
+                                <i class="ti ti-chart-line me-2"></i> Чи-Фань — Аналитика выручки и продаж
                             </h2>
                         </div>
                         <div class="col-auto ms-auto d-print-none">
-                            <button class="btn btn-ghost-secondary theme-switcher" onclick="toggleTheme()">
+                            <button class="btn btn-ghost-secondary" onclick="toggleTheme()">
                                 <i class="ti ti-moon"></i> Тема
                             </button>
                         </div>
@@ -193,6 +190,9 @@
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-analytics" role="tab">Аналитика</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-sales" role="tab">Полуфабрикаты</button>
                         </li>
                     </ul>
 
@@ -267,6 +267,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="tab-pane" id="tab-sales" role="tabpanel">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h3 class="card-title"><i class="ti ti-basket me-2"></i> Продажи полуфабрикатов</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div id="sales-data"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="btn-list">
@@ -278,6 +288,9 @@
                         </button>
                         <button class="btn" onclick="exportPDF('seasonal')">
                             <i class="ti ti-file-text me-2"></i> PDF Сезонные
+                        </button>
+                        <button class="btn" onclick="exportPDF('sales')">
+                            <i class="ti ti-file-text me-2"></i> PDF Полуфабрикаты
                         </button>
                     </div>
                 </div>
@@ -302,7 +315,7 @@
         let autoRefreshInterval = null;
         const AUTO_REFRESH_INTERVAL = 300000; // 5 минут
         const DAILY_NETWORK_PLAN = 1000000; // Пример плана
-        const fixedDailyPlans = {}; // Заглушка для индивидуальных планов
+        const fixedDailyPlans = {}; // Индивидуальные планы филиалов
         const fmt = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 0 });
         const REPO_OWNER = 'wwwgolybfs-dev';
         const REPO_NAME = 'chifan2025';
@@ -310,8 +323,6 @@
 
         function toggleTheme() {
             document.body.classList.toggle('theme-dark');
-            const switcher = document.querySelector('.theme-switcher');
-            switcher.classList.toggle('rotated');
             localStorage.setItem('theme', document.body.classList.contains('theme-dark') ? 'dark' : 'light');
             updateChartThemes();
         }
@@ -371,8 +382,7 @@
         function setPeriod(period, event) {
             const today = new Date();
             let start, end;
-            
-            switch(period) {
+            switch (period) {
                 case 'today':
                     start = end = getCurrentBusinessDay();
                     break;
@@ -384,24 +394,20 @@
                     end = new Date();
                     break;
                 case 'thisMonth':
-                    start = new Date(today.getFullYear(), today.getMonth(), 1); // С 1-го числа текущего месяца
-                    end = new Date(); // До текущей даты
+                    start = new Date(today.getFullYear(), today.getMonth(), 1);
+                    end = new Date();
                     break;
                 case 'lastMonth':
-                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1); // С 1-го числа прошлого месяца
-                    end = new Date(today.getFullYear(), today.getMonth(), 0); // До последнего числа прошлого месяца
+                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    end = new Date(today.getFullYear(), today.getMonth(), 0);
                     break;
             }
-            
             const startStr = formatDateForInput(start);
             const endStr = formatDateForInput(end);
-            
             document.getElementById('start-date').value = startStr;
             document.getElementById('end-date').value = endStr;
-            
             event.target.parentNode.querySelectorAll('.btn').forEach(btn => btn.classList.remove('btn-primary'));
             event.target.classList.add('btn-primary');
-            
             load(startStr, endStr);
         }
 
@@ -432,13 +438,13 @@
             return new Date(year, month + 1, 0).getDate();
         }
 
-        function aggregateData(dailyDataArray) {
+        function aggregateData(dailyDataArray, periodDays) {
             const aggregated = {
                 year_round: {},
                 seasonal: {},
-                total: { 
-                    total_orders: 0, 
-                    total_revenue: 0, 
+                total: {
+                    total_orders: 0,
+                    total_revenue: 0,
                     total_delivery_orders: 0,
                     total_delivery_revenue: 0,
                     total_pickup_orders: 0,
@@ -446,46 +452,55 @@
                     total_cafe_orders: 0,
                     total_cafe_revenue: 0
                 },
-                plan: { total_revenue: 0, total_orders: 0 },
+                plan: { revenue: 0, orders: 0 },
+                sales: {},
                 date: dailyDataArray[0]?.date || '',
                 time: dailyDataArray[dailyDataArray.length - 1]?.time || ''
             };
 
             const monthlyPlans = {};
-            const monthDaysInPeriod = {};
+            const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+
+            // Инициализация sales для всех филиалов
+            allVenues.forEach(venue => {
+                aggregated.sales[venue] = {
+                    Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
+                    'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп': 0, 'Вьетнамский суп': 0 },
+                    'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
+                };
+            });
 
             dailyDataArray.forEach(dayData => {
                 if (dayData) {
                     const month = dayData.date.substring(0, 7);
                     if (!monthlyPlans[month]) {
                         monthlyPlans[month] = {
-                            planRevenue: dayData.plan.total_revenue || 0,
-                            planOrders: dayData.plan.total_orders || 0,
-                            daysInMonth: getDaysInMonth(parseInt(month.split('-')[0]), parseInt(month.split('-')[1]) - 1)
+                            planRevenue: dayData.plan.revenue || 0,
+                            planOrders: dayData.plan.orders || 0
                         };
                     }
-                    monthDaysInPeriod[month] = (monthDaysInPeriod[month] || 0) + 1;
-
                     ['year_round', 'seasonal'].forEach(section => {
                         Object.entries(dayData[section] || {}).forEach(([venue, stats]) => {
                             if (!aggregated[section][venue]) {
-                                aggregated[section][venue] = { 
-                                    total_revenue: 0, 
-                                    total_orders: 0, 
-                                    delivery_orders: 0, 
-                                    pickup_orders: 0, 
-                                    cafe_orders: 0, 
-                                    delivery_revenue: 0, 
-                                    pickup_revenue: 0, 
-                                    cafe_revenue: 0 
-                                };
+                                aggregated[section][venue] = { ...stats };
+                            } else {
+                                Object.keys(stats).forEach(key => {
+                                    aggregated[section][venue][key] = (aggregated[section][venue][key] || 0) + (stats[key] || 0);
+                                });
                             }
-                            Object.keys(stats).forEach(key => {
-                                aggregated[section][venue][key] += stats[key] || 0;
-                            });
                         });
                     });
-
+                    Object.keys(dayData.sales || {}).forEach(venue => {
+                        Object.keys(dayData.sales[venue]).forEach(category => {
+                            if (typeof dayData.sales[venue][category] === 'object') {
+                                Object.keys(dayData.sales[venue][category]).forEach(item => {
+                                    aggregated.sales[venue][category][item] += dayData.sales[venue][category][item] || 0;
+                                });
+                            } else {
+                                aggregated.sales[venue][category] += dayData.sales[venue][category] || 0;
+                            }
+                        });
+                    });
                     aggregated.total.total_orders += dayData.total.total_orders || 0;
                     aggregated.total.total_revenue += dayData.total.total_revenue || 0;
                     aggregated.total.total_delivery_orders += dayData.total.total_delivery_orders || 0;
@@ -497,54 +512,71 @@
                 }
             });
 
-            // Пропорциональный план
-            Object.keys(monthlyPlans).forEach(month => {
-                const daysInPeriod = monthDaysInPeriod[month] || 0;
-                const plan = monthlyPlans[month];
-                aggregated.plan.total_revenue += (plan.planRevenue / plan.daysInMonth) * daysInPeriod;
-                aggregated.plan.total_orders += (plan.planOrders / plan.daysInMonth) * daysInPeriod;
+            const periodMonthlyDays = {};
+            const dates = getDatesBetween(currentStartDate, currentEndDate);
+            dates.forEach(date => {
+                const month = date.substring(0, 7);
+                periodMonthlyDays[month] = (periodMonthlyDays[month] || 0) + 1;
             });
 
-            // Агрегация breakdown
-            const allVenues = { ...aggregated.year_round, ...aggregated.seasonal };
-            aggregated.total.total_delivery_orders = Object.values(allVenues).reduce((sum, v) => sum + (v.delivery_orders || 0), 0);
-            aggregated.total.total_pickup_orders = Object.values(allVenues).reduce((sum, v) => sum + (v.pickup_orders || 0), 0);
-            aggregated.total.total_cafe_orders = Object.values(allVenues).reduce((sum, v) => sum + (v.cafe_orders || 0), 0);
-            aggregated.total.total_delivery_revenue = Object.values(allVenues).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0);
-            aggregated.total.total_pickup_revenue = Object.values(allVenues).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0);
-            aggregated.total.total_cafe_revenue = Object.values(allVenues).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0);
+            for (const month in periodMonthlyDays) {
+                const plan = monthlyPlans[month] || { planRevenue: 0, planOrders: 0 };
+                const [year, m] = month.split('-').map(Number);
+                const daysInMonth = getDaysInMonth(year, m - 1);
+                aggregated.plan.revenue += (plan.planRevenue / daysInMonth) * periodMonthlyDays[month];
+                aggregated.plan.orders += (plan.planOrders / daysInMonth) * periodMonthlyDays[month];
+            }
+
+            aggregated.year_round_total = {
+                orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
+                delivery_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
+                pickup_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
+                cafe_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
+            };
+            aggregated.seasonal_total = {
+                orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
+                delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
+                pickup_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
+                cafe_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
+            };
 
             return aggregated;
         }
 
         async function loadData(startDate, endDate) {
-            const cacheKey = `${startDate}-${endDate}`;
+            const cacheKey = `${startDate}_${endDate}`;
             if (dataCache[cacheKey]) return dataCache[cacheKey];
 
             try {
                 const dates = getDatesBetween(startDate, endDate);
                 const dailyData = await Promise.all(dates.map(async date => {
-                    if (dataCache[date]) return dataCache[date];
-                    const path = date === getTodayDateString() ? 'data/revenue.json' : `data/daily/${date}_revenue.json`;
+                    const path = date === getTodayDateString() ? 'data/data.json' : `data/daily/${date}_data.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     try {
-                        const data = await fetchWithRetry(url);
-                        dataCache[date] = data;
-                        return data;
-                    } catch {
+                        return await fetchWithRetry(url);
+                    } catch (e) {
+                        console.warn(`Нет данных за ${date}: ${e.message}`);
                         return null;
                     }
                 }));
 
                 const validData = dailyData.filter(d => d !== null);
-                if (validData.length === 0) throw new Error('Нет данных для выбранного периода');
+                if (validData.length === 0) throw new Error('No data available');
 
-                const aggregated = aggregateData(validData);
-                dataCache[cacheKey] = aggregated;
-                return aggregated;
+                const aggregatedData = aggregateData(validData, dates.length);
+                dataCache[cacheKey] = aggregatedData;
+                return aggregatedData;
             } catch (error) {
-                console.error('Ошибка загрузки данных:', error);
-                throw error;
+                console.error('Error loading data:', error);
+                return null;
             }
         }
 
@@ -561,8 +593,11 @@
         function renderMetrics(data) {
             const total = data.total || {};
             const plan = data.plan || {};
-            const revenuePercentage = plan.total_revenue > 0 ? (total.total_revenue / plan.total_revenue) * 100 : 0;
+            const revenuePercentage = plan.revenue > 0 ? (total.total_revenue / plan.revenue) * 100 : 0;
             const avgBillTotal = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+            const avgBillYear = data.year_round_total.orders > 0 ? data.year_round_total.revenue / data.year_round_total.orders : 0;
+            const avgBillSeasonal = data.seasonal_total.orders > 0 ? data.seasonal_total.revenue / data.seasonal_total.orders : 0;
+            const avgBillDelivery = total.total_delivery_orders > 0 ? total.total_delivery_revenue / total.total_delivery_orders : 0;
 
             document.getElementById('metrics').innerHTML = `
                 <div class="col-md-3">
@@ -572,11 +607,11 @@
                                 <i class="ti ti-currency-ruble text-primary me-2"></i>
                                 <h3 class="card-title mb-0">Выручка</h3>
                             </div>
-                            <div class="metric-value">${fmt.format(total.total_revenue || 0)} ₽</div>
-                            <div class="orders-breakdown">
-                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${fmt.format(total.total_delivery_revenue || 0)} ₽</div>
-                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${fmt.format(total.total_pickup_revenue || 0)} ₽</div>
-                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${fmt.format(total.total_cafe_revenue || 0)} ₽</div>
+                            <div class="metric-value">${fmt.format(total.total_revenue.toFixed(0))} ₽</div>
+                            <div class="metric-breakdown">
+                                Круглогодичные: ${fmt.format(data.year_round_total.revenue.toFixed(0))} ₽<br>
+                                Сезонные: ${fmt.format(data.seasonal_total.revenue.toFixed(0))} ₽<br>
+                                Доставка: ${fmt.format(total.total_delivery_revenue.toFixed(0))} ₽
                             </div>
                         </div>
                     </div>
@@ -589,10 +624,23 @@
                                 <h3 class="card-title mb-0">Заказы</h3>
                             </div>
                             <div class="metric-value">${total.total_orders || 0}</div>
-                            <div class="orders-breakdown">
-                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${total.total_delivery_orders || 0}</div>
-                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${total.total_pickup_orders || 0}</div>
-                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${total.total_cafe_orders || 0}</div>
+                            <div class="metric-breakdown">
+                                Круглогодичные: ${data.year_round_total.orders}<br>
+                                Сезонные: ${data.seasonal_total.orders}
+                            </div>
+                            <div class="d-flex justify-content-around mt-3">
+                                <div class="text-center order-type delivery">
+                                    <small class="text-muted d-block">Доставка</small>
+                                    <strong>${total.total_delivery_orders || 0}</strong>
+                                </div>
+                                <div class="text-center order-type pickup">
+                                    <small class="text-muted d-block">Самовывоз</small>
+                                    <strong>${total.total_pickup_orders || 0}</strong>
+                                </div>
+                                <div class="text-center order-type cafe">
+                                    <small class="text-muted d-block">Кафе</small>
+                                    <strong>${total.total_cafe_orders || 0}</strong>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -604,9 +652,11 @@
                                 <i class="ti ti-receipt text-primary me-2"></i>
                                 <h3 class="card-title mb-0">Средний чек</h3>
                             </div>
-                            <div class="metric-value">${fmt.format(avgBillTotal || 0)} ₽</div>
+                            <div class="metric-value">${fmt.format(avgBillTotal.toFixed(0))} ₽</div>
                             <div class="metric-breakdown">
-                                Доставка: ${fmt.format(total.total_delivery_orders > 0 ? (total.total_delivery_revenue / total.total_delivery_orders) : 0)} ₽
+                                Круглогодичные: ${fmt.format(avgBillYear.toFixed(0))} ₽<br>
+                                Сезонные: ${fmt.format(avgBillSeasonal.toFixed(0))} ₽<br>
+                                Доставка: ${fmt.format(avgBillDelivery.toFixed(0))} ₽
                             </div>
                         </div>
                     </div>
@@ -620,27 +670,24 @@
                             </div>
                             <div class="metric-value text-${getStatusClass(revenuePercentage)}">${revenuePercentage.toFixed(1)}%</div>
                             <div class="metric-breakdown">
-                                План: ${fmt.format(plan.total_revenue || 0)} ₽
+                                План: ${fmt.format(plan.revenue.toFixed(0))} ₽
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-
             const bar = document.getElementById('plan-bar');
             const progressText = document.getElementById('progress-text');
             const currentValue = document.getElementById('current-value');
             const planValue = document.getElementById('plan-value');
-
             if (bar && progressText && currentValue && planValue) {
                 bar.classList.add('bg-' + getStatusClass(revenuePercentage));
                 bar.style.width = `${Math.min(revenuePercentage, 100)}%`;
                 progressText.textContent = `${revenuePercentage.toFixed(1)}%`;
-                currentValue.textContent = `${fmt.format(total.total_revenue || 0)} ₽`;
-                planValue.textContent = `${fmt.format(plan.total_revenue || 0)} ₽`;
+                currentValue.textContent = `${fmt.format(total.total_revenue.toFixed(0))} ₽`;
+                planValue.textContent = `${fmt.format(plan.revenue.toFixed(0))} ₽`;
             }
-
-            if (revenuePercentage >= 100) {
+            if (revenuePercentage > 100) {
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
             }
         }
@@ -664,15 +711,44 @@
                                 <div class="progress-bar bg-${status}" style="width: ${Math.min(percentage, 100)}%"></div>
                             </div>
                             <div class="venue-metrics">
-                                <div><small class="text-muted">Выручка</small><div>${fmt.format(stats.total_revenue || 0)} ₽</div></div>
-                                <div><small class="text-muted">Заказы</small><div>${stats.total_orders || 0}</div></div>
-                                <div><small class="text-muted">Средний чек</small><div>${fmt.format(avgCheck || 0)} ₽</div></div>
-                                <div><small class="text-muted">План</small><div>Нет данных (обновите backend)</div></div>
+                                <div>
+                                    <small class="text-muted">Выручка</small>
+                                    <div>${fmt.format(stats.total_revenue.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Заказы</small>
+                                    <div>${stats.total_orders || 0}</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Средний чек</small>
+                                    <div>${fmt.format(avgCheck.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">План</small>
+                                    <div>${fmt.format(planRevenueForPeriod.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Доставка выр</small>
+                                    <div>${fmt.format(stats.delivery_revenue.toFixed(0))} ₽</div>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Самовывоз выр</small>
+                                    <div>${fmt.format(stats.pickup_revenue.toFixed(0))} ₽</div>
+                                </div>
                             </div>
-                            <div class="orders-breakdown mt-3">
-                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${stats.delivery_orders || 0}</div>
-                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${stats.pickup_orders || 0}</div>
-                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${stats.cafe_orders || 0}</div>
+                            <div class="d-flex justify-content-around mt-3">
+                                <div class="text-center order-type delivery">
+                                    <small class="text-muted d-block">Доставка</small>
+                                    <strong>${stats.delivery_orders || 0}</strong>
+                                </div>
+                                <div class="text-center order-type pickup">
+                                    <small class="text-muted d-block">Самовывоз</small>
+                                    <strong>${stats.pickup_orders || 0}</strong>
+                                </div>
+                                <div class="text-center order-type cafe">
+                                    <small class="text-muted d-block">Кафе</small>
+                                    <strong>${stats.cafe_orders || 0}</strong>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -684,19 +760,71 @@
             const key = containerId === 'year-round' ? 'year_round' : 'seasonal';
             const venues = data[key] || {};
             const container = document.getElementById(containerId);
-            
             if (!container) return;
-            
             if (Object.keys(venues).length === 0) {
-                container.innerHTML = '<div class="alert alert-warning">Нет данных по филиалам</div>';
+                container.innerHTML = '<div class="empty">Нет данных по филиалам</div>';
                 return;
             }
-            
             const periodDays = getDiffDays(currentStartDate, currentEndDate);
             const sortedVenues = Object.entries(venues)
                 .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
+        }
+
+        function renderSalesData(data) {
+            const salesContainer = document.getElementById('sales-data');
+            if (!salesContainer) return;
+            const sales = data.sales || {};
+            if (Object.keys(sales).length === 0) {
+                salesContainer.innerHTML = '<div class="alert alert-info">Нет данных по продажам полуфабрикатов</div>';
+                return;
+            }
+            let html = '<div class="row row-cards">';
+            const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+            allVenues.forEach(venue => {
+                const stats = sales[venue] || {
+                    Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
+                    'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп': 0, 'Вьетнамский суп': 0 },
+                    'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
+                };
+                html += `
+                    <div class="col-md-6">
+                        <div class="card fade-in">
+                            <div class="card-header">
+                                <h3 class="card-title">${venue}</h3>
+                            </div>
+                            <div class="card-body">
+                                <table class="sales-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Категория</th>
+                                            <th>Количество</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Лапша</td><td>${stats['Лапша']} шт</td></tr>
+                                        <tr><td>Рис</td><td>${stats['Рис']} шт</td></tr>
+                                        <tr><td>Курица</td><td>${stats['Курица']} шт</td></tr>
+                                        <tr><td>Свинина</td><td>${stats['Свинина']} шт</td></tr>
+                                        <tr><td>Креветка</td><td>${stats['Креветка']} шт</td></tr>
+                                        <tr><td>Бекон</td><td>${stats['Бекон']} шт</td></tr>
+                                        <tr><td>Соломка</td><td>${stats['Соломка'].toFixed(2)} кг</td></tr>
+                                        <tr><td>Кубик</td><td>${stats['Кубик'].toFixed(2)} кг</td></tr>
+                                        <tr><td>Азиатский салат с курицей</td><td>${stats['Салаты - Супы']['Азиатский салат с курицей']} шт</td></tr>
+                                        <tr><td>Азиатский салат с креветкой</td><td>${stats['Салаты - Супы']['Азиатский салат с креветкой']} шт</td></tr>
+                                        <tr><td>Тайский суп</td><td>${stats['Салаты - Супы']['Тайский суп']} шт</td></tr>
+                                        <tr><td>Вьетнамский суп</td><td>${stats['Салаты - Супы']['Вьетнамский суп']} шт</td></tr>
+                                        <tr><td>Пельмени с курицей</td><td>${stats['Пельмени - Бао-банс']['Пельмени с курицей']} шт</td></tr>
+                                        <tr><td>Бао-банс с курицей</td><td>${stats['Пельмени - Бао-банс']['Бао-банс с курицей']} шт</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            salesContainer.innerHTML = html;
         }
 
         async function renderTimeChart(startDate, endDate) {
@@ -710,11 +838,12 @@
 
             const dates = getDatesBetween(startDate, endDate);
             const dailyData = await Promise.all(dates.map(async date => {
-                const path = date === getTodayDateString() ? 'data/revenue.json' : `data/daily/${date}_revenue.json`;
+                const path = date === getTodayDateString() ? 'data/data.json' : `data/daily/${date}_data.json`;
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                 try {
                     return await fetchWithRetry(url);
-                } catch {
+                } catch (e) {
+                    console.warn(`Нет данных за ${date}: ${e.message}`);
                     return null;
                 }
             }));
@@ -743,10 +872,10 @@
                     }
                 });
                 labels = Object.keys(monthlyData.revenue).sort();
-                revenueData = labels.map(month => monthlyData.revenue[month] || 0);
-                deliveryData = labels.map(month => monthlyData.delivery[month] || 0);
-                pickupData = labels.map(month => monthlyData.pickup[month] || 0);
-                cafeData = labels.map(month => monthlyData.cafe[month] || 0);
+                revenueData = labels.map(month => monthlyData.revenue[month]);
+                deliveryData = labels.map(month => monthlyData.delivery[month]);
+                pickupData = labels.map(month => monthlyData.pickup[month]);
+                cafeData = labels.map(month => monthlyData.cafe[month]);
             } else {
                 labels = dates;
                 revenueData = dailyData.map(day => day ? (day.total.total_revenue || 0) : 0);
@@ -798,10 +927,7 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            },
+                            legend: { display: true, position: 'bottom' },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
@@ -814,22 +940,14 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    callback: function(value) {
-                                        return fmt.format(value) + ' ₽';
-                                    },
+                                    callback: function(value) { return fmt.format(value) + ' ₽'; },
                                     color: textColor
                                 },
-                                grid: {
-                                    color: gridColor
-                                }
+                                grid: { color: gridColor }
                             },
                             x: {
-                                ticks: {
-                                    color: textColor
-                                },
-                                grid: {
-                                    color: gridColor
-                                }
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
                             }
                         }
                     }
@@ -846,16 +964,15 @@
             const allVenues = { ...data.year_round, ...data.seasonal };
             const labels = Object.keys(allVenues);
             const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
-            
+
             const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
             const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
             const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
             const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
-            
+
             if (ctxRevenue && revenueChart) {
                 revenueChart.destroy();
             }
-            
             if (ctxRevenue) {
                 revenueChart = new Chart(ctxRevenue, {
                     type: 'bar',
@@ -871,9 +988,7 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: {
-                                display: false
-                            },
+                            legend: { display: false },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
@@ -886,38 +1001,29 @@
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    callback: function(value) {
-                                        return fmt.format(value) + ' ₽';
-                                    },
+                                    callback: function(value) { return fmt.format(value) + ' ₽'; },
                                     color: textColor
                                 },
-                                grid: {
-                                    color: gridColor
-                                }
+                                grid: { color: gridColor }
                             },
                             x: {
-                                ticks: {
-                                    color: textColor
-                                },
-                                grid: {
-                                    color: gridColor
-                                }
+                                ticks: { color: textColor },
+                                grid: { color: gridColor }
                             }
                         }
                     }
                 });
             }
-            
+
             const orderTypes = {
                 'Доставка': data.total.total_delivery_orders || 0,
                 'Самовывоз': data.total.total_pickup_orders || 0,
                 'Кафе': data.total.total_cafe_orders || 0
             };
-            
+
             if (ctxOrders && ordersChart) {
                 ordersChart.destroy();
             }
-            
             if (ctxOrders) {
                 ordersChart = new Chart(ctxOrders, {
                     type: 'doughnut',
@@ -932,14 +1038,7 @@
                     options: {
                         responsive: true,
                         plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: textColor,
-                                    padding: 10,
-                                    boxWidth: 12
-                                }
-                            },
+                            legend: { position: 'bottom', labels: { color: textColor, padding: 10, boxWidth: 12 } },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
@@ -954,28 +1053,23 @@
                     }
                 });
             }
-            
             updateChartThemes();
         }
 
         function loadCustomData() {
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
-            
             if (!startDate || !endDate) {
                 showToast('Выберите начальную и конечную дату', 'error');
                 return;
             }
-            
             if (new Date(startDate) > new Date(endDate)) {
                 showToast('Начальная дата не может быть позже конечной', 'error');
                 return;
             }
-            
-            const periodText = startDate === endDate ? 
+            const periodText = startDate === endDate ?
                 `за ${new Date(startDate).toLocaleDateString('ru-RU')}` :
                 `с ${new Date(startDate).toLocaleDateString('ru-RU')} по ${new Date(endDate).toLocaleDateString('ru-RU')}`;
-            
             showToast(`Загрузка данных ${periodText}`);
             load(startDate, endDate);
         }
@@ -985,54 +1079,45 @@
             if (updateEl) {
                 updateEl.innerHTML = '<i class="ti ti-refresh ti-spin"></i> Загрузка...';
             }
-            
             currentStartDate = startDateStr;
             currentEndDate = endDateStr;
-            
             const businessDay = getCurrentBusinessDay();
             const todayStr = formatDateForInput(businessDay);
-            
             if (startDateStr === todayStr || endDateStr === todayStr) {
                 delete dataCache[todayStr];
             }
-            
             try {
                 const data = await loadData(startDateStr, endDateStr);
                 if (!data) {
                     throw new Error('Данные не получены');
                 }
                 dataCache.current = data;
-                
                 const currentDataHash = JSON.stringify(data.total);
                 if (lastDataHash && lastDataHash !== currentDataHash) {
                     showToast('Обновлены данные', 'success');
                 }
                 lastDataHash = currentDataHash;
-                
-                let dateDisplay = startDateStr === endDateStr ? 
+                let dateDisplay = startDateStr === endDateStr ?
                     new Date(startDateStr).toLocaleDateString('ru-RU') :
                     `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
-                
                 if (updateEl) {
                     updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${data.time} (${dateDisplay})`;
                 }
-                
                 renderMetrics(data);
                 renderVenues(data, 'year-round');
                 renderVenues(data, 'seasonal');
+                renderSalesData(data);
                 renderCharts(data);
                 await renderTimeChart(currentStartDate, currentEndDate);
-                
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
                 if (updateEl) {
                     updateEl.innerHTML = '<i class="ti ti-alert-triangle"></i> Ошибка загрузки';
                 }
-                
                 document.getElementById('metrics').innerHTML = '<div class="alert alert-danger">Ошибка загрузки метрик: ' + error.message + '</div>';
                 document.getElementById('year-round').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по круглогодичным филиалам</div>';
                 document.getElementById('seasonal').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по сезонным филиалам</div>';
-                
+                document.getElementById('sales-data').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по полуфабрикатам</div>';
                 showToast('Ошибка загрузки данных: ' + error.message, 'error');
             } finally {
                 setTimeout(() => {
@@ -1043,72 +1128,95 @@
             }
         }
 
-        async function exportPDF(filter = 'all') {
+        function setupAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            autoRefreshInterval = setInterval(() => {
+                const businessDay = getCurrentBusinessDay();
+                const todayStr = formatDateForInput(businessDay);
+                if (currentStartDate === todayStr && currentEndDate === todayStr) {
+                    console.log('Автообновление данных...');
+                    delete dataCache[todayStr];
+                    load(currentStartDate, currentEndDate);
+                }
+            }, AUTO_REFRESH_INTERVAL);
+        }
+
+        function exportPDF(filter = 'all') {
             const data = dataCache.current;
             if (!data) {
                 showToast('Нет данных для экспорта', 'error');
                 return;
             }
-            
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
             doc.setFontSize(16);
-            doc.text('Чи-Фань - Отчет по выручке', 20, 20);
-            
+            doc.text('Чи-Фань - Отчет по выручке и продажам', 20, 20);
             doc.setFontSize(10);
             doc.text(`Период: ${currentStartDate} - ${currentEndDate}`, 20, 30);
             doc.text(`Время обновления: ${data.time}`, 20, 35);
-            
             let y = 45;
-            
-            doc.setFontSize(12);
-            doc.text('Основные метрики:', 20, y);
-            y += 10;
-            
-            const total = data.total || {};
-            doc.text(`Выручка: ${fmt.format(total.total_revenue || 0)} ₽`, 20, y);
-            y += 7;
-            doc.text(`Заказы: ${total.total_orders || 0}`, 20, y);
-            y += 7;
-            doc.text(`Доставка: ${total.total_delivery_orders || 0}`, 20, y);
-            y += 7;
-            doc.text(`Самовывоз: ${total.total_pickup_orders || 0}`, 20, y);
-            y += 7;
-            doc.text(`Кафе: ${total.total_cafe_orders || 0}`, 20, y);
-            y += 15;
-            
-            const venues = filter === 'year-round' ? data.year_round : 
-                          filter === 'seasonal' ? data.seasonal : 
-                          { ...data.year_round, ...data.seasonal };
-            
-            doc.setFontSize(12);
-            doc.text('Филиалы:', 20, y);
-            y += 10;
-            
-            const sortedVenues = Object.entries(venues || {})
-                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-            
-            sortedVenues.forEach(([venue, stats]) => {
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                
-                doc.setFontSize(10);
-                doc.text(`${venue}: ${fmt.format(stats.total_revenue || 0)} ₽ (${stats.total_orders || 0} заказов)`, 20, y);
-                y += 7;
-            });
-            
-            const canvas = document.getElementById('revenueChart');
-            if (canvas) {
-                try {
-                    const imgData = await html2canvas(canvas).then(canvas => canvas.toDataURL('image/png'));
-                    doc.addPage();
-                    doc.addImage(imgData, 'PNG', 10, 10, 190, 100);
-                } catch (e) {
-                    console.error('Ошибка экспорта чарта:', e);
-                }
+
+            if (filter === 'all' || filter === 'year-round' || filter === 'seasonal') {
+                doc.setFontSize(12);
+                doc.text('Основные метрики:', 20, y);
+                y += 10;
+                const total = data.total || {};
+                doc.text(`Выручка: ${fmt.format(total.total_revenue || 0)} ₽`, 20, y); y += 7;
+                doc.text(`Заказы: ${total.total_orders || 0}`, 20, y); y += 7;
+                doc.text(`Доставка: ${total.total_delivery_orders || 0} (${fmt.format(total.total_delivery_revenue || 0)} ₽)`, 20, y); y += 7;
+                doc.text(`Самовывоз: ${total.total_pickup_orders || 0} (${fmt.format(total.total_pickup_revenue || 0)} ₽)`, 20, y); y += 7;
+                doc.text(`Кафе: ${total.total_cafe_orders || 0} (${fmt.format(total.total_cafe_revenue || 0)} ₽)`, 20, y); y += 15;
+
+                const venues = filter === 'year-round' ? data.year_round :
+                               filter === 'seasonal' ? data.seasonal :
+                               { ...data.year_round, ...data.seasonal };
+                doc.setFontSize(12);
+                doc.text('Филиалы:', 20, y); y += 10;
+                const sortedVenues = Object.entries(venues || {})
+                    .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
+                sortedVenues.forEach(([venue, stats]) => {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    doc.setFontSize(10);
+                    doc.text(`${venue}: ${fmt.format(stats.total_revenue || 0)} ₽ (${stats.total_orders || 0} заказов)`, 20, y);
+                    y += 7;
+                    doc.text(`Доставка: ${stats.delivery_orders || 0} (${fmt.format(stats.delivery_revenue || 0)} ₽)`, 25, y); y += 7;
+                    doc.text(`Самовывоз: ${stats.pickup_orders || 0} (${fmt.format(stats.pickup_revenue || 0)} ₽)`, 25, y); y += 7;
+                    doc.text(`Кафе: ${stats.cafe_orders || 0} (${fmt.format(stats.cafe_revenue || 0)} ₽)`, 25, y); y += 7;
+                });
+            }
+
+            if (filter === 'all' || filter === 'sales') {
+                y = y > 270 ? 20 : y + 15;
+                doc.setFontSize(12);
+                doc.text('Продажи полуфабрикатов:', 20, y); y += 10;
+                const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+                allVenues.forEach(venue => {
+                    if (y > 260) { doc.addPage(); y = 20; }
+                    const stats = data.sales[venue] || {
+                        Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
+                        'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп': 0, 'Вьетнамский суп': 0 },
+                        'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
+                    };
+                    doc.setFontSize(10);
+                    doc.text(`${venue}:`, 20, y); y += 7;
+                    doc.text(`Лапша: ${stats['Лапша']} шт`, 25, y); y += 7;
+                    doc.text(`Рис: ${stats['Рис']} шт`, 25, y); y += 7;
+                    doc.text(`Курица: ${stats['Курица']} шт`, 25, y); y += 7;
+                    doc.text(`Свинина: ${stats['Свинина']} шт`, 25, y); y += 7;
+                    doc.text(`Креветка: ${stats['Креветка']} шт`, 25, y); y += 7;
+                    doc.text(`Бекон: ${stats['Бекон']} шт`, 25, y); y += 7;
+                    doc.text(`Соломка: ${stats['Соломка'].toFixed(2)} кг`, 25, y); y += 7;
+                    doc.text(`Кубик: ${stats['Кубик'].toFixed(2)} кг`, 25, y); y += 7;
+                    Object.entries(stats['Салаты - Супы']).forEach(([item, value]) => {
+                        if (value > 0) { doc.text(`${item}: ${value} шт`, 25, y); y += 7; }
+                    });
+                    Object.entries(stats['Пельмени - Бао-банс']).forEach(([item, value]) => {
+                        if (value > 0) { doc.text(`${item}: ${value} шт`, 25, y); y += 7; }
+                    });
+                    y += 5;
+                });
             }
 
             doc.save(`chifan_report_${currentStartDate}_${filter}.pdf`);
@@ -1118,44 +1226,15 @@
         function init() {
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('theme-dark');
-                document.querySelector('.theme-switcher').classList.add('rotated');
             }
-            
             const businessDay = getCurrentBusinessDay();
             const businessDayStr = formatDateForInput(businessDay);
             document.getElementById('start-date').value = businessDayStr;
             document.getElementById('end-date').value = businessDayStr;
-            
             document.querySelector('.btn-list .btn').classList.add('btn-primary');
-            
-            updateBusinessDayInfo();
-            
+            document.getElementById('business-day-date').textContent = businessDayStr;
             load(businessDayStr, businessDayStr);
-            
             setupAutoRefresh();
-        }
-
-        function updateBusinessDayInfo() {
-            const businessDay = getCurrentBusinessDay();
-            const businessDayDate = formatDateForInput(businessDay);
-            document.getElementById('business-day-date').textContent = businessDayDate;
-        }
-
-        function setupAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-            }
-            
-            autoRefreshInterval = setInterval(() => {
-                const businessDay = getCurrentBusinessDay();
-                const todayStr = formatDateForInput(businessDay);
-                
-                if (currentStartDate === todayStr && currentEndDate === todayStr) {
-                    console.log('Автообновление данных...');
-                    delete dataCache[todayStr];
-                    load(currentStartDate, currentEndDate);
-                }
-            }, AUTO_REFRESH_INTERVAL);
         }
 
         document.addEventListener('DOMContentLoaded', init);
