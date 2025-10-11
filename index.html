@@ -320,6 +320,8 @@
         const REPO_OWNER = 'wwwgolybfs-dev';
         const REPO_NAME = 'chifan2025';
         const BRANCH = 'main';
+        const YEAR_ROUND_VENUES = ["Красота", "Луговая", "Парк", "Светланская", "Чуркин", "Тихая", "Тобольская"];
+        const SEASONAL_VENUES = ["Юбилейный", "Кунгас", "МГУ", "Патрокл"];
 
         function toggleTheme() {
             document.body.classList.toggle('theme-dark');
@@ -558,7 +560,7 @@
             try {
                 const dates = getDatesBetween(startDate, endDate);
                 const dailyData = await Promise.all(dates.map(async date => {
-                    const path = date === getTodayDateString() ? 'data/data.json' : `data/daily/${date}_data.json`;
+                    const path = `data/daily/${date}_data.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     try {
                         return await fetchWithRetry(url);
@@ -838,7 +840,7 @@
 
             const dates = getDatesBetween(startDate, endDate);
             const dailyData = await Promise.all(dates.map(async date => {
-                const path = date === getTodayDateString() ? 'data/data.json' : `data/daily/${date}_data.json`;
+                const path = `data/daily/${date}_data.json`;
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                 try {
                     return await fetchWithRetry(url);
