@@ -1,16 +1,16 @@
 {
   "date": "2025-10-11",
-  "time": "17:40",
+  "time": "17:50",
   "year_round": {
     "Светланская": {
-      "total_orders": 52,
+      "total_orders": 57,
       "delivery_orders": 0,
-      "pickup_orders": 11,
-      "cafe_orders": 41,
-      "total_revenue": 26811.0,
+      "pickup_orders": 12,
+      "cafe_orders": 45,
+      "total_revenue": 30326.0,
       "delivery_revenue": 0,
-      "pickup_revenue": 7293.0,
-      "cafe_revenue": 19518.0
+      "pickup_revenue": 7818.0,
+      "cafe_revenue": 22508.0
     },
     "Парк": {
       "total_orders": 9,
@@ -23,24 +23,24 @@
       "cafe_revenue": 2002.0
     },
     "Красота": {
-      "total_orders": 89,
+      "total_orders": 90,
       "delivery_orders": 45,
-      "pickup_orders": 15,
+      "pickup_orders": 16,
       "cafe_orders": 29,
-      "total_revenue": 93903.0,
+      "total_revenue": 94272.0,
       "delivery_revenue": 66283.0,
-      "pickup_revenue": 7921.0,
+      "pickup_revenue": 8290.0,
       "cafe_revenue": 19699.0
     },
     "Тобольская": {
-      "total_orders": 73,
-      "delivery_orders": 33,
+      "total_orders": 79,
+      "delivery_orders": 37,
       "pickup_orders": 7,
-      "cafe_orders": 33,
-      "total_revenue": 74863.0,
-      "delivery_revenue": 49427.0,
+      "cafe_orders": 35,
+      "total_revenue": 83811.0,
+      "delivery_revenue": 57127.0,
       "pickup_revenue": 6649.0,
-      "cafe_revenue": 18787.0
+      "cafe_revenue": 20035.0
     },
     "Тихая": {
       "total_orders": 52,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 422,
-    "total_revenue": 346318.0
+    "total_orders": 434,
+    "total_revenue": 359150.0
   },
   "plan": {
     "total_revenue": 20944728.513,
