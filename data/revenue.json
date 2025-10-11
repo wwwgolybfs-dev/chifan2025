@@ -1,16 +1,16 @@
 {
   "date": "2025-10-11",
-  "time": "16:10",
+  "time": "16:20",
   "year_round": {
     "Светланская": {
-      "total_orders": 45,
+      "total_orders": 46,
       "delivery_orders": 0,
       "pickup_orders": 9,
-      "cafe_orders": 36,
-      "total_revenue": 23113.0,
+      "cafe_orders": 37,
+      "total_revenue": 24139.0,
       "delivery_revenue": 0,
       "pickup_revenue": 6430.0,
-      "cafe_revenue": 16683.0
+      "cafe_revenue": 17709.0
     },
     "Парк": {
       "total_orders": 6,
@@ -23,34 +23,34 @@
       "cafe_revenue": 2002.0
     },
     "Красота": {
-      "total_orders": 73,
+      "total_orders": 76,
       "delivery_orders": 42,
       "pickup_orders": 12,
-      "cafe_orders": 19,
-      "total_revenue": 80219.0,
+      "cafe_orders": 22,
+      "total_revenue": 81568.0,
       "delivery_revenue": 61559.0,
       "pickup_revenue": 6918.0,
-      "cafe_revenue": 11742.0
+      "cafe_revenue": 13091.0
     },
     "Тобольская": {
-      "total_orders": 59,
-      "delivery_orders": 26,
+      "total_orders": 63,
+      "delivery_orders": 27,
       "pickup_orders": 6,
-      "cafe_orders": 27,
-      "total_revenue": 57766.0,
-      "delivery_revenue": 37023.0,
+      "cafe_orders": 30,
+      "total_revenue": 60828.0,
+      "delivery_revenue": 38584.0,
       "pickup_revenue": 5237.0,
-      "cafe_revenue": 15506.0
+      "cafe_revenue": 17007.0
     },
     "Тихая": {
-      "total_orders": 40,
+      "total_orders": 41,
       "delivery_orders": 10,
       "pickup_orders": 8,
-      "cafe_orders": 22,
-      "total_revenue": 33798.0,
+      "cafe_orders": 23,
+      "total_revenue": 34167.0,
       "delivery_revenue": 15343.0,
       "pickup_revenue": 7008.0,
-      "cafe_revenue": 11447.0
+      "cafe_revenue": 11816.0
     },
     "Чуркин": {
       "total_orders": 87,
@@ -96,8 +96,8 @@
     }
   },
   "total": {
-    "total_orders": 343,
-    "total_revenue": 277539.0
+    "total_orders": 352,
+    "total_revenue": 283345.0
   },
   "plan": {
     "total_revenue": 20944728.513,
