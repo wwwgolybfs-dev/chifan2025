@@ -1,6 +1,6 @@
 {
   "date": "2025-10-11",
-  "time": "12:50",
+  "time": "13:00",
   "year_round": {
     "Светланская": {
       "total_orders": 18,
@@ -23,24 +23,24 @@
       "cafe_revenue": 299.0
     },
     "Красота": {
-      "total_orders": 36,
-      "delivery_orders": 28,
+      "total_orders": 38,
+      "delivery_orders": 29,
       "pickup_orders": 2,
-      "cafe_orders": 6,
-      "total_revenue": 50335.0,
-      "delivery_revenue": 45049.0,
+      "cafe_orders": 7,
+      "total_revenue": 52670.0,
+      "delivery_revenue": 46069.0,
       "pickup_revenue": 1073.0,
-      "cafe_revenue": 4213.0
+      "cafe_revenue": 5528.0
     },
     "Тобольская": {
-      "total_orders": 24,
-      "delivery_orders": 12,
-      "pickup_orders": 2,
-      "cafe_orders": 10,
-      "total_revenue": 20794.0,
-      "delivery_revenue": 15009.0,
-      "pickup_revenue": 1215.0,
-      "cafe_revenue": 4570.0
+      "total_orders": 29,
+      "delivery_orders": 14,
+      "pickup_orders": 4,
+      "cafe_orders": 11,
+      "total_revenue": 26071.0,
+      "delivery_revenue": 17701.0,
+      "pickup_revenue": 3461.0,
+      "cafe_revenue": 4909.0
     },
     "Тихая": {
       "total_orders": 13,
@@ -53,14 +53,14 @@
       "cafe_revenue": 4552.0
     },
     "Чуркин": {
-      "total_orders": 19,
+      "total_orders": 22,
       "delivery_orders": 0,
       "pickup_orders": 4,
-      "cafe_orders": 15,
-      "total_revenue": 12850.0,
+      "cafe_orders": 18,
+      "total_revenue": 15956.0,
       "delivery_revenue": 0,
       "pickup_revenue": 4023.0,
-      "cafe_revenue": 8827.0
+      "cafe_revenue": 11933.0
     }
   },
   "seasonal": {
@@ -85,19 +85,19 @@
       "cafe_revenue": 1688.0
     },
     "Юбилейный": {
-      "total_orders": 1,
+      "total_orders": 3,
       "delivery_orders": 0,
       "pickup_orders": 0,
-      "cafe_orders": 1,
-      "total_revenue": 365.0,
+      "cafe_orders": 3,
+      "total_revenue": 1079.0,
       "delivery_revenue": 0,
       "pickup_revenue": 0,
-      "cafe_revenue": 365.0
+      "cafe_revenue": 1079.0
     }
   },
   "total": {
-    "total_orders": 119,
-    "total_revenue": 105007.0
+    "total_orders": 131,
+    "total_revenue": 116439.0
   },
   "plan": {
     "total_revenue": 20944728.513,
