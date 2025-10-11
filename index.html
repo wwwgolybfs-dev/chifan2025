@@ -36,12 +36,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--tblr-primary);
-            animation: fadeInValue 1s ease, pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            animation: fadeInValue 1s ease;
         }
         @keyframes fadeInValue {
             from { opacity: 0; transform: scale(0.9); }
@@ -389,12 +384,12 @@
                     end = new Date();
                     break;
                 case 'thisMonth':
-                    start = new Date(today.getFullYear(), today.getMonth(), 1);
-                    end = new Date();
+                    start = new Date(today.getFullYear(), today.getMonth(), 1); // С 1-го числа текущего месяца
+                    end = new Date(); // До текущей даты
                     break;
                 case 'lastMonth':
-                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                    end = new Date(today.getFullYear(), today.getMonth(), 0);
+                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1); // С 1-го числа прошлого месяца
+                    end = new Date(today.getFullYear(), today.getMonth(), 0); // До последнего числа прошлого месяца
                     break;
             }
             
@@ -578,23 +573,10 @@
                                 <h3 class="card-title mb-0">Выручка</h3>
                             </div>
                             <div class="metric-value">${fmt.format(total.total_revenue || 0)} ₽</div>
-                            <div class="accordion" id="accordion-revenue">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-revenue">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-revenue" aria-expanded="false">
-                                            Breakdown
-                                        </button>
-                                    </h2>
-                                    <div id="collapse-revenue" class="accordion-collapse collapse" aria-labelledby="heading-revenue">
-                                        <div class="accordion-body">
-                                            <div class="orders-breakdown">
-                                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${fmt.format(total.total_delivery_revenue || 0)} ₽</div>
-                                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${fmt.format(total.total_pickup_revenue || 0)} ₽</div>
-                                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${fmt.format(total.total_cafe_revenue || 0)} ₽</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="orders-breakdown">
+                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${fmt.format(total.total_delivery_revenue || 0)} ₽</div>
+                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${fmt.format(total.total_pickup_revenue || 0)} ₽</div>
+                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${fmt.format(total.total_cafe_revenue || 0)} ₽</div>
                             </div>
                         </div>
                     </div>
@@ -607,23 +589,10 @@
                                 <h3 class="card-title mb-0">Заказы</h3>
                             </div>
                             <div class="metric-value">${total.total_orders || 0}</div>
-                            <div class="accordion" id="accordion-orders">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-orders">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-orders" aria-expanded="false">
-                                            Breakdown
-                                        </button>
-                                    </h2>
-                                    <div id="collapse-orders" class="accordion-collapse collapse" aria-labelledby="heading-orders">
-                                        <div class="accordion-body">
-                                            <div class="orders-breakdown">
-                                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${total.total_delivery_orders || 0}</div>
-                                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${total.total_pickup_orders || 0}</div>
-                                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${total.total_cafe_orders || 0}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="orders-breakdown">
+                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${total.total_delivery_orders || 0}</div>
+                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${total.total_pickup_orders || 0}</div>
+                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${total.total_cafe_orders || 0}</div>
                             </div>
                         </div>
                     </div>
@@ -700,23 +669,10 @@
                                 <div><small class="text-muted">Средний чек</small><div>${fmt.format(avgCheck || 0)} ₽</div></div>
                                 <div><small class="text-muted">План</small><div>Нет данных (обновите backend)</div></div>
                             </div>
-                            <div class="accordion mt-3" id="accordion-${venue}">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-${venue}">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${venue}" aria-expanded="false">
-                                            Breakdown
-                                        </button>
-                                    </h2>
-                                    <div id="collapse-${venue}" class="accordion-collapse collapse" aria-labelledby="heading-${venue}">
-                                        <div class="accordion-body">
-                                            <div class="orders-breakdown">
-                                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${stats.delivery_orders || 0}</div>
-                                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${stats.pickup_orders || 0}</div>
-                                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${stats.cafe_orders || 0}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="orders-breakdown mt-3">
+                                <div class="order-type delivery"><i class="ti ti-truck me-1"></i>Доставка: ${stats.delivery_orders || 0}</div>
+                                <div class="order-type pickup"><i class="ti ti-walk me-1"></i>Самовывоз: ${stats.pickup_orders || 0}</div>
+                                <div class="order-type cafe"><i class="ti ti-coffee me-1"></i>Кафе: ${stats.cafe_orders || 0}</div>
                             </div>
                         </div>
                     </div>
