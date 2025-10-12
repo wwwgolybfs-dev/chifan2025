@@ -98,7 +98,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .row-cards .card {
-            min-height: 180px; /* Выравнивание высоты */
+            min-height: 220px; /* Выравнивание высоты */
+        }
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .sales-table th, .sales-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
         }
     </style>
 </head>
@@ -848,7 +858,7 @@
             const days = getDiffDays(startDate, endDate);
             let labels = [];
             let deliveryData = [];
-            let pickupData = [];
+            < pickupData = [];
             let cafeData = [];
             let type = 'line';
             let timeUnit = 'day';
