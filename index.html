@@ -434,6 +434,31 @@
             return new Date(year, month + 1, 0).getDate();
         }
 
+        function computeTotals(data) {
+            if (!data) return data;
+            data.year_round_total = {
+                orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
+                delivery_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
+                pickup_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
+                cafe_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
+            };
+            data.seasonal_total = {
+                orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
+                delivery_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
+                pickup_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
+                cafe_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
+            };
+            return data;
+        }
+
         function aggregateData(dailyDataArray, periodDays) {
             const aggregated = {
                 year_round: {},
@@ -535,10 +560,11 @@
             try {
                 const dates = getDatesBetween(startDate, endDate);
                 const dailyData = await Promise.all(dates.map(async date => {
-                    const path = `data/daily/${date}_data.json`;
+                    const path = (date === getTodayDateString()) ? 'data/revenue.json' : `data/daily/${date}_data.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     try {
-                        return await fetchWithRetry(url);
+                        const response = await fetchWithRetry(url);
+                        return computeTotals(response); // Применяем computeTotals к каждому дню
                     } catch (e) {
                         console.warn(`Нет данных за ${date}: ${e.message}`);
                         return null;
@@ -1024,7 +1050,7 @@
                 timeUnit = 'month';
                 const monthlyData = { delivery: {}, pickup: {}, cafe: {} };
                 dailyData.forEach(dayData => {
-                    if (dayData) {
+                    if (dayData && dayData.total) {
                         const month = dayData.date.substring(0, 7);
                         monthlyData.delivery[month] = (monthlyData.delivery[month] || 0) + (dayData.total.total_delivery_revenue || 0);
                         monthlyData.pickup[month] = (monthlyData.pickup[month] || 0) + (dayData.total.total_pickup_revenue || 0);
@@ -1032,14 +1058,14 @@
                     }
                 });
                 labels = Object.keys(monthlyData.delivery).sort();
-                deliveryData = labels.map(month => monthlyData.delivery[month]);
-                pickupData = labels.map(month => monthlyData.pickup[month]);
-                cafeData = labels.map(month => monthlyData.cafe[month]);
+                deliveryData = labels.map(month => monthlyData.delivery[month] || 0);
+                pickupData = labels.map(month => monthlyData.pickup[month] || 0);
+                cafeData = labels.map(month => monthlyData.cafe[month] || 0);
             } else {
                 labels = dates;
-                deliveryData = dailyData.map(day => day ? (day.total.total_delivery_revenue || 0) : 0);
-                pickupData = dailyData.map(day => day ? (day.total.total_pickup_revenue || 0) : 0);
-                cafeData = dailyData.map(day => day ? (day.total.total_cafe_revenue || 0) : 0);
+                deliveryData = dailyData.map(day => day && day.total ? (day.total.total_delivery_revenue || 0) : 0);
+                pickupData = dailyData.map(day => day && day.total ? (day.total.total_pickup_revenue || 0) : 0);
+                cafeData = dailyData.map(day => day && day.total ? (day.total.total_cafe_revenue || 0) : 0);
             }
 
             if (ctxTime) {
@@ -1054,7 +1080,8 @@
                                 backgroundColor: '#8b5cf6',
                                 borderColor: '#8b5cf6',
                                 borderWidth: 2,
-                                fill: true
+                                fill: true,
+                                stack: 'combined'
                             },
                             {
                                 label: 'Доставка',
@@ -1062,7 +1089,8 @@
                                 backgroundColor: '#10b981',
                                 borderColor: '#10b981',
                                 borderWidth: 2,
-                                fill: true
+                                fill: true,
+                                stack: 'combined'
                             },
                             {
                                 label: 'Самовывоз',
@@ -1070,7 +1098,8 @@
                                 backgroundColor: '#f59e0b',
                                 borderColor: '#f59e0b',
                                 borderWidth: 2,
-                                fill: true
+                                fill: true,
+                                stack: 'combined'
                             }
                         ]
                     },
@@ -1264,10 +1293,12 @@
                 }
             }
             try {
-                const { aggregatedData, dailyData } = await loadData(startDateStr, endDateStr);
-                if (!aggregatedData) {
+                const result = await loadData(startDateStr, endDateStr);
+                if (!result) {
                     throw new Error('Данные не получены');
                 }
+                let { aggregatedData, dailyData } = result;
+                aggregatedData = computeTotals(aggregatedData);
                 dataCache.current = aggregatedData;
                 const currentDataHash = JSON.stringify(aggregatedData.total);
                 if (lastDataHash && lastDataHash !== currentDataHash) {
