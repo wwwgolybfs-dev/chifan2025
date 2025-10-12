@@ -434,30 +434,6 @@
             return new Date(year, month + 1, 0).getDate();
         }
 
-        function computeTotals(data) {
-            data.year_round_total = {
-                orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.total_orders || 0), 0),
-                revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
-                delivery_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
-                delivery_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
-                pickup_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
-                pickup_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
-                cafe_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
-                cafe_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
-            };
-            data.seasonal_total = {
-                orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.total_orders || 0), 0),
-                revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
-                delivery_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
-                delivery_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
-                pickup_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
-                pickup_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
-                cafe_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
-                cafe_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
-            };
-            return data;
-        }
-
         function aggregateData(dailyDataArray, periodDays) {
             const aggregated = {
                 year_round: {},
@@ -547,26 +523,7 @@
                 aggregated.plan.orders += (plan.planOrders / daysInMonth) * periodMonthlyDays[month];
             }
 
-            aggregated.year_round_total = {
-                orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_orders || 0), 0),
-                revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
-                delivery_orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
-                delivery_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
-                pickup_orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
-                pickup_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
-                cafe_orders: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
-                cafe_revenue: Object.values(aggregated.year_round).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
-            };
-            aggregated.seasonal_total = {
-                orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_orders || 0), 0),
-                revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
-                delivery_orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
-                delivery_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
-                pickup_orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
-                pickup_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
-                cafe_orders: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
-                cafe_revenue: Object.values(aggregated.seasonal).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
-            };
+            aggregated = computeTotals(aggregated);
 
             return aggregated;
         }
@@ -592,8 +549,8 @@
                 if (validData.length === 0) throw new Error('No data available');
 
                 const aggregatedData = aggregateData(validData, dates.length);
-                dataCache[cacheKey] = aggregatedData;
-                return aggregatedData;
+                dataCache[cacheKey] = { aggregatedData, dailyData: validData };
+                return { aggregatedData, dailyData: validData };
             } catch (error) {
                 console.error('Error loading data:', error);
                 return null;
@@ -1059,7 +1016,7 @@
             let deliveryData = [];
             let pickupData = [];
             let cafeData = [];
-            let type = 'line';
+            let type = 'bar';
             let timeUnit = 'day';
 
             if (days > 31) {
@@ -1092,6 +1049,14 @@
                         labels: labels,
                         datasets: [
                             {
+                                label: 'Кафе',
+                                data: cafeData,
+                                backgroundColor: '#8b5cf6',
+                                borderColor: '#8b5cf6',
+                                borderWidth: 2,
+                                fill: true
+                            },
+                            {
                                 label: 'Доставка',
                                 data: deliveryData,
                                 backgroundColor: '#10b981',
@@ -1104,14 +1069,6 @@
                                 data: pickupData,
                                 backgroundColor: '#f59e0b',
                                 borderColor: '#f59e0b',
-                                borderWidth: 2,
-                                fill: true
-                            },
-                            {
-                                label: 'Кафе',
-                                data: cafeData,
-                                backgroundColor: '#8b5cf6',
-                                borderColor: '#8b5cf6',
                                 borderWidth: 2,
                                 fill: true
                             }
@@ -1131,6 +1088,7 @@
                         },
                         scales: {
                             y: {
+                                stacked: true,
                                 beginAtZero: true,
                                 ticks: {
                                     callback: function(value) { return fmt.format(value) + ' ₽'; },
@@ -1139,6 +1097,7 @@
                                 grid: { color: gridColor }
                             },
                             x: {
+                                stacked: true,
                                 ticks: { color: textColor },
                                 grid: { color: gridColor }
                             }
@@ -1305,12 +1264,12 @@
                 }
             }
             try {
-                const data = await loadData(startDateStr, endDateStr);
-                if (!data) {
+                const { aggregatedData, dailyData } = await loadData(startDateStr, endDateStr);
+                if (!aggregatedData) {
                     throw new Error('Данные не получены');
                 }
-                dataCache.current = data;
-                const currentDataHash = JSON.stringify(data.total);
+                dataCache.current = aggregatedData;
+                const currentDataHash = JSON.stringify(aggregatedData.total);
                 if (lastDataHash && lastDataHash !== currentDataHash) {
                     showToast('Обновлены данные', 'success');
                 }
@@ -1319,13 +1278,13 @@
                     new Date(startDateStr).toLocaleDateString('ru-RU') :
                     `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
                 if (updateEl) {
-                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${data.time} (${dateDisplay})`;
+                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${aggregatedData.time} (${dateDisplay})`;
                 }
-                renderMetrics(data);
-                renderVenues(data, 'year-round');
-                renderVenues(data, 'seasonal');
-                renderSalesData(data);
-                renderCharts(data);
+                renderMetrics(aggregatedData);
+                renderVenues(aggregatedData, 'year-round');
+                renderVenues(aggregatedData, 'seasonal');
+                renderSalesData(aggregatedData);
+                renderCharts(aggregatedData);
                 await renderTimeChart(currentStartDate, currentEndDate, dailyData);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
