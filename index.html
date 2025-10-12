@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            background-color: #f0f4f8; /* Светлый фон */
+            background-color: #e2e8f0; /* Более серый светлый фон */
             transition: background-color 0.3s ease;
         }
         body.theme-dark {
@@ -77,7 +77,7 @@
             font-size: 0.75rem;
         }
         .chart-container {
-            height: auto !important; /* Responsive height */
+            height: 300px !important; /* Fixed height for alignment */
             animation: fadeIn 0.5s ease;
         }
         .venue-card .card-header {
@@ -568,8 +568,8 @@
                 if (validData.length === 0) throw new Error('No data available');
 
                 const aggregatedData = aggregateData(validData, dates.length);
-                dataCache[cacheKey] = aggregatedData;
-                return aggregatedData;
+                dataCache[cacheKey] = { aggregatedData, dailyData: validData };
+                return { aggregatedData, dailyData: validData };
             } catch (error) {
                 console.error('Error loading data:', error);
                 return null;
@@ -822,6 +822,14 @@
             container.innerHTML = sortedVenues.map(([venue, stats]) => renderVenueCard(venue, stats, periodDays)).join('');
         }
 
+        function isSalesActive(salesStats) {
+            const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
+            if (categories.some(cat => salesStats[cat] > 0)) return true;
+            if (Object.values(salesStats['Салаты - Супы']).some(val => val > 0)) return true;
+            if (Object.values(salesStats['Пельмени - Бао-банс']).some(val => val > 0)) return true;
+            return false;
+        }
+
         function renderSalesData(data) {
             const salesContainer = document.getElementById('sales-data');
             if (!salesContainer) return;
@@ -831,15 +839,19 @@
                 return;
             }
             let html = '<div class="row row-cards">';
+            let totalSales = {
+                Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
+                'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп': 0, 'Вьетнамский суп': 0 },
+                'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
+            };
             const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
             allVenues.forEach(venue => {
-                const stats = data.year_round[venue] || data.seasonal[venue] || {};
                 const salesStats = sales[venue] || {
                     Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
                     'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп': 0, 'Вьетнамский суп': 0 },
                     'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
                 };
-                if (isVenueActive(stats, salesStats)) {
+                if (isSalesActive(salesStats)) {
                     let tableHtml = `
                         <table class="sales-table">
                             <thead>
@@ -860,6 +872,7 @@
                                     <td>${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}</td>
                                 </tr>
                             `;
+                            totalSales[cat] += value;
                         }
                     });
                     const saladSup = salesStats['Салаты - Супы'];
@@ -878,6 +891,7 @@
                                         <td>${value}</td>
                                     </tr>
                                 `;
+                                totalSales['Салаты - Супы'][item] += value;
                             }
                         });
                     }
@@ -897,6 +911,7 @@
                                         <td>${value}</td>
                                     </tr>
                                 `;
+                                totalSales['Пельмени - Бао-банс'][item] += value;
                             }
                         });
                     }
@@ -918,10 +933,80 @@
                 }
             });
             html += '</div>';
+            // Итоговые значения
+            if (Object.keys(totalSales).some(cat => totalSales[cat] > 0 || (typeof totalSales[cat] === 'object' && Object.values(totalSales[cat]).some(v => v > 0)))) {
+                let totalTableHtml = `
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title">Итого</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="sales-table">
+                                <thead>
+                                    <tr>
+                                        <th>Категория</th>
+                                        <th>Количество</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
+                categories.forEach(cat => {
+                    const value = totalSales[cat];
+                    if (value > 0) {
+                        totalTableHtml += `
+                            <tr>
+                                <th>${cat}</th>
+                                <td>${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}</td>
+                            </tr>
+                        `;
+                    }
+                });
+                const saladSup = totalSales['Салаты - Супы'];
+                if (Object.values(saladSup).some(v => v > 0)) {
+                    totalTableHtml += `
+                        <tr>
+                            <th>Салаты - Супы</th>
+                            <td></td>
+                        </tr>
+                    `;
+                    Object.entries(saladSup).forEach(([item, value]) => {
+                        if (value > 0) {
+                            totalTableHtml += `
+                                <tr>
+                                    <td>${item}</td>
+                                    <td>${value}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                }
+                const pelmeniBao = totalSales['Пельмени - Бао-банс'];
+                if (Object.values(pelmeniBao).some(v => v > 0)) {
+                    totalTableHtml += `
+                        <tr>
+                            <th>Пельмени - Бао-банс</th>
+                            <td></td>
+                        </tr>
+                    `;
+                    Object.entries(pelmeniBao).forEach(([item, value]) => {
+                        if (value > 0) {
+                            totalTableHtml += `
+                                <tr>
+                                    <td>${item}</td>
+                                    <td>${value}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                }
+                totalTableHtml += '</tbody></table>';
+                html += totalTableHtml;
+            }
             salesContainer.innerHTML = html;
         }
 
-        function renderTimeChart(startDate, endDate) {
+        function renderTimeChart(startDate, endDate, dailyData) {
             const ctxTime = document.getElementById('timeChart')?.getContext('2d');
             const textColor = getComputedStyle(document.body).getPropertyValue('--tblr-body-color').trim();
             const gridColor = getComputedStyle(document.body).getPropertyValue('--tblr-border-color').trim();
@@ -931,17 +1016,6 @@
             }
 
             const dates = getDatesBetween(startDate, endDate);
-            const dailyData = dates.map(date => {
-                // Simulate data or use real, since no real data, use placeholder
-                return {
-                    total: {
-                        total_delivery_revenue: 0,
-                        total_pickup_revenue: 0,
-                        total_cafe_revenue: 0
-                    }
-                };
-            });
-
             const days = getDiffDays(startDate, endDate);
             let labels = [];
             let deliveryData = [];
@@ -1169,12 +1243,13 @@
                 delete dataCache[todayStr];
             }
             try {
-                const data = await loadData(startDateStr, endDateStr);
-                if (!data) {
+                const result = await loadData(startDateStr, endDateStr);
+                if (!result) {
                     throw new Error('Данные не получены');
                 }
-                dataCache.current = data;
-                const currentDataHash = JSON.stringify(data.total);
+                const { aggregatedData, dailyData } = result;
+                dataCache.current = aggregatedData;
+                const currentDataHash = JSON.stringify(aggregatedData.total);
                 if (lastDataHash && lastDataHash !== currentDataHash) {
                     showToast('Обновлены данные', 'success');
                 }
@@ -1183,14 +1258,14 @@
                     new Date(startDateStr).toLocaleDateString('ru-RU') :
                     `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
                 if (updateEl) {
-                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${data.time} (${dateDisplay})`;
+                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${aggregatedData.time} (${dateDisplay})`;
                 }
-                renderMetrics(data);
-                renderVenues(data, 'year-round');
-                renderVenues(data, 'seasonal');
-                renderSalesData(data);
-                renderCharts(data);
-                await renderTimeChart(currentStartDate, currentEndDate);
+                renderMetrics(aggregatedData);
+                renderVenues(aggregatedData, 'year-round');
+                renderVenues(aggregatedData, 'seasonal');
+                renderSalesData(aggregatedData);
+                renderCharts(aggregatedData);
+                renderTimeChart(currentStartDate, currentEndDate, dailyData);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
                 if (updateEl) {
@@ -1298,7 +1373,7 @@
                 const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
                 allVenues.forEach(venue => {
                     const salesStats = data.sales[venue] || {};
-                    if (isVenueActive(data.year_round[venue] || data.seasonal[venue] || {}, salesStats)) {
+                    if (isSalesActive(salesStats)) {
                         if (y > 270) {
                             doc.addPage();
                             y = 20;
