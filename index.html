@@ -554,7 +554,7 @@
             try {
                 const dates = getDatesBetween(startDate, endDate);
                 const dailyData = await Promise.all(dates.map(async date => {
-                    const path = `data/daily/${date}_data.json`;
+                    const path = (date === getTodayDateString()) ? 'data/revenue.json' : `data/daily/${date}_data.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     try {
                         return await fetchWithRetry(url);
@@ -568,8 +568,8 @@
                 if (validData.length === 0) throw new Error('No data available');
 
                 const aggregatedData = aggregateData(validData, dates.length);
-                dataCache[cacheKey] = { aggregatedData, dailyData: validData };
-                return { aggregatedData, dailyData: validData };
+                dataCache[cacheKey] = aggregatedData;
+                return aggregatedData;
             } catch (error) {
                 console.error('Error loading data:', error);
                 return null;
@@ -717,6 +717,20 @@
             }
 
             document.getElementById('metrics').innerHTML = html;
+            const bar = document.getElementById('plan-bar');
+            const progressText = document.getElementById('progress-text');
+            const currentValue = document.getElementById('current-value');
+            const planValue = document.getElementById('plan-value');
+            if (bar && progressText && currentValue && planValue) {
+                bar.classList.add('bg-' + getStatusClass(revenuePercentage));
+                bar.style.width = `${Math.min(revenuePercentage, 100)}%`;
+                progressText.textContent = `${revenuePercentage.toFixed(1)}%`;
+                currentValue.textContent = `${fmt.format(total.total_revenue.toFixed(0))} ₽`;
+                planValue.textContent = `${fmt.format(plan.revenue.toFixed(0))} ₽`;
+            }
+            if (revenuePercentage > 100) {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
         }
 
         function renderVenueCard(venue, stats, periodDays) {
@@ -1239,17 +1253,39 @@
             currentEndDate = endDateStr;
             const businessDay = getCurrentBusinessDay();
             const todayStr = formatDateForInput(businessDay);
-            if (startDateStr === todayStr || endDateStr === todayStr) {
-                delete dataCache[todayStr];
+            if (startDateStr === todayStr && currentEndDate === todayStr) {
+                const path = 'data/revenue.json';
+                const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
+                try {
+                    const data = await fetchWithRetry(url);
+                    dataCache.current = data;
+                    const currentDataHash = JSON.stringify(data.total);
+                    if (lastDataHash && lastDataHash !== currentDataHash) {
+                        showToast('Обновлены данные', 'success');
+                    }
+                    lastDataHash = currentDataHash;
+                    let dateDisplay = data.date;
+                    if (updateEl) {
+                        updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${data.time} (${dateDisplay})`;
+                    }
+                    renderMetrics(data);
+                    renderVenues(data, 'year-round');
+                    renderVenues(data, 'seasonal');
+                    renderSalesData(data);
+                    renderCharts(data);
+                    await renderTimeChart(currentStartDate, currentEndDate, [data]);
+                    return;
+                } catch (e) {
+                    console.warn(`Нет данных за сегодня в revenue.json: ${e.message}`);
+                }
             }
             try {
-                const result = await loadData(startDateStr, endDateStr);
-                if (!result) {
+                const data = await loadData(startDateStr, endDateStr);
+                if (!data) {
                     throw new Error('Данные не получены');
                 }
-                const { aggregatedData, dailyData } = result;
-                dataCache.current = aggregatedData;
-                const currentDataHash = JSON.stringify(aggregatedData.total);
+                dataCache.current = data;
+                const currentDataHash = JSON.stringify(data.total);
                 if (lastDataHash && lastDataHash !== currentDataHash) {
                     showToast('Обновлены данные', 'success');
                 }
@@ -1258,14 +1294,14 @@
                     new Date(startDateStr).toLocaleDateString('ru-RU') :
                     `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
                 if (updateEl) {
-                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${aggregatedData.time} (${dateDisplay})`;
+                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${data.time} (${dateDisplay})`;
                 }
-                renderMetrics(aggregatedData);
-                renderVenues(aggregatedData, 'year-round');
-                renderVenues(aggregatedData, 'seasonal');
-                renderSalesData(aggregatedData);
-                renderCharts(aggregatedData);
-                renderTimeChart(currentStartDate, currentEndDate, dailyData);
+                renderMetrics(data);
+                renderVenues(data, 'year-round');
+                renderVenues(data, 'seasonal');
+                renderSalesData(data);
+                renderCharts(data);
+                await renderTimeChart(currentStartDate, currentEndDate, dailyData);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
                 if (updateEl) {
