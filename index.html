@@ -12,24 +12,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            background-color: #e2e8f0; /* Более тёмный светлый фон */
+            background-color: #f0f4f8; /* Светлый фон */
             transition: background-color 0.3s ease;
         }
         body.theme-dark {
-            background-color: #020617; /* Более тёмный тёмный фон */
+            background-color: #0f172a; /* Темный фон */
         }
         .card {
             background-color: #ffffff; /* Светлые карточки */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Увеличенная тень для объёма */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
         body.theme-dark .card {
-            background-color: #1f2937; /* Чуть темнее карточки в тёмной теме */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Увеличенная тень для объёма */
+            background-color: #1e293b; /* Темные карточки */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .card:hover {
-            transform: translateY(-5px) scale(1.02); /* Масштабирование для "ближе" эффекта */
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
         .metric-value {
             font-size: 1.5rem;
@@ -98,12 +98,18 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .row-cards .card {
-            min-height: 220px; /* Выравнивание высоты */
+            min-height: 180px; /* Выравнивание высоты */
+        }
+        .sales-section {
+            margin-top: 20px;
+        }
+        .sales-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
         }
         .sales-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
         .sales-table th, .sales-table td {
             padding: 8px;
@@ -858,7 +864,7 @@
             const days = getDiffDays(startDate, endDate);
             let labels = [];
             let deliveryData = [];
-            < pickupData = [];
+            let pickupData = [];
             let cafeData = [];
             let type = 'line';
             let timeUnit = 'day';
