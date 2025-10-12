@@ -460,7 +460,7 @@
         }
 
         function aggregateData(dailyDataArray, periodDays) {
-            const aggregated = {
+            let aggregated = {
                 year_round: {},
                 seasonal: {},
                 total: {
@@ -563,8 +563,7 @@
                     const path = (date === getTodayDateString()) ? 'data/revenue.json' : `data/daily/${date}_data.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     try {
-                        const response = await fetchWithRetry(url);
-                        return computeTotals(response); // Применяем computeTotals к каждому дню
+                        return await fetchWithRetry(url);
                     } catch (e) {
                         console.warn(`Нет данных за ${date}: ${e.message}`);
                         return null;
@@ -574,7 +573,8 @@
                 const validData = dailyData.filter(d => d !== null);
                 if (validData.length === 0) throw new Error('No data available');
 
-                const aggregatedData = aggregateData(validData, dates.length);
+                let aggregatedData = aggregateData(validData, dates.length);
+                aggregatedData = computeTotals(aggregatedData);
                 dataCache[cacheKey] = { aggregatedData, dailyData: validData };
                 return { aggregatedData, dailyData: validData };
             } catch (error) {
