@@ -434,6 +434,30 @@
             return new Date(year, month + 1, 0).getDate();
         }
 
+        function computeTotals(data) {
+            data.year_round_total = {
+                orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
+                delivery_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
+                pickup_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_orders: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
+                cafe_revenue: Object.values(data.year_round || {}).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
+            };
+            data.seasonal_total = {
+                orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.total_orders || 0), 0),
+                revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.total_revenue || 0), 0),
+                delivery_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.delivery_orders || 0), 0),
+                delivery_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.delivery_revenue || 0), 0),
+                pickup_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.pickup_orders || 0), 0),
+                pickup_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.pickup_revenue || 0), 0),
+                cafe_orders: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.cafe_orders || 0), 0),
+                cafe_revenue: Object.values(data.seasonal || {}).reduce((sum, v) => sum + (v.cafe_revenue || 0), 0)
+            };
+            return data;
+        }
+
         function aggregateData(dailyDataArray, periodDays) {
             const aggregated = {
                 year_round: {},
@@ -554,7 +578,7 @@
             try {
                 const dates = getDatesBetween(startDate, endDate);
                 const dailyData = await Promise.all(dates.map(async date => {
-                    const path = (date === getTodayDateString()) ? 'data/revenue.json' : `data/daily/${date}_data.json`;
+                    const path = `data/daily/${date}_data.json`;
                     const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                     try {
                         return await fetchWithRetry(url);
@@ -1257,7 +1281,8 @@
                 const path = 'data/revenue.json';
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                 try {
-                    const data = await fetchWithRetry(url);
+                    let data = await fetchWithRetry(url);
+                    data = computeTotals(data);
                     dataCache.current = data;
                     const currentDataHash = JSON.stringify(data.total);
                     if (lastDataHash && lastDataHash !== currentDataHash) {
