@@ -12,24 +12,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            background-color: #f0f4f8;
+            background-color: #e2e8f0; /* Более тёмный светлый фон */
             transition: background-color 0.3s ease;
         }
         body.theme-dark {
-            background-color: #0f172a;
+            background-color: #020617; /* Более тёмный тёмный фон */
         }
         .card {
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff; /* Светлые карточки */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Увеличенная тень для объёма */
             transition: all 0.3s ease;
         }
         body.theme-dark .card {
-            background-color: #1e293b;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            background-color: #1f2937; /* Чуть темнее карточки в тёмной теме */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Увеличенная тень для объёма */
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px) scale(1.02); /* Масштабирование для "ближе" эффекта */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
         }
         .metric-value {
             font-size: 1.5rem;
@@ -77,7 +77,7 @@
             font-size: 0.75rem;
         }
         .chart-container {
-            height: auto !important;
+            height: auto !important; /* Responsive height */
             animation: fadeIn 0.5s ease;
         }
         .venue-card .card-header {
@@ -98,17 +98,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .row-cards .card {
-            min-height: 180px;
-        }
-        .sales-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .sales-table th, .sales-table td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            min-height: 180px; /* Выравнивание высоты */
         }
     </style>
 </head>
@@ -283,9 +273,6 @@
                         <button class="btn" onclick="exportPDF('seasonal')">
                             <i class="ti ti-file-text me-2"></i> PDF Сезонные
                         </button>
-                        <button class="btn" onclick="exportPDF('sales')">
-                            <i class="ti ti-file-text me-2"></i> PDF Полуфабрикаты
-                        </button>
                     </div>
                 </div>
             </div>
@@ -314,8 +301,6 @@
         const REPO_OWNER = 'wwwgolybfs-dev';
         const REPO_NAME = 'chifan2025';
         const BRANCH = 'main';
-        const YEAR_ROUND_VENUES = ["Красота", "Луговая", "Парк", "Светланская", "Чуркин", "Тихая", "Тобольская"];
-        const SEASONAL_VENUES = ["Юбилейный", "Кунгас", "МГУ", "Патрокл"];
 
         function toggleTheme() {
             document.body.classList.toggle('theme-dark');
@@ -587,7 +572,7 @@
         }
 
         function isVenueActive(stats, salesStats) {
-            if (stats && (stats.total_revenue > 0 || stats.total_orders > 0)) return true;
+            if (stats.total_revenue > 0 || stats.total_orders > 0) return true;
             if (salesStats) {
                 const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
                 if (categories.some(cat => salesStats[cat] > 0)) return true;
@@ -961,8 +946,7 @@
 
         function renderCharts(data) {
             const allVenues = { ...data.year_round, ...data.seasonal };
-            const labels = Object.keys(allVenues)
-                .filter(venue => isVenueActive(allVenues[venue], data.sales[venue]));
+            const labels = Object.keys(allVenues);
             const revenues = labels.map(venue => allVenues[venue]?.total_revenue || 0);
 
             const ctxRevenue = document.getElementById('revenueChart')?.getContext('2d');
@@ -1167,11 +1151,11 @@
             y += 7;
             doc.text(`Заказы: ${total.total_orders || 0}`, 20, y);
             y += 7;
-            doc.text(`Доставка: ${total.total_delivery_orders || 0} (${fmt.format(total.total_delivery_revenue || 0)} ₽)`, 20, y);
+            doc.text(`Доставка: ${total.total_delivery_orders || 0}`, 20, y);
             y += 7;
-            doc.text(`Самовывоз: ${total.total_pickup_orders || 0} (${fmt.format(total.total_pickup_revenue || 0)} ₽)`, 20, y);
+            doc.text(`Самовывоз: ${total.total_pickup_orders || 0}`, 20, y);
             y += 7;
-            doc.text(`Кафе: ${total.total_cafe_orders || 0} (${fmt.format(total.total_cafe_revenue || 0)} ₽)`, 20, y);
+            doc.text(`Кафе: ${total.total_cafe_orders || 0}`, 20, y);
             y += 15;
 
             // Филиалы
@@ -1183,7 +1167,6 @@
             y += 10;
 
             const sortedVenues = Object.entries(venues || {})
-                .filter(([venue, stats]) => isVenueActive(stats, data.sales[venue]))
                 .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
 
             sortedVenues.forEach(([venue, stats]) => {
@@ -1194,9 +1177,6 @@
                 doc.setFontSize(10);
                 doc.text(`${venue}: ${fmt.format(stats.total_revenue || 0)} ₽ (${stats.total_orders || 0} заказов)`, 20, y);
                 y += 7;
-                doc.text(`Доставка: ${stats.delivery_orders || 0} (${fmt.format(stats.delivery_revenue || 0)} ₽)`, 25, y); y += 7;
-                doc.text(`Самовывоз: ${stats.pickup_orders || 0} (${fmt.format(stats.pickup_revenue || 0)} ₽)`, 25, y); y += 7;
-                doc.text(`Кафе: ${stats.cafe_orders || 0} (${fmt.format(stats.cafe_revenue || 0)} ₽)`, 25, y); y += 7;
             });
 
             doc.save(`chifan_report_${currentStartDate}_${filter}.pdf`);
