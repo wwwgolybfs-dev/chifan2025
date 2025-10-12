@@ -22,7 +22,6 @@
             background-color: #ffffff; /* Светлые карточки */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            min-height: 220px; /* Выравнивание высоты карточек */
         }
         body.theme-dark .card {
             background-color: #1e293b; /* Темные карточки */
@@ -110,9 +109,6 @@
             padding: 8px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
-        }
-        .sales-table th {
-            font-weight: bold;
         }
     </style>
 </head>
@@ -1105,7 +1101,6 @@
             if (data.total.total_pickup_orders > 0) orderTypes['Самовывоз'] = data.total.total_pickup_orders;
             if (data.total.total_cafe_orders > 0) orderTypes['Кафе'] = data.total.total_cafe_orders;
 
-            const ctxOrders = document.getElementById('ordersChart')?.getContext('2d');
             if (ctxOrders && ordersChart) {
                 ordersChart.destroy();
             }
