@@ -1,6 +1,6 @@
 {
   "date": "2025-10-13",
-  "time": "14:15",
+  "time": "14:30",
   "year_round": {
     "Светланская": {
       "total_orders": 15,
@@ -23,44 +23,44 @@
       "cafe_revenue": 817.0
     },
     "Красота": {
-      "total_orders": 32,
-      "total_revenue": 28896.0,
+      "total_orders": 33,
+      "total_revenue": 29400.0,
       "delivery_orders": 13,
       "delivery_revenue": 20606.0,
-      "pickup_orders": 7,
-      "pickup_revenue": 3307.0,
+      "pickup_orders": 8,
+      "pickup_revenue": 3811.0,
       "cafe_orders": 12,
       "cafe_revenue": 4983.0
     },
     "Тобольская": {
-      "total_orders": 33,
-      "total_revenue": 30165.0,
+      "total_orders": 34,
+      "total_revenue": 30295.0,
       "delivery_orders": 6,
       "delivery_revenue": 13192.0,
       "pickup_orders": 8,
       "pickup_revenue": 6345.0,
-      "cafe_orders": 19,
-      "cafe_revenue": 10628.0
+      "cafe_orders": 20,
+      "cafe_revenue": 10758.0
     },
     "Тихая": {
-      "total_orders": 10,
-      "total_revenue": 6213.0,
-      "delivery_orders": 2,
-      "delivery_revenue": 1869.0,
+      "total_orders": 13,
+      "total_revenue": 9335.0,
+      "delivery_orders": 5,
+      "delivery_revenue": 4991.0,
       "pickup_orders": 2,
       "pickup_revenue": 1392.0,
       "cafe_orders": 6,
       "cafe_revenue": 2952.0
     },
     "Чуркин": {
-      "total_orders": 43,
-      "total_revenue": 22943.0,
+      "total_orders": 45,
+      "total_revenue": 23956.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 6,
       "pickup_revenue": 3375.0,
-      "cafe_orders": 37,
-      "cafe_revenue": 19568.0
+      "cafe_orders": 39,
+      "cafe_revenue": 20581.0
     }
   },
   "seasonal": {
@@ -75,25 +75,25 @@
       "cafe_revenue": 4995.0
     },
     "Юбилейный": {
-      "total_orders": 9,
-      "total_revenue": 4125.0,
+      "total_orders": 11,
+      "total_revenue": 4729.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
-      "pickup_orders": 1,
-      "pickup_revenue": 252.0,
+      "pickup_orders": 3,
+      "pickup_revenue": 856.0,
       "cafe_orders": 8,
       "cafe_revenue": 3873.0
     }
   },
   "total": {
-    "total_orders": 152,
-    "total_revenue": 106235.0,
-    "total_delivery_orders": 21,
-    "total_delivery_revenue": 35667.0,
-    "total_pickup_orders": 29,
-    "total_pickup_revenue": 16673.0,
-    "total_cafe_orders": 102,
-    "total_cafe_revenue": 53895.0
+    "total_orders": 161,
+    "total_revenue": 111608.0,
+    "total_delivery_orders": 24,
+    "total_delivery_revenue": 38789.0,
+    "total_pickup_orders": 32,
+    "total_pickup_revenue": 17781.0,
+    "total_cafe_orders": 105,
+    "total_cafe_revenue": 55038.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -161,13 +161,13 @@
       }
     },
     "Чуркин": {
-      "Лапша": 31,
+      "Лапша": 33,
       "Рис": 16,
       "Курица": 15,
-      "Свинина": 5,
+      "Свинина": 6,
       "Креветка": 14,
-      "Бекон": 12,
-      "Соломка": 1.7000000000000002,
+      "Бекон": 13,
+      "Соломка": 1.8000000000000003,
       "Кубик": 1.21,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 3,
@@ -177,18 +177,18 @@
       },
       "Пельмени - Бао-банс": {
         "Пельмени с курицей": 1,
-        "Бао-банс с курицей": 0
+        "Бао-банс с курицей": 1
       }
     },
     "Тихая": {
       "Лапша": 5,
-      "Рис": 1,
-      "Курица": 1,
+      "Рис": 2,
+      "Курица": 3,
       "Свинина": 1,
-      "Креветка": 3,
+      "Креветка": 4,
       "Бекон": 2,
       "Соломка": 0.2,
-      "Кубик": 0.11,
+      "Кубик": 0.22,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
         "Азиатский салат с креветкой": 2,
@@ -221,13 +221,13 @@
       }
     },
     "Юбилейный": {
-      "Лапша": 8,
+      "Лапша": 10,
       "Рис": 4,
-      "Курица": 7,
+      "Курица": 9,
       "Свинина": 4,
       "Креветка": 1,
       "Бекон": 0,
-      "Соломка": 0.8,
+      "Соломка": 1.0,
       "Кубик": 0.44,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
