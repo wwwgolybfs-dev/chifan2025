@@ -1,6 +1,6 @@
 {
   "date": "2025-10-13",
-  "time": "22:30",
+  "time": "22:45",
   "year_round": {
     "Светланская": {
       "total_orders": 52,
@@ -33,12 +33,12 @@
       "cafe_revenue": 16482.0
     },
     "Тобольская": {
-      "total_orders": 100,
-      "total_revenue": 85103.0,
+      "total_orders": 101,
+      "total_revenue": 85659.0,
       "delivery_orders": 26,
       "delivery_revenue": 39808.0,
-      "pickup_orders": 14,
-      "pickup_revenue": 9171.0,
+      "pickup_orders": 15,
+      "pickup_revenue": 9727.0,
       "cafe_orders": 60,
       "cafe_revenue": 36124.0
     },
@@ -86,12 +86,12 @@
     }
   },
   "total": {
-    "total_orders": 494,
-    "total_revenue": 349765.0,
+    "total_orders": 495,
+    "total_revenue": 350321.0,
     "total_delivery_orders": 78,
     "total_delivery_revenue": 116705.0,
-    "total_pickup_orders": 75,
-    "total_pickup_revenue": 43866.0,
+    "total_pickup_orders": 76,
+    "total_pickup_revenue": 44422.0,
     "total_cafe_orders": 341,
     "total_cafe_revenue": 189194.0
   },
@@ -202,13 +202,13 @@
     },
     "Тобольская": {
       "Лапша": 82,
-      "Рис": 49,
+      "Рис": 50,
       "Курица": 53,
       "Свинина": 16,
       "Креветка": 28,
       "Бекон": 41,
       "Соломка": 5.1,
-      "Кубик": 3.85,
+      "Кубик": 3.96,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 7,
         "Азиатский салат с креветкой": 4,
