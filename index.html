@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -561,6 +560,16 @@
                     }
                 });
                 const saladSup = salesStats['Салаты - Супы'] || {};
+                html += `
+                    <tr>
+                        <td>Тайский суп с курицей</td>
+                        <td>${saladSup['Тайский суп с курицей'] || 0}</td>
+                    </tr>
+                    <tr>
+                        <td>Тайский суп с креветкой</td>
+                        <td>${saladSup['Тайский суп с креветкой'] || 0}</td>
+                    </tr>
+                `;
                 if (Object.values(saladSup).some(v => v > 0)) {
                     html += `
                         <tr>
@@ -901,6 +910,10 @@
                             }
                         });
                         const saladSup = salesStats['Салаты - Супы'] || {};
+                        doc.text(`Тайский суп с курицей: ${saladSup['Тайский суп с курицей'] || 0}`, 25, y);
+                        y += 7;
+                        doc.text(`Тайский суп с креветкой: ${saladSup['Тайский суп с креветкой'] || 0}`, 25, y);
+                        y += 7;
                         if (Object.values(saladSup).some(v => v > 0)) {
                             doc.text('Салаты - Супы:', 25, y);
                             y += 7;
