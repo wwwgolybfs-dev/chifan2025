@@ -382,7 +382,7 @@
                     continue;
                 }
                 try {
-                    const data = await fetchWithRetry(`https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/daily/${date}_data.json`);
+                    const data = await fetchWithRetry(`${date}_data.json`);
                     dataCache[date] = data;
                     dailyData.push(data);
                 } catch (error) {
@@ -577,16 +577,6 @@
                         }
                     });
                 }
-                html += `
-                            <tr>
-                                <td>Тайский суп с курицей</td>
-                                <td>${saladSup['Тайский суп с курицей'] || 0}</td>
-                            </tr>
-                            <tr>
-                                <td>Тайский суп с креветкой</td>
-                                <td>${saladSup['Тайский суп с креветкой'] || 0}</td>
-                            </tr>
-                        `;
                 const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
                 if (Object.values(pelmeniBao).some(v => v > 0)) {
                     html += `
@@ -616,7 +606,7 @@
             document.getElementById('sales-data').innerHTML = html;
         }
 
-        async function renderTimeChart(startDate, endDate, dailyData) {
+        async function renderTimeChart(currentStartDate, currentEndDate, dailyData) {
             const ctx = document.getElementById('timeChart').getContext('2d');
             if (timeChart) timeChart.destroy();
             const labels = dailyData.map(d => d.date);
@@ -737,7 +727,7 @@
                 const todayStr = formatDateForInput(getCurrentBusinessDay());
                 if (startDateStr === todayStr) {
                     try {
-                        let data = await fetchWithRetry('https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/revenue.json');
+                        let data = await fetchWithRetry('revenue.json');
                         data = computeTotals(data);
                         dataCache.current = data;
                         const currentDataHash = JSON.stringify(data.total);
@@ -920,10 +910,6 @@
                                 }
                             });
                         }
-                        doc.text(`Тайский суп с курицей: ${saladSup['Тайский суп с курицей'] || 0}`, 25, y);
-                        y += 7;
-                        doc.text(`Тайский суп с креветкой: ${saladSup['Тайский суп с креветкой'] || 0}`, 25, y);
-                        y += 7;
                         const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
                         if (Object.values(pelmeniBao).some(v => v > 0)) {
                             doc.text('Пельмени - Бао-банс:', 25, y);
