@@ -117,7 +117,7 @@
         <div class="page-wrapper">
             <div class="page-header d-print-none">
                 <div class="container-xl">
-                    <div class="row g-3 align-items-center">
+                    <div class="row g-2 align-items-center">
                         <div class="col">
                             <h2 class="page-title">
                                 <i class="ti ti-chart-line me-2"></i> Чи-Фань — Аналитика выручки
@@ -191,7 +191,7 @@
                     </ul>
 
                     <div class="tab-content">
-                        <div class="tab-pane active show" id="tab-dashboard" role="tabpanel" role="tabpanel">
+                        <div class="tab-pane active show" id="tab-dashboard" role="tabpanel">
                             <div class="row row-cards mb-3" id="metrics"></div>
 
                             <div class="card mb-3">
@@ -382,7 +382,7 @@
                     continue;
                 }
                 try {
-                    const data = await fetchWithRetry(`${date}_data.json`);
+                    const data = await fetchWithRetry(`https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/daily/${date}_data.json`);
                     dataCache[date] = data;
                     dailyData.push(data);
                 } catch (error) {
@@ -477,7 +477,7 @@
 
         function renderVenues(data, type) {
             const venues = type === 'year-round' ? YEAR_ROUND_VENUES : SEASONAL_VENUES;
-            const venueData = data[type === 'year-round' ? 'year_round' : 'seasonal'] || {};
+            const venueData = data[type === 'year_round' ? 'year_round' : 'seasonal'] || {};
             let html = '';
             venues.forEach(venue => {
                 const stats = venueData[venue] || {};
@@ -560,16 +560,6 @@
                     }
                 });
                 const saladSup = salesStats['Салаты - Супы'] || {};
-                html += `
-                    <tr>
-                        <td>Тайский суп с курицей</td>
-                        <td>${saladSup['Тайский суп с курицей'] || 0}</td>
-                    </tr>
-                    <tr>
-                        <td>Тайский суп с креветкой</td>
-                        <td>${saladSup['Тайский суп с креветкой'] || 0}</td>
-                    </tr>
-                `;
                 if (Object.values(saladSup).some(v => v > 0)) {
                     html += `
                         <tr>
@@ -910,10 +900,16 @@
                             }
                         });
                         const saladSup = salesStats['Салаты - Супы'] || {};
-                        doc.text(`Тайский суп с курицей: ${saladSup['Тайский суп с курицей'] || 0}`, 25, y);
-                        y += 7;
-                        doc.text(`Тайский суп с креветкой: ${saladSup['Тайский суп с креветкой'] || 0}`, 25, y);
-                        y += 7;
+                        const thaiChickenSoup = saladSup['Тайский суп с курицей'] || 0;
+                        const thaiShrimpSoup = saladSup['Тайский суп с креветкой'] || 0;
+                        if (thaiChickenSoup > 0) {
+                            doc.text(`Тайский суп с курицей: ${thaiChickenSoup}`, 25, y);
+                            y += 7;
+                        }
+                        if (thaiShrimpSoup > 0) {
+                            doc.text(`Тайский суп с креветкой: ${thaiShrimpSoup}`, 25, y);
+                            y += 7;
+                        }
                         if (Object.values(saladSup).some(v => v > 0)) {
                             doc.text('Салаты - Супы:', 25, y);
                             y += 7;
