@@ -300,8 +300,8 @@
 
     <script>
         const fmt = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        const REPO_OWNER = 'your-github-username';
-        const REPO_NAME = 'your-repo-name';
+        const REPO_OWNER = 'wwwgolybfs-dev';
+        const REPO_NAME = 'chifan2025';
         const BRANCH = 'main';
         const YEAR_ROUND_VENUES = ['Красота', 'Луговая', 'Парк', 'Светланская', 'Чуркин', 'Тихая', 'Тобольская'];
         const SEASONAL_VENUES = ['Юбилейный', 'Кунгас', 'МГУ', 'Патрокл'];
@@ -314,6 +314,15 @@
         let timeChart = null;
         let revenueChart = null;
         let ordersChart = null;
+
+        function showToast(message, type = 'success') {
+            const toastEl = document.getElementById('toast');
+            toastEl.querySelector('.toast-body').textContent = message;
+            toastEl.classList.remove('bg-success', 'bg-danger', 'bg-info');
+            toastEl.classList.add(`bg-${type}`);
+            const bsToast = new bootstrap.Toast(toastEl);
+            bsToast.show();
+        }
 
         function toggleTheme() {
             document.body.classList.toggle('theme-dark');
@@ -410,7 +419,7 @@
             }
             const dailyData = await Promise.all(dates.map(async dateStr => {
                 if (dataCache[dateStr]) return dataCache[dateStr];
-                const path = `data/${dateStr}_data.json`;
+                const path = `data/daily/${dateStr}_data.json`;
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                 try {
                     const data = await fetchWithRetry(url);
@@ -742,11 +751,11 @@
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
             if (!startDate || !endDate) {
-                showToast('Выберите начальную и конечную дату', 'error');
+                showToast('Выберите начальную и конечную дату', 'danger');
                 return;
             }
             if (new Date(startDate) > new Date(endDate)) {
-                showToast('Начальная дата не может быть позже конечной', 'error');
+                showToast('Начальная дата не может быть позже конечной', 'danger');
                 return;
             }
             const periodText = startDate === endDate ?
@@ -765,7 +774,7 @@
             currentEndDate = endDateStr;
             const businessDay = getCurrentBusinessDay();
             const todayStr = formatDateForInput(businessDay);
-            if (startDateStr === todayStr && currentEndDate === todayStr) {
+            if (startDateStr === todayStr && endDateStr === todayStr) {
                 const path = 'data/revenue.json';
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
                 try {
@@ -826,7 +835,7 @@
                 document.getElementById('year-round').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по круглогодичным филиалам</div>';
                 document.getElementById('seasonal').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по сезонным филиалам</div>';
                 document.getElementById('sales-data').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по полуфабрикатам</div>';
-                showToast('Ошибка загрузки данных: ' + error.message, 'error');
+                showToast('Ошибка загрузки данных: ' + error.message, 'danger');
             } finally {
                 setTimeout(() => {
                     document.querySelectorAll('.card').forEach((el, index) => {
@@ -854,7 +863,7 @@
         function exportPDF(filter = 'all') {
             const data = dataCache.current;
             if (!data) {
-                showToast('Нет данных для экспорта', 'error');
+                showToast('Нет данных для экспорта', 'danger');
                 return;
             }
             const { jsPDF } = window.jspdf;
