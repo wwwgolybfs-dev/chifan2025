@@ -1,6 +1,6 @@
 {
   "date": "2025-10-14",
-  "time": "10:15",
+  "time": "10:27",
   "year_round": {
     "Красота": {
       "total_orders": 23,
@@ -11,18 +11,28 @@
       "pickup_revenue": 1603.0,
       "cafe_orders": 4,
       "cafe_revenue": 4155.0
+    },
+    "Чуркин": {
+      "total_orders": 1,
+      "total_revenue": 489.0,
+      "delivery_orders": 0,
+      "delivery_revenue": 0.0,
+      "pickup_orders": 0,
+      "pickup_revenue": 0.0,
+      "cafe_orders": 1,
+      "cafe_revenue": 489.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 23,
-    "total_revenue": 34325.0,
+    "total_orders": 24,
+    "total_revenue": 34814.0,
     "total_delivery_orders": 17,
     "total_delivery_revenue": 28567.0,
     "total_pickup_orders": 2,
     "total_pickup_revenue": 1603.0,
-    "total_cafe_orders": 4,
-    "total_cafe_revenue": 4155.0
+    "total_cafe_orders": 5,
+    "total_cafe_revenue": 4644.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -91,13 +101,13 @@
     },
     "Чуркин": {
       "Лапша": 0,
-      "Рис": 0,
+      "Рис": 1,
       "Курица": 0,
       "Свинина": 0,
-      "Креветка": 0,
+      "Креветка": 1,
       "Бекон": 0,
       "Соломка": 0.0,
-      "Кубик": 0.0,
+      "Кубик": 0.11,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
         "Азиатский салат с креветкой": 0,
