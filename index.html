@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -117,7 +118,7 @@
         <div class="page-wrapper">
             <div class="page-header d-print-none">
                 <div class="container-xl">
-                    <div class="row g-2 align-items-center">
+                    <div class="row g-3 align-items-center">
                         <div class="col">
                             <h2 class="page-title">
                                 <i class="ti ti-chart-line me-2"></i> Чи-Фань — Аналитика выручки
@@ -191,7 +192,7 @@
                     </ul>
 
                     <div class="tab-content">
-                        <div class="tab-pane active show" id="tab-dashboard" role="tabpanel">
+                        <div class="tab-pane active show" id="tab-dashboard" role="tabpanel" role="tabpanel">
                             <div class="row row-cards mb-3" id="metrics"></div>
 
                             <div class="card mb-3">
@@ -606,7 +607,7 @@
             document.getElementById('sales-data').innerHTML = html;
         }
 
-        async function renderTimeChart(currentStartDate, currentEndDate, dailyData) {
+        async function renderTimeChart(startDate, endDate, dailyData) {
             const ctx = document.getElementById('timeChart').getContext('2d');
             if (timeChart) timeChart.destroy();
             const labels = dailyData.map(d => d.date);
