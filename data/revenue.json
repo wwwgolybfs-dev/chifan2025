@@ -1,6 +1,6 @@
 {
   "date": "2025-10-14",
-  "time": "23:15",
+  "time": "23:30",
   "year_round": {
     "Светланская": {
       "total_orders": 63,
@@ -33,12 +33,12 @@
       "cafe_revenue": 22116.0
     },
     "Тобольская": {
-      "total_orders": 107,
-      "total_revenue": 91916.0,
+      "total_orders": 108,
+      "total_revenue": 92628.0,
       "delivery_orders": 28,
       "delivery_revenue": 48729.0,
-      "pickup_orders": 18,
-      "pickup_revenue": 12141.0,
+      "pickup_orders": 19,
+      "pickup_revenue": 12853.0,
       "cafe_orders": 61,
       "cafe_revenue": 31046.0
     },
@@ -86,12 +86,12 @@
     }
   },
   "total": {
-    "total_orders": 525,
-    "total_revenue": 395407.0,
+    "total_orders": 526,
+    "total_revenue": 396119.0,
     "total_delivery_orders": 97,
     "total_delivery_revenue": 161910.0,
-    "total_pickup_orders": 81,
-    "total_pickup_revenue": 59119.0,
+    "total_pickup_orders": 82,
+    "total_pickup_revenue": 59831.0,
     "total_cafe_orders": 347,
     "total_cafe_revenue": 174378.0
   },
@@ -206,19 +206,19 @@
       }
     },
     "Тобольская": {
-      "Лапша": 106,
+      "Лапша": 107,
       "Рис": 46,
       "Курица": 52,
       "Свинина": 14,
-      "Креветка": 45,
+      "Креветка": 46,
       "Бекон": 40,
-      "Соломка": 5.6000000000000005,
+      "Соломка": 5.7,
       "Кубик": 3.52,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 3,
-        "Азиатский салат с креветкой": 0,
+        "Азиатский салат с креветкой": 1,
         "Тайский суп с курицей": 10,
-        "Тайский суп с креветкой": 13,
+        "Тайский суп с креветкой": 14,
         "Вьетнамский суп": 4
       },
       "Пельмени - Бао-банс": {
