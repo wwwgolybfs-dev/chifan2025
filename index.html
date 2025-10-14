@@ -12,19 +12,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
-            background-color: #e2e8f0; /* Более серый светлый фон */
+            background-color: #e2e8f0;
             transition: background-color 0.3s ease;
         }
         body.theme-dark {
-            background-color: #0f172a; /* Темный фон */
+            background-color: #0f172a;
         }
         .card {
-            background-color: #ffffff; /* Светлые карточки */
+            background-color: #ffffff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
         body.theme-dark .card {
-            background-color: #1e293b; /* Темные карточки */
+            background-color: #1e293b;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
         .card:hover {
@@ -77,7 +77,7 @@
             font-size: 0.75rem;
         }
         .chart-container {
-            height: 300px !important; /* Fixed height for alignment */
+            height: 300px !important;
             animation: fadeIn 0.5s ease;
         }
         .venue-card .card-header {
@@ -98,7 +98,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .row-cards .card {
-            min-height: 180px; /* Выравнивание высоты */
+            min-height: 180px;
         }
         .sales-table {
             width: 100%;
@@ -109,6 +109,10 @@
             padding: 8px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -157,9 +161,9 @@
                                 <div class="col-md-6">
                                     <div class="input-group">
                                         <span class="input-group-text">С:</span>
-                                        <input type="date" class="form-control" id="start-date">
+                                        <input type="date" class="form-control" id="start-date" value="2025-10-14">
                                         <span class="input-group-text">По:</span>
-                                        <input type="date" class="form-control" id="end-date">
+                                        <input type="date" class="form-control" id="end-date" value="2025-10-14">
                                         <button class="btn btn-primary" onclick="loadCustomData()">Обновить</button>
                                     </div>
                                 </div>
@@ -174,6 +178,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="error-container" class="error-message mb-3" style="display: none;"></div>
 
                     <!-- Общая выручка и метрики -->
                     <div class="row row-cards mb-3" id="total-metrics"></div>
@@ -233,7 +239,7 @@
                         </div>
                     </div>
 
-                    <!-- Новая секция: Итоговые позиции (все вместе) -->
+                    <!-- Итоговые позиции (все вместе) -->
                     <div class="card mb-3">
                         <div class="card-header">
                             <h3 class="card-title">Итоговые позиции (все филиалы вместе)</h3>
@@ -242,7 +248,6 @@
                             <table class="sales-table" id="total-sales-table"></table>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -253,7 +258,6 @@
         const SEASONAL_VENUES = ['Юбилейный', 'Кунгас', 'МГУ', 'Патрокл'];
         let revenueChart, ordersChart;
         let currentStartDate, currentEndDate;
-        let currentFilter = 'all'; // По умолчанию 'all'
 
         const fmt = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' });
 
@@ -264,7 +268,7 @@
 
         function getCurrentBusinessDay() {
             const now = new Date();
-            now.setHours(now.getHours() - 3); // Учёт бизнес-дня
+            now.setHours(now.getHours() - 1); // Корректировка на CEST (UTC+2)
             return now;
         }
 
@@ -300,11 +304,18 @@
         }
 
         async function load(startDate, endDate = startDate) {
+            document.getElementById('last-update').textContent = 'Загрузка данных...';
+            document.getElementById('error-container').style.display = 'none';
             try {
-                const data = await fetch(`data/${startDate}_data.json`).then(res => res.json());
+                const data = await fetch('./data/revenue.json').then(res => {
+                    if (!res.ok) throw new Error('Файл revenue.json не найден');
+                    return res.json();
+                });
                 processData(data);
             } catch (error) {
                 console.error('Error loading data:', error);
+                document.getElementById('error-container').textContent = 'Ошибка загрузки данных: ' + error.message;
+                document.getElementById('error-container').style.display = 'block';
                 showToast('Ошибка загрузки данных', 'danger');
             }
         }
@@ -314,22 +325,32 @@
             currentEndDate = document.getElementById('end-date').value;
             if (!currentStartDate || !currentEndDate) return;
 
+            document.getElementById('last-update').textContent = 'Загрузка данных...';
+            document.getElementById('error-container').style.display = 'none';
+
             const dailyData = [];
             let current = new Date(currentStartDate);
             const end = new Date(currentEndDate);
+            let errorMessages = [];
 
             while (current <= end) {
                 const dateStr = formatDateForInput(current);
                 try {
-                    const data = await fetch(`data/${dateStr}_data.json`).then(res => {
-                        if (!res.ok) throw new Error();
+                    const data = await fetch(`./data/${dateStr}_data.json`).then(res => {
+                        if (!res.ok) throw new Error(`Файл для ${dateStr} не найден`);
                         return res.json();
                     });
                     dailyData.push(data);
-                } catch {
-                    // Пропуск дня, если файл не найден
+                } catch (e) {
+                    errorMessages.push(e.message);
                 }
                 current.setDate(current.getDate() + 1);
+            }
+
+            if (dailyData.length === 0) {
+                document.getElementById('error-container').textContent = 'Нет данных за выбранный период: ' + errorMessages.join(', ');
+                document.getElementById('error-container').style.display = 'block';
+                return;
             }
 
             const aggregated = aggregateData(dailyData);
@@ -346,7 +367,6 @@
             };
 
             dailyData.forEach(data => {
-                // Агрегация year_round и seasonal
                 Object.entries(data.year_round || {}).forEach(([venue, stats]) => {
                     if (!aggregated.year_round[venue]) aggregated.year_round[venue] = initStats();
                     aggregateStats(aggregated.year_round[venue], stats);
@@ -356,14 +376,11 @@
                     aggregateStats(aggregated.seasonal[venue], stats);
                 });
 
-                // Агрегация total
                 aggregateStats(aggregated.total, data.total || {});
 
-                // План (суммируем, если нужно)
                 aggregated.plan.revenue += data.plan?.revenue || 0;
                 aggregated.plan.orders += data.plan?.orders || 0;
 
-                // Агрегация sales
                 Object.entries(data.sales || {}).forEach(([venue, salesStats]) => {
                     if (!aggregated.sales[venue]) aggregated.sales[venue] = initSalesStats();
                     aggregateSales(aggregated.sales[venue], salesStats);
@@ -420,11 +437,11 @@
         }
 
         function processData(data) {
-            document.getElementById('last-update').textContent = `${data.date} ${data.time}`;
+            document.getElementById('last-update').textContent = `${data.date || 'Неизвестно'} ${data.time || ''}`;
             updateTotalMetrics(data);
             updateVenueCards(data);
             updateSalesTables(data);
-            updateTotalSalesTable(data); // Новый вызов
+            updateTotalSalesTable(data);
             updateCharts(data);
         }
 
@@ -457,9 +474,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="metric-label">План</div>
-                            <div class="metric-value">${Math.round((data.total.total_revenue / data.plan.revenue) * 100)}%</div>
+                            <div class="metric-value">${Math.round((data.total.total_revenue / data.plan.revenue) * 100 || 0)}%</div>
                             <div class="progress progress-sm">
-                                <div class="progress-bar bg-primary" style="width: ${ (data.total.total_revenue / data.plan.revenue) * 100 }%"></div>
+                                <div class="progress-bar bg-primary" style="width: ${ (data.total.total_revenue / data.plan.revenue) * 100 || 0 }%"></div>
                             </div>
                         </div>
                     </div>
@@ -474,7 +491,7 @@
             const sortedVenues = Object.entries(venues).sort((a, b) => b[1].total_revenue - a[1].total_revenue);
 
             sortedVenues.forEach(([venue, stats]) => {
-                if (stats.total_revenue > 0 || stats.total_orders > 0) {
+                if (stats.total_revenue > 0) {
                     container.innerHTML += `
                         <div class="col-md-4">
                             <div class="card venue-card">
@@ -500,13 +517,13 @@
             updateSalesTable(data.seasonal, data.sales, 'seasonal-sales-table', SEASONAL_VENUES);
         }
 
-        function updateSalesTable(venuesData, salesData, tableId, venuesList) {
+        function updateSalesTable(venues, salesData, tableId, venuesList) {
             const table = document.getElementById(tableId);
             table.innerHTML = '';
             venuesList.forEach(venue => {
-                const stats = venuesData[venue] || initStats();
+                const stats = venues[venue] || initStats();
                 const salesStats = salesData[venue] || initSalesStats();
-                if (isVenueActive(stats, salesStats)) {
+                if (stats.total_revenue > 0 || isSalesActive(salesStats)) {
                     table.innerHTML += `<tr><th colspan="2">${venue}</th></tr>`;
                     const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
                     categories.forEach(cat => {
@@ -517,20 +534,24 @@
                         }
                     });
 
-                    // Подкатегории с явной проверкой
                     const saladSup = salesStats['Салаты - Супы'] || {};
                     if (Object.values(saladSup).some(v => v > 0)) {
                         table.innerHTML += '<tr><td colspan="2">Салаты - Супы</td></tr>';
-                        Object.entries(saladSup).forEach(([item, value]) => {
+                        const subItems = ['Азиатский салат с курицей', 'Азиатский салат с креветкой', 'Тайский суп с курицей', 'Тайский суп с креветкой', 'Вьетнамский суп'];
+                        subItems.forEach(item => {
+                            const value = saladSup[item] || 0;
                             if (value > 0) {
                                 table.innerHTML += `<tr><td>${item}</td><td>${value}</td></tr>`;
                             }
                         });
                     }
+
                     const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
                     if (Object.values(pelmeniBao).some(v => v > 0)) {
                         table.innerHTML += '<tr><td colspan="2">Пельмени - Бао-банс</td></tr>';
-                        Object.entries(pelmeniBao).forEach(([item, value]) => {
+                        const subItems = ['Пельмени с курицей', 'Бао-банс с курицей'];
+                        subItems.forEach(item => {
+                            const value = pelmeniBao[item] || 0;
                             if (value > 0) {
                                 table.innerHTML += `<tr><td>${item}</td><td>${value}</td></tr>`;
                             }
@@ -540,13 +561,11 @@
             });
         }
 
-        // Новая функция: Суммарная таблица позиций
         function updateTotalSalesTable(data) {
             const table = document.getElementById('total-sales-table');
             table.innerHTML = '';
             const totalSales = initSalesStats();
 
-            // Суммируем по всем филиалам
             Object.values(data.sales).forEach(salesStats => {
                 aggregateSales(totalSales, salesStats);
             });
@@ -565,16 +584,21 @@
                 const saladSup = totalSales['Салаты - Супы'] || {};
                 if (Object.values(saladSup).some(v => v > 0)) {
                     table.innerHTML += '<tr><td colspan="2">Салаты - Супы</td></tr>';
-                    Object.entries(saladSup).forEach(([item, value]) => {
+                    const subItems = ['Азиатский салат с курицей', 'Азиатский салат с креветкой', 'Тайский суп с курицей', 'Тайский суп с креветкой', 'Вьетнамский суп'];
+                    subItems.forEach(item => {
+                        const value = saladSup[item] || 0;
                         if (value > 0) {
                             table.innerHTML += `<tr><td>${item}</td><td>${value}</td></tr>`;
                         }
                     });
                 }
+
                 const pelmeniBao = totalSales['Пельмени - Бао-банс'] || {};
                 if (Object.values(pelmeniBao).some(v => v > 0)) {
                     table.innerHTML += '<tr><td colspan="2">Пельмени - Бао-банс</td></tr>';
-                    Object.entries(pelmeniBao).forEach(([item, value]) => {
+                    const subItems = ['Пельмени с курицей', 'Бао-банс с курицей'];
+                    subItems.forEach(item => {
+                        const value = pelmeniBao[item] || 0;
                         if (value > 0) {
                             table.innerHTML += `<tr><td>${item}</td><td>${value}</td></tr>`;
                         }
@@ -583,10 +607,6 @@
             } else {
                 table.innerHTML = '<tr><td colspan="2">Нет данных по продажам</td></tr>';
             }
-        }
-
-        function isVenueActive(stats, salesStats) {
-            return stats.total_orders > 0 || isSalesActive(salesStats);
         }
 
         function isSalesActive(salesStats) {
@@ -620,145 +640,14 @@
         }
 
         function showToast(message, type = 'success') {
-            // Простая реализация тоста
-            alert(message);
+            alert(message); // Простая реализация, можно заменить на Bootstrap toast
         }
 
-        function exportPDF(filter) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            let y = 20;
-
-            doc.setFontSize(16);
-            doc.text('Отчет Чи-Фань', 20, y);
-            y += 10;
-
-            doc.setFontSize(12);
-            doc.text('Основные метрики:', 20, y);
-            y += 10;
-
-            const total = data.total || {};
-            if (total.total_revenue > 0) doc.text(`Выручка: ${fmt.format(total.total_revenue || 0)} ₽`, 20, y); y += 7;
-            if (total.total_orders > 0) doc.text(`Заказы: ${total.total_orders || 0}`, 20, y); y += 7;
-            if (total.total_delivery_orders > 0) doc.text(`Доставка: ${total.total_delivery_orders || 0}`, 20, y); y += 7;
-            if (total.total_pickup_orders > 0) doc.text(`Самовывоз: ${total.total_pickup_orders || 0}`, 20, y); y += 7;
-            if (total.total_cafe_orders > 0) doc.text(`Кафе: ${total.total_cafe_orders || 0}`, 20, y); y += 15;
-
-            const venues = filter === 'year-round' ? data.year_round : 
-                          filter === 'seasonal' ? data.seasonal : 
-                          { ...data.year_round, ...data.seasonal };
-            doc.setFontSize(12);
-            doc.text('Филиалы:', 20, y);
-            y += 10;
-
-            const sortedVenues = Object.entries(venues || {})
-                .filter(([venue, stats]) => isVenueActive(stats, data.sales[venue]))
-                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
-
-            sortedVenues.forEach(([venue, stats]) => {
-                if (y > 270) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.setFontSize(10);
-                doc.text(`${venue}: ${fmt.format(stats.total_revenue || 0)} ₽ (${stats.total_orders || 0} заказов)`, 20, y);
-                y += 7;
-                if (stats.delivery_orders > 0) {
-                    doc.text(`Доставка: ${stats.delivery_orders} (${fmt.format(stats.delivery_revenue || 0)} ₽)`, 25, y);
-                    y += 7;
-                }
-                if (stats.pickup_orders > 0) {
-                    doc.text(`Самовывоз: ${stats.pickup_orders} (${fmt.format(stats.pickup_revenue || 0)} ₽)`, 25, y);
-                    y += 7;
-                }
-                if (stats.cafe_orders > 0) {
-                    doc.text(`Кафе: ${stats.cafe_orders} (${fmt.format(stats.cafe_revenue || 0)} ₽)`, 25, y);
-                    y += 7;
-                }
-            });
-
-            if (filter === 'all' || filter === 'sales') {
-                if (y > 250) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.setFontSize(12);
-                doc.text('Полуфабрикаты:', 20, y);
-                y += 10;
-
-                const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
-                allVenues.forEach(venue => {
-                    const salesStats = data.sales[venue] || {};
-                    if (isSalesActive(salesStats)) {
-                        if (y > 270) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                        doc.setFontSize(10);
-                        doc.text(`${venue}:`, 20, y);
-                        y += 7;
-                        const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
-                        categories.forEach(cat => {
-                            const value = salesStats[cat] || 0;
-                            if (value > 0) {
-                                doc.text(`${cat}: ${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}`, 25, y);
-                                y += 7;
-                            }
-                        });
-                        const saladSup = salesStats['Салаты - Супы'] || {};
-                        if (Object.values(saladSup).some(v => v > 0)) {
-                            doc.text('Салаты - Супы:', 25, y);
-                            y += 7;
-                            Object.entries(saladSup).forEach(([item, value]) => {
-                                if (value > 0) {
-                                    doc.text(`${item}: ${value}`, 30, y);
-                                    y += 7;
-                                }
-                            });
-                        }
-                        const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
-                        if (Object.values(pelmeniBao).some(v => v > 0)) {
-                            doc.text('Пельмени - Бао-банс:', 25, y);
-                            y += 7;
-                            Object.entries(pelmeniBao).forEach(([item, value]) => {
-                                if (value > 0) {
-                                    doc.text(`${item}: ${value}`, 30, y);
-                                    y += 7;
-                                }
-                            });
-                        }
-                        y += 5;
-                    }
-                });
-            }
-
-            doc.save(`chifan_report_${currentStartDate}_${filter}.pdf`);
-            showToast('PDF успешно экспортирован');
-        }
-
-        // Инициализация
-        function init() {
-            // Установка темы
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('theme-dark');
-            }
-            
-            // Установка дат по умолчанию
-            const businessDay = getCurrentBusinessDay();
-            const businessDayStr = formatDateForInput(businessDay);
-            document.getElementById('start-date').value = businessDayStr;
-            document.getElementById('end-date').value = businessDayStr;
-            
-            // Активная кнопка "Сегодня"
-            document.querySelector('.btn-list .btn').classList.add('btn-primary');
-            
-            // Обновление информации о бизнес-дне
-            updateBusinessDayInfo();
-            
-            // Загрузка данных
-            load(businessDayStr, businessDayStr);
-            
-            // Запуск автообновления (если нужно, добавь setInterval)
+        function setupAutoRefresh() {
+            setInterval(() => {
+                const today = formatDateForInput(getCurrentBusinessDay());
+                load(today, today);
+            }, 300000); // Каждые 5 минут
         }
 
         function updateBusinessDayInfo() {
@@ -767,7 +656,20 @@
             document.getElementById('business-day-date').textContent = businessDayDate;
         }
 
-        // Запуск при загрузке страницы
+        function init() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('theme-dark');
+            }
+            const businessDay = getCurrentBusinessDay();
+            const businessDayStr = formatDateForInput(businessDay);
+            document.getElementById('start-date').value = businessDayStr;
+            document.getElementById('end-date').value = businessDayStr;
+            document.querySelector('.btn-list .btn').classList.add('btn-primary');
+            updateBusinessDayInfo();
+            load(businessDayStr, businessDayStr);
+            setupAutoRefresh();
+        }
+
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
