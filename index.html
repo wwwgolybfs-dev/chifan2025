@@ -382,7 +382,7 @@
                     continue;
                 }
                 try {
-                    const data = await fetchWithRetry(`${date}_data.json`);
+                    const data = await fetchWithRetry(`https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/daily/${date}_data.json`);
                     dataCache[date] = data;
                     dailyData.push(data);
                 } catch (error) {
@@ -560,22 +560,13 @@
                     }
                 });
                 const saladSup = salesStats['Салаты - Супы'] || {};
-                const salads = {};
-                const soups = {};
-                Object.entries(saladSup).forEach(([item, value]) => {
-                    if (item.includes('салат')) {
-                        salads[item] = value;
-                    } else {
-                        soups[item] = value;
-                    }
-                });
-                if (Object.values(salads).some(v => v > 0)) {
+                if (Object.values(saladSup).some(v => v > 0)) {
                     html += `
                         <tr>
-                            <td colspan="2" class="metric-breakdown">Салаты:</td>
+                            <td colspan="2" class="metric-breakdown">Салаты - Супы:</td>
                         </tr>
                     `;
-                    Object.entries(salads).forEach(([item, value]) => {
+                    Object.entries(saladSup).forEach(([item, value]) => {
                         if (value > 0) {
                             html += `
                                 <tr>
@@ -586,23 +577,16 @@
                         }
                     });
                 }
-                if (Object.values(soups).some(v => v > 0)) {
-                    html += `
-                        <tr>
-                            <td colspan="2" class="metric-breakdown">Супы:</td>
-                        </tr>
-                    `;
-                    Object.entries(soups).forEach(([item, value]) => {
-                        if (value > 0) {
-                            html += `
-                                <tr>
-                                    <td>${item}</td>
-                                    <td>${value}</td>
-                                </tr>
-                            `;
-                        }
-                    });
-                }
+                html += `
+                            <tr>
+                                <td>Тайский суп с курицей</td>
+                                <td>${saladSup['Тайский суп с курицей'] || 0}</td>
+                            </tr>
+                            <tr>
+                                <td>Тайский суп с креветкой</td>
+                                <td>${saladSup['Тайский суп с креветкой'] || 0}</td>
+                            </tr>
+                        `;
                 const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
                 if (Object.values(pelmeniBao).some(v => v > 0)) {
                     html += `
@@ -753,7 +737,7 @@
                 const todayStr = formatDateForInput(getCurrentBusinessDay());
                 if (startDateStr === todayStr) {
                     try {
-                        let data = await fetchWithRetry('revenue.json');
+                        let data = await fetchWithRetry('https://raw.githubusercontent.com/wwwgolybfs-dev/chifan2025/main/data/revenue.json');
                         data = computeTotals(data);
                         dataCache.current = data;
                         const currentDataHash = JSON.stringify(data.total);
@@ -926,35 +910,20 @@
                             }
                         });
                         const saladSup = salesStats['Салаты - Супы'] || {};
-                        const salads = {};
-                        const soups = {};
-                        Object.entries(saladSup).forEach(([item, value]) => {
-                            if (item.includes('салат')) {
-                                salads[item] = value;
-                            } else {
-                                soups[item] = value;
-                            }
-                        });
-                        if (Object.values(salads).some(v => v > 0)) {
-                            doc.text('Салаты:', 25, y);
+                        if (Object.values(saladSup).some(v => v > 0)) {
+                            doc.text('Салаты - Супы:', 25, y);
                             y += 7;
-                            Object.entries(salads).forEach(([item, value]) => {
+                            Object.entries(saladSup).forEach(([item, value]) => {
                                 if (value > 0) {
                                     doc.text(`${item}: ${value}`, 30, y);
                                     y += 7;
                                 }
                             });
                         }
-                        if (Object.values(soups).some(v => v > 0)) {
-                            doc.text('Супы:', 25, y);
-                            y += 7;
-                            Object.entries(soups).forEach(([item, value]) => {
-                                if (value > 0) {
-                                    doc.text(`${item}: ${value}`, 30, y);
-                                    y += 7;
-                                }
-                            });
-                        }
+                        doc.text(`Тайский суп с курицей: ${saladSup['Тайский суп с курицей'] || 0}`, 25, y);
+                        y += 7;
+                        doc.text(`Тайский суп с креветкой: ${saladSup['Тайский суп с креветкой'] || 0}`, 25, y);
+                        y += 7;
                         const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
                         if (Object.values(pelmeniBao).some(v => v > 0)) {
                             doc.text('Пельмени - Бао-банс:', 25, y);
