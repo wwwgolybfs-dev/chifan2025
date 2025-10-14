@@ -306,11 +306,19 @@
         }
 
         async function load(startDate, endDate = startDate) {
+            document.getElementById('last-update').textContent = 'Загрузка данных...';
+            document.getElementById('error-container').style.display = 'none';
             try {
-                const data = await fetch(`data/${startDate}_data.json`).then(res => res.json());
+                // Для текущей даты используем revenue.json
+                const data = await fetch('./data/revenue.json').then(res => {
+                    if (!res.ok) throw new Error('Файл revenue.json не найден');
+                    return res.json();
+                });
                 processData(data);
             } catch (error) {
                 console.error('Error loading data:', error);
+                document.getElementById('error-container').textContent = 'Ошибка загрузки данных: ' + error.message;
+                document.getElementById('error-container').style.display = 'block';
                 showToast('Ошибка загрузки данных', 'danger');
             }
         }
@@ -320,22 +328,32 @@
             currentEndDate = document.getElementById('end-date').value;
             if (!currentStartDate || !currentEndDate) return;
 
+            document.getElementById('last-update').textContent = 'Загрузка данных...';
+            document.getElementById('error-container').style.display = 'none';
+
             const dailyData = [];
             let current = new Date(currentStartDate);
             const end = new Date(currentEndDate);
+            let errorMessages = [];
 
             while (current <= end) {
                 const dateStr = formatDateForInput(current);
                 try {
-                    const data = await fetch(`data/${dateStr}_data.json`).then(res => {
-                        if (!res.ok) throw new Error();
+                    const data = await fetch(`./data/${dateStr}_data.json`).then(res => {
+                        if (!res.ok) throw new Error(`Файл для ${dateStr} не найден`);
                         return res.json();
                     });
                     dailyData.push(data);
-                } catch {
-                    // Пропуск дня, если файл не найден
+                } catch (e) {
+                    errorMessages.push(e.message);
                 }
                 current.setDate(current.getDate() + 1);
+            }
+
+            if (dailyData.length === 0) {
+                document.getElementById('error-container').textContent = 'Нет данных за выбранный период: ' + errorMessages.join(', ');
+                document.getElementById('error-container').style.display = 'block';
+                return;
             }
 
             const aggregated = aggregateData(dailyData);
@@ -352,7 +370,6 @@
             };
 
             dailyData.forEach(data => {
-                // Агрегация year_round и seasonal
                 Object.entries(data.year_round || {}).forEach(([venue, stats]) => {
                     if (!aggregated.year_round[venue]) aggregated.year_round[venue] = initStats();
                     aggregateStats(aggregated.year_round[venue], stats);
@@ -362,14 +379,11 @@
                     aggregateStats(aggregated.seasonal[venue], stats);
                 });
 
-                // Агрегация total
                 aggregateStats(aggregated.total, data.total || {});
 
-                // План (суммируем, если нужно)
                 aggregated.plan.revenue += data.plan?.revenue || 0;
                 aggregated.plan.orders += data.plan?.orders || 0;
 
-                // Агрегация sales
                 Object.entries(data.sales || {}).forEach(([venue, salesStats]) => {
                     if (!aggregated.sales[venue]) aggregated.sales[venue] = initSalesStats();
                     aggregateSales(aggregated.sales[venue], salesStats);
@@ -523,7 +537,6 @@
                         }
                     });
 
-                    // Исправление: Явный цикл по подкатегориям для корректного отображения супов
                     const saladSup = salesStats['Салаты - Супы'] || {};
                     if (Object.values(saladSup).some(v => v > 0)) {
                         table.innerHTML += '<tr><td colspan="2">Салаты - Супы</td></tr>';
@@ -569,7 +582,6 @@
                     }
                 });
 
-                // Исправление: Явный цикл по подкатегориям для корректного отображения супов
                 const saladSup = totalSales['Салаты - Супы'] || {};
                 if (Object.values(saladSup).some(v => v > 0)) {
                     table.innerHTML += '<tr><td colspan="2">Салаты - Супы</td></tr>';
@@ -720,7 +732,6 @@
                         if (Object.values(saladSup).some(v => v > 0)) {
                             doc.text('Салаты - Супы:', 25, y);
                             y += 7;
-                            // Исправление: Явный цикл по супам для корректного отображения
                             const subItems = ['Азиатский салат с курицей', 'Азиатский салат с креветкой', 'Тайский суп с курицей', 'Тайский суп с креветкой', 'Вьетнамский суп'];
                             subItems.forEach(item => {
                                 const value = saladSup[item] || 0;
