@@ -1,16 +1,16 @@
 {
   "date": "2025-10-14",
-  "time": "15:45",
+  "time": "16:00",
   "year_round": {
     "Светланская": {
-      "total_orders": 35,
-      "total_revenue": 18863.0,
+      "total_orders": 36,
+      "total_revenue": 19228.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 15,
       "pickup_revenue": 8849.0,
-      "cafe_orders": 20,
-      "cafe_revenue": 10014.0
+      "cafe_orders": 21,
+      "cafe_revenue": 10379.0
     },
     "Парк": {
       "total_orders": 19,
@@ -23,34 +23,34 @@
       "cafe_revenue": 9942.0
     },
     "Красота": {
-      "total_orders": 54,
-      "total_revenue": 64781.0,
+      "total_orders": 55,
+      "total_revenue": 66289.0,
       "delivery_orders": 28,
       "delivery_revenue": 46762.0,
       "pickup_orders": 8,
       "pickup_revenue": 7134.0,
-      "cafe_orders": 18,
-      "cafe_revenue": 10885.0
+      "cafe_orders": 19,
+      "cafe_revenue": 12393.0
     },
     "Тобольская": {
-      "total_orders": 47,
-      "total_revenue": 35023.0,
-      "delivery_orders": 9,
-      "delivery_revenue": 15100.0,
+      "total_orders": 49,
+      "total_revenue": 37126.0,
+      "delivery_orders": 10,
+      "delivery_revenue": 16709.0,
       "pickup_orders": 8,
       "pickup_revenue": 6334.0,
-      "cafe_orders": 30,
-      "cafe_revenue": 13589.0
+      "cafe_orders": 31,
+      "cafe_revenue": 14083.0
     },
     "Тихая": {
-      "total_orders": 31,
-      "total_revenue": 24498.0,
-      "delivery_orders": 8,
-      "delivery_revenue": 12424.0,
+      "total_orders": 34,
+      "total_revenue": 27642.0,
+      "delivery_orders": 10,
+      "delivery_revenue": 15199.0,
       "pickup_orders": 6,
       "pickup_revenue": 3871.0,
-      "cafe_orders": 17,
-      "cafe_revenue": 8203.0
+      "cafe_orders": 18,
+      "cafe_revenue": 8572.0
     },
     "Чуркин": {
       "total_orders": 66,
@@ -86,14 +86,14 @@
     }
   },
   "total": {
-    "total_orders": 295,
-    "total_revenue": 202381.0,
-    "total_delivery_orders": 45,
-    "total_delivery_revenue": 74286.0,
+    "total_orders": 302,
+    "total_revenue": 209501.0,
+    "total_delivery_orders": 48,
+    "total_delivery_revenue": 78670.0,
     "total_pickup_orders": 46,
     "total_pickup_revenue": 32372.0,
-    "total_cafe_orders": 204,
-    "total_cafe_revenue": 95723.0
+    "total_cafe_orders": 208,
+    "total_cafe_revenue": 98459.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -101,12 +101,12 @@
   },
   "sales": {
     "Красота": {
-      "Лапша": 59,
+      "Лапша": 63,
       "Рис": 39,
       "Курица": 39,
       "Свинина": 13,
-      "Креветка": 22,
-      "Бекон": 27,
+      "Креветка": 24,
+      "Бекон": 29,
       "Соломка": 3.1,
       "Кубик": 3.0799999999999996,
       "Салаты - Супы": {
@@ -185,20 +185,20 @@
       }
     },
     "Тихая": {
-      "Лапша": 29,
-      "Рис": 5,
-      "Курица": 14,
-      "Свинина": 4,
-      "Креветка": 12,
-      "Бекон": 6,
-      "Соломка": 2.1,
-      "Кубик": 0.33,
+      "Лапша": 31,
+      "Рис": 9,
+      "Курица": 16,
+      "Свинина": 5,
+      "Креветка": 13,
+      "Бекон": 7,
+      "Соломка": 2.3000000000000003,
+      "Кубик": 0.66,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 3,
         "Азиатский салат с креветкой": 1,
         "Тайский суп с курицей": 1,
         "Тайский суп с креветкой": 2,
-        "Вьетнамский суп": 5
+        "Вьетнамский суп": 6
       },
       "Пельмени - Бао-банс": {
         "Пельмени с курицей": 0,
@@ -206,18 +206,18 @@
       }
     },
     "Тобольская": {
-      "Лапша": 45,
+      "Лапша": 48,
       "Рис": 19,
-      "Курица": 13,
-      "Свинина": 7,
+      "Курица": 14,
+      "Свинина": 8,
       "Креветка": 25,
-      "Бекон": 15,
-      "Соломка": 1.9,
+      "Бекон": 16,
+      "Соломка": 2.1,
       "Кубик": 1.32,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 2,
         "Азиатский салат с креветкой": 0,
-        "Тайский суп с курицей": 2,
+        "Тайский суп с курицей": 3,
         "Тайский суп с креветкой": 6,
         "Вьетнамский суп": 2
       },
