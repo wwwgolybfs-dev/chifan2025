@@ -1,6 +1,6 @@
 {
   "date": "2025-10-14",
-  "time": "22:15",
+  "time": "22:30",
   "year_round": {
     "Светланская": {
       "total_orders": 63,
@@ -23,24 +23,24 @@
       "cafe_revenue": 13311.0
     },
     "Красота": {
-      "total_orders": 91,
-      "total_revenue": 106719.0,
+      "total_orders": 93,
+      "total_revenue": 108200.0,
       "delivery_orders": 46,
       "delivery_revenue": 76307.0,
       "pickup_orders": 13,
       "pickup_revenue": 10952.0,
-      "cafe_orders": 32,
-      "cafe_revenue": 19460.0
+      "cafe_orders": 34,
+      "cafe_revenue": 20941.0
     },
     "Тобольская": {
-      "total_orders": 103,
-      "total_revenue": 89017.0,
+      "total_orders": 105,
+      "total_revenue": 89635.0,
       "delivery_orders": 27,
       "delivery_revenue": 47106.0,
       "pickup_orders": 18,
       "pickup_revenue": 12141.0,
-      "cafe_orders": 58,
-      "cafe_revenue": 29770.0
+      "cafe_orders": 60,
+      "cafe_revenue": 30388.0
     },
     "Тихая": {
       "total_orders": 66,
@@ -86,14 +86,14 @@
     }
   },
   "total": {
-    "total_orders": 518,
-    "total_revenue": 389852.0,
+    "total_orders": 522,
+    "total_revenue": 391951.0,
     "total_delivery_orders": 96,
     "total_delivery_revenue": 160287.0,
     "total_pickup_orders": 81,
     "total_pickup_revenue": 59119.0,
-    "total_cafe_orders": 341,
-    "total_cafe_revenue": 170446.0
+    "total_cafe_orders": 345,
+    "total_cafe_revenue": 172545.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -101,17 +101,17 @@
   },
   "sales": {
     "Красота": {
-      "Лапша": 95,
+      "Лапша": 97,
       "Рис": 63,
-      "Курица": 67,
+      "Курица": 68,
       "Свинина": 22,
-      "Креветка": 37,
+      "Креветка": 38,
       "Бекон": 41,
-      "Соломка": 4.7,
+      "Соломка": 4.900000000000001,
       "Кубик": 5.28,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 7,
-        "Азиатский салат с креветкой": 6,
+        "Азиатский салат с креветкой": 7,
         "Тайский суп с курицей": 4,
         "Тайский суп с креветкой": 9,
         "Вьетнамский суп": 6
@@ -217,7 +217,7 @@
       "Салаты - Супы": {
         "Азиатский салат с курицей": 3,
         "Азиатский салат с креветкой": 0,
-        "Тайский суп с курицей": 9,
+        "Тайский суп с курицей": 10,
         "Тайский суп с креветкой": 13,
         "Вьетнамский суп": 4
       },
