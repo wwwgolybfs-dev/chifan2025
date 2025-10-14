@@ -774,6 +774,7 @@
             currentEndDate = endDateStr;
             const businessDay = getCurrentBusinessDay();
             const todayStr = formatDateForInput(businessDay);
+            let dataLoaded = false;
             if (startDateStr === todayStr && endDateStr === todayStr) {
                 const path = 'data/revenue.json';
                 const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${path}`;
@@ -796,52 +797,55 @@
                     renderSalesData(data);
                     renderCharts(data);
                     await renderTimeChart(currentStartDate, currentEndDate, [data]);
+                    dataLoaded = true;
                     return;
                 } catch (e) {
                     console.warn(`Нет данных за сегодня в revenue.json: ${e.message}`);
                 }
             }
-            try {
-                const result = await loadData(startDateStr, endDateStr);
-                if (!result) {
-                    throw new Error('Данные не получены');
+            if (!dataLoaded) {
+                try {
+                    const result = await loadData(startDateStr, endDateStr);
+                    if (!result) {
+                        throw new Error('Данные не получены');
+                    }
+                    let { aggregatedData, dailyData } = result;
+                    aggregatedData = computeTotals(aggregatedData);
+                    dataCache.current = aggregatedData;
+                    const currentDataHash = JSON.stringify(aggregatedData.total);
+                    if (lastDataHash && lastDataHash !== currentDataHash) {
+                        showToast('Обновлены данные', 'success');
+                    }
+                    lastDataHash = currentDataHash;
+                    let dateDisplay = startDateStr === endDateStr ?
+                        new Date(startDateStr).toLocaleDateString('ru-RU') :
+                        `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
+                    if (updateEl) {
+                        updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${aggregatedData.time} (${dateDisplay})`;
+                    }
+                    renderMetrics(aggregatedData);
+                    renderVenues(aggregatedData, 'year-round');
+                    renderVenues(aggregatedData, 'seasonal');
+                    renderSalesData(aggregatedData);
+                    renderCharts(aggregatedData);
+                    await renderTimeChart(currentStartDate, currentEndDate, dailyData);
+                } catch (error) {
+                    console.error('Ошибка загрузки:', error);
+                    if (updateEl) {
+                        updateEl.innerHTML = '<i class="ti ti-alert-triangle"></i> Ошибка загрузки';
+                    }
+                    document.getElementById('metrics').innerHTML = '<div class="alert alert-danger">Ошибка загрузки метрик: ' + error.message + '</div>';
+                    document.getElementById('year-round').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по круглогодичным филиалам</div>';
+                    document.getElementById('seasonal').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по сезонным филиалам</div>';
+                    document.getElementById('sales-data').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по полуфабрикатам</div>';
+                    showToast('Ошибка загрузки данных: ' + error.message, 'danger');
+                } finally {
+                    setTimeout(() => {
+                        document.querySelectorAll('.card').forEach((el, index) => {
+                            setTimeout(() => el.classList.add('fade-in'), index * 50);
+                        });
+                    }, 100);
                 }
-                let { aggregatedData, dailyData } = result;
-                aggregatedData = computeTotals(aggregatedData);
-                dataCache.current = aggregatedData;
-                const currentDataHash = JSON.stringify(aggregatedData.total);
-                if (lastDataHash && lastDataHash !== currentDataHash) {
-                    showToast('Обновлены данные', 'success');
-                }
-                lastDataHash = currentDataHash;
-                let dateDisplay = startDateStr === endDateStr ?
-                    new Date(startDateStr).toLocaleDateString('ru-RU') :
-                    `${new Date(startDateStr).toLocaleDateString('ru-RU')} - ${new Date(endDateStr).toLocaleDateString('ru-RU')}`;
-                if (updateEl) {
-                    updateEl.innerHTML = `<i class="ti ti-check"></i> Обновлено: ${aggregatedData.time} (${dateDisplay})`;
-                }
-                renderMetrics(aggregatedData);
-                renderVenues(aggregatedData, 'year-round');
-                renderVenues(aggregatedData, 'seasonal');
-                renderSalesData(aggregatedData);
-                renderCharts(aggregatedData);
-                await renderTimeChart(currentStartDate, currentEndDate, dailyData);
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                if (updateEl) {
-                    updateEl.innerHTML = '<i class="ti ti-alert-triangle"></i> Ошибка загрузки';
-                }
-                document.getElementById('metrics').innerHTML = '<div class="alert alert-danger">Ошибка загрузки метрик: ' + error.message + '</div>';
-                document.getElementById('year-round').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по круглогодичным филиалам</div>';
-                document.getElementById('seasonal').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по сезонным филиалам</div>';
-                document.getElementById('sales-data').innerHTML = '<div class="alert alert-danger">Ошибка загрузки данных по полуфабрикатам</div>';
-                showToast('Ошибка загрузки данных: ' + error.message, 'danger');
-            } finally {
-                setTimeout(() => {
-                    document.querySelectorAll('.card').forEach((el, index) => {
-                        setTimeout(() => el.classList.add('fade-in'), index * 50);
-                    });
-                }, 100);
             }
         }
 
