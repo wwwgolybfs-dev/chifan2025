@@ -1,6 +1,6 @@
 {
   "date": "2025-10-15",
-  "time": "10:45",
+  "time": "11:00",
   "year_round": {
     "Красота": {
       "total_orders": 25,
@@ -22,27 +22,37 @@
       "cafe_orders": 4,
       "cafe_revenue": 1290.0
     },
-    "Чуркин": {
+    "Тихая": {
       "total_orders": 1,
-      "total_revenue": 365.0,
+      "total_revenue": 728.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 0,
       "pickup_revenue": 0.0,
       "cafe_orders": 1,
-      "cafe_revenue": 365.0
+      "cafe_revenue": 728.0
+    },
+    "Чуркин": {
+      "total_orders": 2,
+      "total_revenue": 734.0,
+      "delivery_orders": 0,
+      "delivery_revenue": 0.0,
+      "pickup_orders": 0,
+      "pickup_revenue": 0.0,
+      "cafe_orders": 2,
+      "cafe_revenue": 734.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 31,
-    "total_revenue": 39017.0,
+    "total_orders": 33,
+    "total_revenue": 40114.0,
     "total_delivery_orders": 19,
     "total_delivery_revenue": 33712.0,
     "total_pickup_orders": 2,
     "total_pickup_revenue": 1141.0,
-    "total_cafe_orders": 10,
-    "total_cafe_revenue": 4164.0
+    "total_cafe_orders": 12,
+    "total_cafe_revenue": 5261.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -113,13 +123,13 @@
       }
     },
     "Чуркин": {
-      "Лапша": 0,
+      "Лапша": 1,
       "Рис": 0,
       "Курица": 0,
       "Свинина": 0,
-      "Креветка": 0,
+      "Креветка": 1,
       "Бекон": 0,
-      "Соломка": 0.0,
+      "Соломка": 0.1,
       "Кубик": 0.0,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
@@ -134,13 +144,13 @@
       }
     },
     "Тихая": {
-      "Лапша": 0,
+      "Лапша": 1,
       "Рис": 0,
       "Курица": 0,
-      "Свинина": 0,
-      "Креветка": 0,
+      "Свинина": 1,
+      "Креветка": 1,
       "Бекон": 0,
-      "Соломка": 0.0,
+      "Соломка": 0.1,
       "Кубик": 0.0,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
