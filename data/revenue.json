@@ -1,6 +1,6 @@
 {
   "date": "2025-10-15",
-  "time": "22:00",
+  "time": "22:15",
   "year_round": {
     "Светланская": {
       "total_orders": 49,
@@ -33,24 +33,24 @@
       "cafe_revenue": 18315.0
     },
     "Тобольская": {
-      "total_orders": 113,
+      "total_orders": 114,
       "total_revenue": 93366.0,
       "delivery_orders": 34,
       "delivery_revenue": 50846.0,
       "pickup_orders": 23,
       "pickup_revenue": 13963.0,
-      "cafe_orders": 56,
+      "cafe_orders": 57,
       "cafe_revenue": 28557.0
     },
     "Тихая": {
-      "total_orders": 60,
-      "total_revenue": 44420.0,
-      "delivery_orders": 11,
-      "delivery_revenue": 18671.0,
+      "total_orders": 62,
+      "total_revenue": 46622.0,
+      "delivery_orders": 12,
+      "delivery_revenue": 20165.0,
       "pickup_orders": 18,
       "pickup_revenue": 10783.0,
-      "cafe_orders": 31,
-      "cafe_revenue": 14966.0
+      "cafe_orders": 32,
+      "cafe_revenue": 15674.0
     },
     "Чуркин": {
       "total_orders": 118,
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 446,
-    "total_revenue": 358093.0,
-    "total_delivery_orders": 95,
-    "total_delivery_revenue": 152699.0,
+    "total_orders": 449,
+    "total_revenue": 360295.0,
+    "total_delivery_orders": 96,
+    "total_delivery_revenue": 154193.0,
     "total_pickup_orders": 76,
     "total_pickup_revenue": 51112.0,
-    "total_cafe_orders": 275,
-    "total_cafe_revenue": 154282.0
+    "total_cafe_orders": 277,
+    "total_cafe_revenue": 154990.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -164,14 +164,14 @@
       }
     },
     "Тихая": {
-      "Лапша": 51,
-      "Рис": 28,
-      "Курица": 21,
+      "Лапша": 54,
+      "Рис": 29,
+      "Курица": 23,
       "Свинина": 10,
-      "Креветка": 21,
-      "Бекон": 27,
-      "Соломка": 2.1,
-      "Кубик": 1.7600000000000002,
+      "Креветка": 22,
+      "Бекон": 28,
+      "Соломка": 2.3,
+      "Кубик": 1.87,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 2,
         "Азиатский салат с креветкой": 3,
