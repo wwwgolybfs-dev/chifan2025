@@ -1,16 +1,16 @@
 {
   "date": "2025-10-15",
-  "time": "21:45",
+  "time": "22:00",
   "year_round": {
     "Светланская": {
-      "total_orders": 48,
-      "total_revenue": 24219.0,
+      "total_orders": 49,
+      "total_revenue": 24574.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 7,
       "pickup_revenue": 3751.0,
-      "cafe_orders": 41,
-      "cafe_revenue": 20468.0
+      "cafe_orders": 42,
+      "cafe_revenue": 20823.0
     },
     "Парк": {
       "total_orders": 10,
@@ -23,12 +23,12 @@
       "cafe_revenue": 5527.0
     },
     "Красота": {
-      "total_orders": 94,
-      "total_revenue": 108793.0,
-      "delivery_orders": 49,
-      "delivery_revenue": 81771.0,
-      "pickup_orders": 13,
-      "pickup_revenue": 8707.0,
+      "total_orders": 96,
+      "total_revenue": 111664.0,
+      "delivery_orders": 50,
+      "delivery_revenue": 83182.0,
+      "pickup_orders": 14,
+      "pickup_revenue": 10167.0,
       "cafe_orders": 32,
       "cafe_revenue": 18315.0
     },
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 443,
-    "total_revenue": 354867.0,
-    "total_delivery_orders": 94,
-    "total_delivery_revenue": 151288.0,
-    "total_pickup_orders": 75,
-    "total_pickup_revenue": 49652.0,
-    "total_cafe_orders": 274,
-    "total_cafe_revenue": 153927.0
+    "total_orders": 446,
+    "total_revenue": 358093.0,
+    "total_delivery_orders": 95,
+    "total_delivery_revenue": 152699.0,
+    "total_pickup_orders": 76,
+    "total_pickup_revenue": 51112.0,
+    "total_cafe_orders": 275,
+    "total_cafe_revenue": 154282.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -81,11 +81,11 @@
   "sales": {
     "Красота": {
       "Лапша": 97,
-      "Рис": 49,
+      "Рис": 52,
       "Курица": 60,
       "Свинина": 17,
       "Креветка": 45,
-      "Бекон": 39,
+      "Бекон": 42,
       "Соломка": 5.6,
       "Кубик": 3.74,
       "Салаты - Супы": {
@@ -97,7 +97,7 @@
       },
       "Пельмени - Бао-банс": {
         "Пельмени с курицей": 0,
-        "Бао-банс с курицей": 13
+        "Бао-банс с курицей": 14
       }
     },
     "Парк": {
@@ -122,13 +122,13 @@
       }
     },
     "Светланская": {
-      "Лапша": 40,
+      "Лапша": 41,
       "Рис": 12,
-      "Курица": 19,
+      "Курица": 20,
       "Свинина": 6,
       "Креветка": 11,
       "Бекон": 14,
-      "Соломка": 2.6,
+      "Соломка": 2.7,
       "Кубик": 0.66,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 1,
