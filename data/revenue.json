@@ -1,28 +1,28 @@
 {
   "date": "2025-10-15",
-  "time": "09:45",
+  "time": "10:00",
   "year_round": {
     "Красота": {
-      "total_orders": 21,
-      "total_revenue": 34906.0,
+      "total_orders": 22,
+      "total_revenue": 35616.0,
       "delivery_orders": 19,
       "delivery_revenue": 33712.0,
       "pickup_orders": 0,
       "pickup_revenue": 0.0,
-      "cafe_orders": 2,
-      "cafe_revenue": 1194.0
+      "cafe_orders": 3,
+      "cafe_revenue": 1904.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 21,
-    "total_revenue": 34906.0,
+    "total_orders": 22,
+    "total_revenue": 35616.0,
     "total_delivery_orders": 19,
     "total_delivery_revenue": 33712.0,
     "total_pickup_orders": 0,
     "total_pickup_revenue": 0.0,
-    "total_cafe_orders": 2,
-    "total_cafe_revenue": 1194.0
+    "total_cafe_orders": 3,
+    "total_cafe_revenue": 1904.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -30,13 +30,13 @@
   },
   "sales": {
     "Красота": {
-      "Лапша": 18,
+      "Лапша": 20,
       "Рис": 15,
-      "Курица": 20,
+      "Курица": 22,
       "Свинина": 2,
       "Креветка": 8,
       "Бекон": 10,
-      "Соломка": 0.8,
+      "Соломка": 1.0,
       "Кубик": 1.1,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 1,
