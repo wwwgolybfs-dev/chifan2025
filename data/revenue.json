@@ -1,6 +1,6 @@
 {
   "date": "2025-10-16",
-  "time": "23:15",
+  "time": "23:30",
   "year_round": {
     "Светланская": {
       "total_orders": 54,
@@ -23,14 +23,14 @@
       "cafe_revenue": 2096.0
     },
     "Красота": {
-      "total_orders": 95,
-      "total_revenue": 105465.0,
+      "total_orders": 98,
+      "total_revenue": 108215.0,
       "delivery_orders": 54,
       "delivery_revenue": 77793.0,
-      "pickup_orders": 18,
-      "pickup_revenue": 11376.0,
-      "cafe_orders": 23,
-      "cafe_revenue": 16296.0
+      "pickup_orders": 19,
+      "pickup_revenue": 12110.0,
+      "cafe_orders": 25,
+      "cafe_revenue": 18312.0
     },
     "Тобольская": {
       "total_orders": 104,
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 455,
-    "total_revenue": 373411.0,
+    "total_orders": 458,
+    "total_revenue": 376161.0,
     "total_delivery_orders": 108,
     "total_delivery_revenue": 165764.0,
-    "total_pickup_orders": 88,
-    "total_pickup_revenue": 54237.0,
-    "total_cafe_orders": 259,
-    "total_cafe_revenue": 153410.0
+    "total_pickup_orders": 89,
+    "total_pickup_revenue": 54971.0,
+    "total_cafe_orders": 261,
+    "total_cafe_revenue": 155426.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -80,18 +80,18 @@
   },
   "sales": {
     "Красота": {
-      "Лапша": 97,
-      "Рис": 64,
+      "Лапша": 98,
+      "Рис": 66,
       "Курица": 56,
       "Свинина": 16,
-      "Креветка": 47,
-      "Бекон": 51,
+      "Креветка": 48,
+      "Бекон": 55,
       "Соломка": 4.5,
       "Кубик": 4.4,
       "Салаты - Супы": {
-        "Азиатский салат с курицей": 12,
+        "Азиатский салат с курицей": 13,
         "Азиатский салат с креветкой": 0,
-        "Тайский суп с курицей": 4,
+        "Тайский суп с курицей": 6,
         "Тайский суп с креветкой": 9,
         "Вьетнамский суп": 7
       },
