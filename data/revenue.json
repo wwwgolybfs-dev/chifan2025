@@ -1,6 +1,6 @@
 {
   "date": "2025-10-16",
-  "time": "23:00",
+  "time": "23:15",
   "year_round": {
     "Светланская": {
       "total_orders": 54,
@@ -23,12 +23,12 @@
       "cafe_revenue": 2096.0
     },
     "Красота": {
-      "total_orders": 92,
-      "total_revenue": 102095.0,
-      "delivery_orders": 52,
-      "delivery_revenue": 75420.0,
-      "pickup_orders": 17,
-      "pickup_revenue": 10379.0,
+      "total_orders": 95,
+      "total_revenue": 105465.0,
+      "delivery_orders": 54,
+      "delivery_revenue": 77793.0,
+      "pickup_orders": 18,
+      "pickup_revenue": 11376.0,
       "cafe_orders": 23,
       "cafe_revenue": 16296.0
     },
@@ -65,12 +65,12 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 452,
-    "total_revenue": 370041.0,
-    "total_delivery_orders": 106,
-    "total_delivery_revenue": 163391.0,
-    "total_pickup_orders": 87,
-    "total_pickup_revenue": 53240.0,
+    "total_orders": 455,
+    "total_revenue": 373411.0,
+    "total_delivery_orders": 108,
+    "total_delivery_revenue": 165764.0,
+    "total_pickup_orders": 88,
+    "total_pickup_revenue": 54237.0,
     "total_cafe_orders": 259,
     "total_cafe_revenue": 153410.0
   },
@@ -80,16 +80,16 @@
   },
   "sales": {
     "Красота": {
-      "Лапша": 95,
-      "Рис": 63,
-      "Курица": 55,
+      "Лапша": 97,
+      "Рис": 64,
+      "Курица": 56,
       "Свинина": 16,
-      "Креветка": 46,
+      "Креветка": 47,
       "Бекон": 51,
-      "Соломка": 4.3999999999999995,
-      "Кубик": 4.29,
+      "Соломка": 4.5,
+      "Кубик": 4.4,
       "Салаты - Супы": {
-        "Азиатский салат с курицей": 11,
+        "Азиатский салат с курицей": 12,
         "Азиатский салат с креветкой": 0,
         "Тайский суп с курицей": 4,
         "Тайский суп с креветкой": 9,
@@ -97,7 +97,7 @@
       },
       "Пельмени - Бао-банс": {
         "Пельмени с курицей": 0,
-        "Бао-банс с курицей": 11
+        "Бао-банс с курицей": 12
       }
     },
     "Парк": {
