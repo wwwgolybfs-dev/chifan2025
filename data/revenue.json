@@ -1,6 +1,6 @@
 {
   "date": "2025-10-16",
-  "time": "22:45",
+  "time": "23:00",
   "year_round": {
     "Светланская": {
       "total_orders": 54,
@@ -33,24 +33,24 @@
       "cafe_revenue": 16296.0
     },
     "Тобольская": {
-      "total_orders": 102,
-      "total_revenue": 99634.0,
-      "delivery_orders": 31,
-      "delivery_revenue": 56437.0,
+      "total_orders": 104,
+      "total_revenue": 101225.0,
+      "delivery_orders": 32,
+      "delivery_revenue": 57400.0,
       "pickup_orders": 18,
       "pickup_revenue": 11730.0,
-      "cafe_orders": 53,
-      "cafe_revenue": 31467.0
+      "cafe_orders": 54,
+      "cafe_revenue": 32095.0
     },
     "Тихая": {
-      "total_orders": 82,
-      "total_revenue": 64269.0,
+      "total_orders": 83,
+      "total_revenue": 64634.0,
       "delivery_orders": 22,
       "delivery_revenue": 30571.0,
       "pickup_orders": 22,
       "pickup_revenue": 12520.0,
-      "cafe_orders": 38,
-      "cafe_revenue": 21178.0
+      "cafe_orders": 39,
+      "cafe_revenue": 21543.0
     },
     "Чуркин": {
       "total_orders": 114,
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 449,
-    "total_revenue": 368085.0,
-    "total_delivery_orders": 105,
-    "total_delivery_revenue": 162428.0,
+    "total_orders": 452,
+    "total_revenue": 370041.0,
+    "total_delivery_orders": 106,
+    "total_delivery_revenue": 163391.0,
     "total_pickup_orders": 87,
     "total_pickup_revenue": 53240.0,
-    "total_cafe_orders": 257,
-    "total_cafe_revenue": 152417.0
+    "total_cafe_orders": 259,
+    "total_cafe_revenue": 153410.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -185,13 +185,13 @@
       }
     },
     "Тобольская": {
-      "Лапша": 113,
+      "Лапша": 115,
       "Рис": 47,
       "Курица": 57,
       "Свинина": 24,
-      "Креветка": 56,
+      "Креветка": 58,
       "Бекон": 40,
-      "Соломка": 6.4,
+      "Соломка": 6.5,
       "Кубик": 3.8499999999999996,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 6,
