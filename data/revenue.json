@@ -1,6 +1,6 @@
 {
   "date": "2025-10-17",
-  "time": "11:30",
+  "time": "11:45",
   "year_round": {
     "Светланская": {
       "total_orders": 2,
@@ -13,10 +13,10 @@
       "cafe_revenue": 708.0
     },
     "Красота": {
-      "total_orders": 24,
-      "total_revenue": 30292.0,
-      "delivery_orders": 14,
-      "delivery_revenue": 22454.0,
+      "total_orders": 25,
+      "total_revenue": 31640.0,
+      "delivery_orders": 15,
+      "delivery_revenue": 23802.0,
       "pickup_orders": 3,
       "pickup_revenue": 1431.0,
       "cafe_orders": 7,
@@ -43,26 +43,26 @@
       "cafe_revenue": 0.0
     },
     "Чуркин": {
-      "total_orders": 11,
-      "total_revenue": 5283.0,
+      "total_orders": 13,
+      "total_revenue": 6216.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
-      "pickup_orders": 2,
-      "pickup_revenue": 1367.0,
-      "cafe_orders": 9,
-      "cafe_revenue": 3916.0
+      "pickup_orders": 3,
+      "pickup_revenue": 1722.0,
+      "cafe_orders": 10,
+      "cafe_revenue": 4494.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 45,
-    "total_revenue": 41042.0,
-    "total_delivery_orders": 17,
-    "total_delivery_revenue": 25629.0,
-    "total_pickup_orders": 7,
-    "total_pickup_revenue": 3380.0,
-    "total_cafe_orders": 21,
-    "total_cafe_revenue": 12033.0
+    "total_orders": 48,
+    "total_revenue": 43323.0,
+    "total_delivery_orders": 18,
+    "total_delivery_revenue": 26977.0,
+    "total_pickup_orders": 8,
+    "total_pickup_revenue": 3735.0,
+    "total_cafe_orders": 22,
+    "total_cafe_revenue": 12611.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -71,18 +71,18 @@
   "sales": {
     "Красота": {
       "Лапша": 18,
-      "Рис": 12,
+      "Рис": 13,
       "Курица": 9,
       "Свинина": 3,
-      "Креветка": 7,
+      "Креветка": 8,
       "Бекон": 11,
       "Соломка": 0.8,
-      "Кубик": 0.55,
+      "Кубик": 0.66,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 4,
         "Азиатский салат с креветкой": 1,
         "Тайский суп с курицей": 2,
-        "Тайский суп с креветкой": 4,
+        "Тайский суп с креветкой": 5,
         "Вьетнамский суп": 3
       },
       "Пельмени - Бао-банс": {
@@ -133,24 +133,24 @@
       }
     },
     "Чуркин": {
-      "Лапша": 6,
+      "Лапша": 7,
       "Рис": 4,
-      "Курица": 2,
+      "Курица": 3,
       "Свинина": 3,
       "Креветка": 2,
       "Бекон": 2,
-      "Соломка": 0.4,
+      "Соломка": 0.5,
       "Кубик": 0.33,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
         "Азиатский салат с креветкой": 0,
-        "Тайский суп с курицей": 0,
+        "Тайский суп с курицей": 1,
         "Тайский суп с креветкой": 0,
         "Вьетнамский суп": 0
       },
       "Пельмени - Бао-банс": {
         "Пельмени с курицей": 0,
-        "Бао-банс с курицей": 1
+        "Бао-банс с курицей": 2
       }
     },
     "Тихая": {
