@@ -1,6 +1,6 @@
 {
   "date": "2025-10-17",
-  "time": "10:00",
+  "time": "10:15",
   "year_round": {
     "Красота": {
       "total_orders": 20,
@@ -13,24 +13,24 @@
       "cafe_revenue": 5488.0
     },
     "Тобольская": {
-      "total_orders": 1,
-      "total_revenue": 329.0,
+      "total_orders": 2,
+      "total_revenue": 648.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
-      "pickup_orders": 0,
-      "pickup_revenue": 0.0,
+      "pickup_orders": 1,
+      "pickup_revenue": 319.0,
       "cafe_orders": 1,
       "cafe_revenue": 329.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 21,
-    "total_revenue": 29284.0,
+    "total_orders": 22,
+    "total_revenue": 29603.0,
     "total_delivery_orders": 14,
     "total_delivery_revenue": 22454.0,
-    "total_pickup_orders": 2,
-    "total_pickup_revenue": 1013.0,
+    "total_pickup_orders": 3,
+    "total_pickup_revenue": 1332.0,
     "total_cafe_orders": 5,
     "total_cafe_revenue": 5817.0
   },
@@ -145,12 +145,12 @@
       }
     },
     "Тобольская": {
-      "Лапша": 1,
+      "Лапша": 2,
       "Рис": 0,
       "Курица": 0,
       "Свинина": 0,
       "Креветка": 0,
-      "Бекон": 0,
+      "Бекон": 1,
       "Соломка": 0.1,
       "Кубик": 0.0,
       "Салаты - Супы": {
