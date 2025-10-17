@@ -1,16 +1,16 @@
 {
   "date": "2025-10-17",
-  "time": "21:30",
+  "time": "21:45",
   "year_round": {
     "Светланская": {
-      "total_orders": 67,
-      "total_revenue": 34709.0,
+      "total_orders": 68,
+      "total_revenue": 35407.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 25,
       "pickup_revenue": 13969.0,
-      "cafe_orders": 42,
-      "cafe_revenue": 20740.0
+      "cafe_orders": 43,
+      "cafe_revenue": 21438.0
     },
     "Парк": {
       "total_orders": 21,
@@ -23,32 +23,32 @@
       "cafe_revenue": 12267.0
     },
     "Красота": {
-      "total_orders": 88,
-      "total_revenue": 96064.0,
+      "total_orders": 89,
+      "total_revenue": 96363.0,
       "delivery_orders": 39,
       "delivery_revenue": 65244.0,
       "pickup_orders": 14,
       "pickup_revenue": 9973.0,
-      "cafe_orders": 35,
-      "cafe_revenue": 20847.0
+      "cafe_orders": 36,
+      "cafe_revenue": 21146.0
     },
     "Тобольская": {
-      "total_orders": 110,
-      "total_revenue": 109362.0,
-      "delivery_orders": 37,
-      "delivery_revenue": 62234.0,
+      "total_orders": 113,
+      "total_revenue": 111578.0,
+      "delivery_orders": 38,
+      "delivery_revenue": 63642.0,
       "pickup_orders": 24,
       "pickup_revenue": 15669.0,
-      "cafe_orders": 49,
-      "cafe_revenue": 31459.0
+      "cafe_orders": 51,
+      "cafe_revenue": 32267.0
     },
     "Тихая": {
-      "total_orders": 65,
-      "total_revenue": 56337.0,
+      "total_orders": 66,
+      "total_revenue": 57056.0,
       "delivery_orders": 21,
       "delivery_revenue": 31038.0,
-      "pickup_orders": 18,
-      "pickup_revenue": 11930.0,
+      "pickup_orders": 19,
+      "pickup_revenue": 12649.0,
       "cafe_orders": 26,
       "cafe_revenue": 13369.0
     },
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 466,
-    "total_revenue": 375787.0,
-    "total_delivery_orders": 97,
-    "total_delivery_revenue": 158516.0,
-    "total_pickup_orders": 102,
-    "total_pickup_revenue": 65188.0,
-    "total_cafe_orders": 267,
-    "total_cafe_revenue": 152083.0
+    "total_orders": 472,
+    "total_revenue": 379719.0,
+    "total_delivery_orders": 98,
+    "total_delivery_revenue": 159924.0,
+    "total_pickup_orders": 103,
+    "total_pickup_revenue": 65907.0,
+    "total_cafe_orders": 271,
+    "total_cafe_revenue": 153888.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -122,14 +122,14 @@
       }
     },
     "Светланская": {
-      "Лапша": 49,
-      "Рис": 16,
-      "Курица": 21,
-      "Свинина": 4,
+      "Лапша": 50,
+      "Рис": 17,
+      "Курица": 22,
+      "Свинина": 5,
       "Креветка": 26,
       "Бекон": 16,
-      "Соломка": 2.6,
-      "Кубик": 1.2100000000000002,
+      "Соломка": 2.7,
+      "Кубик": 1.32,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 2,
         "Азиатский салат с креветкой": 2,
@@ -185,14 +185,14 @@
       }
     },
     "Тобольская": {
-      "Лапша": 102,
-      "Рис": 54,
+      "Лапша": 106,
+      "Рис": 55,
       "Курица": 66,
-      "Свинина": 19,
-      "Креветка": 53,
-      "Бекон": 30,
-      "Соломка": 6.500000000000001,
-      "Кубик": 4.62,
+      "Свинина": 20,
+      "Креветка": 55,
+      "Бекон": 32,
+      "Соломка": 6.7,
+      "Кубик": 4.73,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 9,
         "Азиатский салат с креветкой": 2,
