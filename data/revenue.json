@@ -1,6 +1,6 @@
 {
   "date": "2025-10-18",
-  "time": "11:29",
+  "time": "11:32",
   "year_round": {
     "Светланская": {
       "total_orders": 61,
@@ -43,14 +43,14 @@
       "cafe_revenue": 19341.0
     },
     "Тихая": {
-      "total_orders": 50,
-      "total_revenue": 47099.0,
+      "total_orders": 51,
+      "total_revenue": 47458.0,
       "delivery_orders": 21,
       "delivery_revenue": 29971.0,
       "pickup_orders": 9,
       "pickup_revenue": 4838.0,
-      "cafe_orders": 20,
-      "cafe_revenue": 12290.0
+      "cafe_orders": 21,
+      "cafe_revenue": 12649.0
     },
     "Чуркин": {
       "total_orders": 106,
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 341,
-    "total_revenue": 278389.0,
+    "total_orders": 342,
+    "total_revenue": 278748.0,
     "total_delivery_orders": 69,
     "total_delivery_revenue": 107520.0,
     "total_pickup_orders": 61,
     "total_pickup_revenue": 41476.0,
-    "total_cafe_orders": 211,
-    "total_cafe_revenue": 129393.0
+    "total_cafe_orders": 212,
+    "total_cafe_revenue": 129752.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -164,13 +164,13 @@
       }
     },
     "Тихая": {
-      "Лапша": 51,
+      "Лапша": 52,
       "Рис": 17,
       "Курица": 18,
-      "Свинина": 14,
+      "Свинина": 15,
       "Креветка": 23,
       "Бекон": 16,
-      "Соломка": 3.1000000000000005,
+      "Соломка": 3.2,
       "Кубик": 1.32,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
