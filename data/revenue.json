@@ -1,7 +1,17 @@
 {
   "date": "2025-10-18",
-  "time": "10:45",
+  "time": "11:00",
   "year_round": {
+    "Светланская": {
+      "total_orders": 1,
+      "total_revenue": 478.0,
+      "delivery_orders": 0,
+      "delivery_revenue": 0.0,
+      "pickup_orders": 0,
+      "pickup_revenue": 0.0,
+      "cafe_orders": 1,
+      "cafe_revenue": 478.0
+    },
     "Красота": {
       "total_orders": 17,
       "total_revenue": 21116.0,
@@ -11,6 +21,16 @@
       "pickup_revenue": 1640.0,
       "cafe_orders": 4,
       "cafe_revenue": 2491.0
+    },
+    "Тобольская": {
+      "total_orders": 1,
+      "total_revenue": 1491.0,
+      "delivery_orders": 0,
+      "delivery_revenue": 0.0,
+      "pickup_orders": 1,
+      "pickup_revenue": 1491.0,
+      "cafe_orders": 0,
+      "cafe_revenue": 0.0
     },
     "Тихая": {
       "total_orders": 1,
@@ -35,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 21,
-    "total_revenue": 25835.0,
+    "total_orders": 23,
+    "total_revenue": 27804.0,
     "total_delivery_orders": 11,
     "total_delivery_revenue": 18759.0,
-    "total_pickup_orders": 3,
-    "total_pickup_revenue": 1640.0,
-    "total_cafe_orders": 7,
-    "total_cafe_revenue": 5436.0
+    "total_pickup_orders": 4,
+    "total_pickup_revenue": 3131.0,
+    "total_cafe_orders": 8,
+    "total_cafe_revenue": 5914.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -92,11 +112,11 @@
       }
     },
     "Светланская": {
-      "Лапша": 0,
+      "Лапша": 1,
       "Рис": 0,
       "Курица": 0,
       "Свинина": 0,
-      "Креветка": 0,
+      "Креветка": 1,
       "Бекон": 0,
       "Соломка": 0.0,
       "Кубик": 0.0,
@@ -155,14 +175,14 @@
       }
     },
     "Тобольская": {
-      "Лапша": 0,
-      "Рис": 0,
+      "Лапша": 1,
+      "Рис": 1,
       "Курица": 0,
       "Свинина": 0,
-      "Креветка": 0,
+      "Креветка": 1,
       "Бекон": 0,
       "Соломка": 0.0,
-      "Кубик": 0.0,
+      "Кубик": 0.11,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 0,
         "Азиатский салат с креветкой": 0,
