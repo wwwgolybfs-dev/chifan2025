@@ -482,7 +482,7 @@
             const monthlyPlans = {};
             const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
 
-            // Инициализация sales для всех филиалов
+            // Инициализация sales для всех филиалов (с обновлёнными элементами из вставленного текста)
             allVenues.forEach(venue => {
                 aggregated.sales[venue] = {
                     Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
@@ -603,114 +603,179 @@
         }
 
         function renderMetrics(data) {
-            const metricsContainer = document.getElementById('metrics');
-            let html = '';
             const total = data.total || {};
             const plan = data.plan || {};
+            const isSingleDay = currentStartDate === currentEndDate;
+            const planRevenue = isSingleDay ? DAILY_NETWORK_PLAN : plan.revenue;
+            const progress = total.total_revenue ? (total.total_revenue / planRevenue) * 100 : 0;
+            document.getElementById('current-value').textContent = `${fmt.format(total.total_revenue || 0)} ₽`;
+            document.getElementById('plan-value').textContent = `${fmt.format(planRevenue || 0)} ₽`;
+            document.getElementById('plan-bar').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('progress-text').textContent = `${Math.round(progress)}%`;
 
-            const revenue = total.total_revenue || 0;
-            const orders = total.total_orders || 0;
-
-            if (revenue > 0) {
+            let html = '';
+            if (total.total_revenue > 0) {
                 html += `
-                    <div class="col-md-3">
+                    <div class="col-md-6 col-lg-3">
                         <div class="card">
-                            <div class="card-body text-center">
+                            <div class="card-body">
                                 <div class="metric-label">Выручка</div>
-                                <div class="metric-value">${fmt.format(revenue)} ₽</div>
-                                <div class="orders-breakdown">
-                                    ${total.total_delivery_revenue > 0 ? `<div class="order-type delivery">Доставка: ${fmt.format(total.total_delivery_revenue)} ₽</div>` : ''}
-                                    ${total.total_pickup_revenue > 0 ? `<div class="order-type pickup">Самовывоз: ${fmt.format(total.total_pickup_revenue)} ₽</div>` : ''}
-                                    ${total.total_cafe_revenue > 0 ? `<div class="order-type cafe">Кафе: ${fmt.format(total.total_cafe_revenue)} ₽</div>` : ''}
+                                <div class="metric-value">${fmt.format(total.total_revenue)} ₽</div>
+                                <div class="metric-breakdown">
+                                    <div class="orders-breakdown">
+                                        ${total.total_delivery_revenue > 0 ? `<div class="order-type delivery">Доставка: ${fmt.format(total.total_delivery_revenue)} ₽</div>` : ''}
+                                        ${total.total_pickup_revenue > 0 ? `<div class="order-type pickup">Самовывоз: ${fmt.format(total.total_pickup_revenue)} ₽</div>` : ''}
+                                        ${total.total_cafe_revenue > 0 ? `<div class="order-type cafe">Кафе: ${fmt.format(total.total_cafe_revenue)} ₽</div>` : ''}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             }
-
-            if (orders > 0) {
+            if (total.total_orders > 0) {
                 html += `
-                    <div class="col-md-3">
+                    <div class="col-md-6 col-lg-3">
                         <div class="card">
-                            <div class="card-body text-center">
+                            <div class="card-body">
                                 <div class="metric-label">Заказы</div>
-                                <div class="metric-value">${orders}</div>
-                                <div class="orders-breakdown">
-                                    ${total.total_delivery_orders > 0 ? `<div class="order-type delivery">Доставка: ${total.total_delivery_orders}</div>` : ''}
-                                    ${total.total_pickup_orders > 0 ? `<div class="order-type pickup">Самовывоз: ${total.total_pickup_orders}</div>` : ''}
-                                    ${total.total_cafe_orders > 0 ? `<div class="order-type cafe">Кафе: ${total.total_cafe_orders}</div>` : ''}
+                                <div class="metric-value">${total.total_orders}</div>
+                                <div class="metric-breakdown">
+                                    <div class="orders-breakdown">
+                                        ${total.total_delivery_orders > 0 ? `<div class="order-type delivery">Доставка: ${total.total_delivery_orders}</div>` : ''}
+                                        ${total.total_pickup_orders > 0 ? `<div class="order-type pickup">Самовывоз: ${total.total_pickup_orders}</div>` : ''}
+                                        ${total.total_cafe_orders > 0 ? `<div class="order-type cafe">Кафе: ${total.total_cafe_orders}</div>` : ''}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             }
-
-            if (metricsContainer) {
-                metricsContainer.innerHTML = html;
+            // Новая карточка со средними чеками (общими)
+            if (total.total_orders > 0) {
+                const avgTotal = total.total_orders > 0 ? total.total_revenue / total.total_orders : 0;
+                const avgCafe = total.total_cafe_orders > 0 ? total.total_cafe_revenue / total.total_cafe_orders : 0;
+                const avgDelivery = total.total_delivery_orders > 0 ? total.total_delivery_revenue / total.total_delivery_orders : 0;
+                const avgPickup = total.total_pickup_orders > 0 ? total.total_pickup_revenue / total.total_pickup_orders : 0;
+                html += `
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="metric-label">Средние чеки</div>
+                                <div class="metric-value">${fmt.format(Math.round(avgTotal))} ₽ (общий)</div>
+                                <div class="metric-breakdown">
+                                    ${avgCafe > 0 ? `Ср. чек кафе: ${fmt.format(Math.round(avgCafe))} ₽<br>` : ''}
+                                    ${avgDelivery > 0 ? `Ср. чек доставка: ${fmt.format(Math.round(avgDelivery))} ₽<br>` : ''}
+                                    ${avgPickup > 0 ? `Ср. чек самовывоз: ${fmt.format(Math.round(avgPickup))} ₽` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
-
-            const currentValueEl = document.getElementById('current-value');
-            const planValueEl = document.getElementById('plan-value');
-            const planBarEl = document.getElementById('plan-bar');
-            const progressTextEl = document.getElementById('progress-text');
-
-            if (currentValueEl) currentValueEl.textContent = `${fmt.format(revenue)} ₽`;
-            if (planValueEl) planValueEl.textContent = `${fmt.format(plan.revenue)} ₽`;
-
-            const progress = plan.revenue > 0 ? (revenue / plan.revenue) * 100 : 0;
-            if (planBarEl) {
-                planBarEl.style.width = `${progress}%`;
-                planBarEl.className = `progress-bar bg-${getStatusClass(progress)}`;
+            if (data.year_round_total && data.year_round_total.revenue > 0) {
+                html += `
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="metric-label">Круглогодичные</div>
+                                <div class="metric-value">${fmt.format(data.year_round_total.revenue)} ₽</div>
+                                <div class="metric-breakdown">Заказы: ${data.year_round_total.orders}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
-            if (progressTextEl) progressTextEl.textContent = `${Math.round(progress)}%`;
+            if (data.seasonal_total && data.seasonal_total.revenue > 0) {
+                html += `
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="metric-label">Сезонные</div>
+                                <div class="metric-value">${fmt.format(data.seasonal_total.revenue)} ₽</div>
+                                <div class="metric-breakdown">Заказы: ${data.seasonal_total.orders}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('metrics').innerHTML = html;
         }
 
         function renderVenues(data, type) {
-            const container = document.getElementById(type === 'year-round' ? 'year-round' : 'seasonal');
-            let html = '';
             const venues = type === 'year-round' ? data.year_round : data.seasonal;
-            const sortedVenues = Object.entries(venues || {})
-                .filter(([venue, stats]) => isVenueActive(stats, data.sales[venue]))
-                .sort((a, b) => (b[1].total_revenue || 0) - (a[1].total_revenue || 0));
+            const venueList = type === 'year-round' ? YEAR_ROUND_VENUES : SEASONAL_VENUES;
+            let html = '';
+            const sortedVenues = venueList
+                .filter(venue => isVenueActive(venues[venue], data.sales[venue]))
+                .sort((a, b) => (venues[b]?.total_revenue || 0) - (venues[a]?.total_revenue || 0));
 
-            sortedVenues.forEach(([venue, stats]) => {
-                const dailyPlan = fixedDailyPlans[venue] || DAILY_NETWORK_PLAN / YEAR_ROUND_VENUES.length;
-                const percentage = stats.total_revenue > 0 ? (stats.total_revenue / dailyPlan) * 100 : 0;
-                html += `
-                    <div class="col-md-6">
-                        <div class="card venue-card">
-                            <div class="card-header">
-                                <h3 class="card-title">${venue}</h3>
-                                ${stats.total_revenue > 0 ? `<span class="badge bg-${getStatusClass(percentage)} status-badge">${Math.round(percentage)}%</span>` : ''}
-                            </div>
-                            <div class="card-body">
-                                <div class="venue-metrics">
-                                    ${stats.total_revenue > 0 ? `<div><strong>Выручка:</strong> ${fmt.format(stats.total_revenue)} ₽</div>` : ''}
-                                    ${stats.total_orders > 0 ? `<div><strong>Заказы:</strong> ${stats.total_orders}</div>` : ''}
-                                    ${stats.delivery_orders > 0 ? `<div><strong>Доставка:</strong> ${stats.delivery_orders} (${fmt.format(stats.delivery_revenue)} ₽)</div>` : ''}
-                                    ${stats.pickup_orders > 0 ? `<div><strong>Самовывоз:</strong> ${stats.pickup_orders} (${fmt.format(stats.pickup_revenue)} ₽)</div>` : ''}
-                                    ${stats.cafe_orders > 0 ? `<div><strong>Кафе:</strong> ${stats.cafe_orders} (${fmt.format(stats.cafe_revenue)} ₽)</div>` : ''}
+            sortedVenues.forEach(venue => {
+                const stats = venues[venue] || {};
+                const salesStats = data.sales[venue] || {};
+                const hasOrders = stats.total_orders > 0 || stats.total_revenue > 0;
+                const hasSales = isSalesActive(salesStats);
+                if (hasOrders || hasSales) {  // Оставляем, если есть продажи, но не отображаем их
+                    const avgTotal = stats.total_orders > 0 ? stats.total_revenue / stats.total_orders : 0;
+                    const avgCafe = stats.cafe_orders > 0 ? stats.cafe_revenue / stats.cafe_orders : 0;
+                    const avgDelivery = stats.delivery_orders > 0 ? stats.delivery_revenue / stats.delivery_orders : 0;
+                    const avgPickup = stats.pickup_orders > 0 ? stats.pickup_revenue / stats.pickup_orders : 0;
+                    html += `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card venue-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">${venue}</h3>
+                                    ${hasOrders ? `<span class="status-badge bg-${getStatusClass((stats.total_revenue / (fixedDailyPlans[venue] || DAILY_NETWORK_PLAN / venueList.length) * 100))}">
+                                        ${Math.round((stats.total_revenue / (fixedDailyPlans[venue] || DAILY_NETWORK_PLAN / venueList.length) * 100))}%
+                                    </span>` : ''}
+                                </div>
+                                <div class="card-body">
+                                    ${hasOrders ? `
+                                        <div class="venue-metrics">
+                                            <div>
+                                                <div class="metric-label">Выручка</div>
+                                                <div class="metric-value">${fmt.format(stats.total_revenue || 0)} ₽</div>
+                                            </div>
+                                            <div>
+                                                <div class="metric-label">Заказы</div>
+                                                <div class="metric-value">${stats.total_orders || 0}</div>
+                                            </div>
+                                        </div>
+                                        <div class="orders-breakdown mt-3">
+                                            ${stats.delivery_orders > 0 ? `<div class="order-type delivery">Доставка: ${stats.delivery_orders} (${fmt.format(stats.delivery_revenue || 0)} ₽)</div>` : ''}
+                                            ${stats.pickup_orders > 0 ? `<div class="order-type pickup">Самовывоз: ${stats.pickup_orders} (${fmt.format(stats.pickup_revenue || 0)} ₽)</div>` : ''}
+                                            ${stats.cafe_orders > 0 ? `<div class="order-type cafe">Кафе: ${stats.cafe_orders} (${fmt.format(stats.cafe_revenue || 0)} ₽)</div>` : ''}
+                                        </div>
+                                        <div class="mt-3">
+                                            <div class="metric-label">Средние чеки</div>
+                                            <div class="metric-breakdown">
+                                                ${avgCafe > 0 ? `Ср. чек кафе: ${fmt.format(Math.round(avgCafe))} ₽<br>` : ''}
+                                                ${avgDelivery > 0 ? `Ср. чек доставка: ${fmt.format(Math.round(avgDelivery))} ₽<br>` : ''}
+                                                ${avgPickup > 0 ? `Ср. чек самовывоз: ${fmt.format(Math.round(avgPickup))} ₽<br>` : ''}
+                                                ${avgTotal > 0 ? `Общий ср. чек: ${fmt.format(Math.round(avgTotal))} ₽` : ''}
+                                            </div>
+                                        </div>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             });
-            if (container) container.innerHTML = html;
+            document.getElementById(type === 'year-round' ? 'year-round' : 'seasonal').innerHTML = html;
         }
 
         function renderSalesData(data) {
             const salesContainer = document.getElementById('sales-data');
             let html = '<div class="row">';
-            let totalSales = {
+            const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+            const totalSales = {
                 Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
                 'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп с курицей': 0, 'Тайский суп с креветкой': 0, 'Вьетнамский суп': 0 },
                 'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
             };
 
-            const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
             allVenues.forEach(venue => {
                 const salesStats = data.sales[venue] || {};
                 if (isSalesActive(salesStats)) {
