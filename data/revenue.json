@@ -1,6 +1,6 @@
 {
   "date": "2025-10-19",
-  "time": "11:32",
+  "time": "11:40",
   "year_round": {
     "Светланская": {
       "total_orders": 64,
@@ -43,14 +43,14 @@
       "cafe_revenue": 18202.0
     },
     "Чуркин": {
-      "total_orders": 110,
-      "total_revenue": 70852.0,
+      "total_orders": 114,
+      "total_revenue": 72830.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 11,
       "pickup_revenue": 6775.0,
-      "cafe_orders": 99,
-      "cafe_revenue": 64077.0
+      "cafe_orders": 103,
+      "cafe_revenue": 66055.0
     }
   },
   "seasonal": {
@@ -66,14 +66,14 @@
     }
   },
   "total": {
-    "total_orders": 388,
-    "total_revenue": 321511.0,
+    "total_orders": 392,
+    "total_revenue": 323489.0,
     "total_delivery_orders": 79,
     "total_delivery_revenue": 121399.0,
     "total_pickup_orders": 62,
     "total_pickup_revenue": 47377.0,
-    "total_cafe_orders": 247,
-    "total_cafe_revenue": 152735.0
+    "total_cafe_orders": 251,
+    "total_cafe_revenue": 154713.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -162,13 +162,13 @@
       "Салат с курицей и киноа": 0
     },
     "Чуркин": {
-      "Лапша": 103,
+      "Лапша": 107,
       "Рис": 39,
-      "Курица": 45,
+      "Курица": 48,
       "Свинина": 24,
-      "Креветка": 39,
-      "Бекон": 40,
-      "Соломка": 6.800000000000001,
+      "Креветка": 40,
+      "Бекон": 41,
+      "Соломка": 7.000000000000001,
       "Кубик": 1.87,
       "Салаты - Супы": {
         "Азиатский салат с курицей": 6,
@@ -183,7 +183,7 @@
       "Сырники": 3,
       "Кимчи": 1.3,
       "Го Ба Жоу": 0,
-      "Куриные стрипсы": 15,
+      "Куриные стрипсы": 16,
       "Боул с тофу": 0,
       "Хрустящий овощной салат": 0,
       "Салат с курицей и киноа": 0
