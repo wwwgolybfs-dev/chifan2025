@@ -1,6 +1,6 @@
 {
   "date": "2025-10-20",
-  "time": "10:18",
+  "time": "10:34",
   "year_round": {
     "Красота": {
       "total_orders": 9,
@@ -23,14 +23,14 @@
       "cafe_revenue": 0.0
     },
     "Тихая": {
-      "total_orders": 1,
-      "total_revenue": 1551.0,
+      "total_orders": 3,
+      "total_revenue": 2594.0,
       "delivery_orders": 1,
       "delivery_revenue": 1551.0,
-      "pickup_orders": 0,
-      "pickup_revenue": 0.0,
-      "cafe_orders": 0,
-      "cafe_revenue": 0.0
+      "pickup_orders": 1,
+      "pickup_revenue": 678.0,
+      "cafe_orders": 1,
+      "cafe_revenue": 365.0
     },
     "Чуркин": {
       "total_orders": 1,
@@ -45,14 +45,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 12,
-    "total_revenue": 17059.0,
+    "total_orders": 14,
+    "total_revenue": 18102.0,
     "total_delivery_orders": 9,
     "total_delivery_revenue": 15598.0,
-    "total_pickup_orders": 1,
-    "total_pickup_revenue": 665.0,
-    "total_cafe_orders": 2,
-    "total_cafe_revenue": 796.0
+    "total_pickup_orders": 2,
+    "total_pickup_revenue": 1343.0,
+    "total_cafe_orders": 3,
+    "total_cafe_revenue": 1161.0
   },
   "plan": {
     "revenue": 20944728.513,
@@ -168,12 +168,12 @@
       "Салат с курицей и киноа": 0
     },
     "Тихая": {
-      "Лапша": 1,
-      "Рис": 0,
-      "Курица": 2,
+      "Лапша": 2,
+      "Рис": 1,
+      "Курица": 3,
       "Свинина": 0,
-      "Креветка": 0,
-      "Бекон": 0,
+      "Креветка": 1,
+      "Бекон": 1,
       "Соломка": 0.1,
       "Кубик": 0.0,
       "Салаты - Супы": {
@@ -187,7 +187,7 @@
         "Бао-банс с курицей": 0
       },
       "Сырники": 0,
-      "Кимчи": 0.0,
+      "Кимчи": 0.1,
       "Го Ба Жоу": 0,
       "Куриные стрипсы": 1,
       "Боул с тофу": 0,
