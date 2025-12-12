@@ -482,18 +482,12 @@
             const monthlyPlans = {};
             const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
 
-            // Инициализация sales для всех филиалов с новыми категориями
+            // Инициализация sales для всех филиалов (с обновлёнными элементами из вставленного текста)
             allVenues.forEach(venue => {
                 aggregated.sales[venue] = {
                     Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
-                    'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп с курицей': 0, 'Тайский суп с креветкой': 0, 'Вьетнамский суп': 0, 'Хрустящий овощной салат': 0 },
-                    'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 },
-                    'Сырники': 0,
-                    'Кимчи': 0,
-                    'Го Ба Жоу': 0,
-                    'Куриные стрипсы': 0,
-                    'Боул с тофу': 0,
-                    'Салат с курицей и киноа': 0
+                    'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп с курицей': 0, 'Тайский суп с креветкой': 0, 'Вьетнамский суп': 0 },
+                    'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
                 };
             });
 
@@ -776,18 +770,11 @@
             const salesContainer = document.getElementById('sales-data');
             let html = '<div class="row">';
             const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
-            const totalSales = {};
-            // Инициализация итогов с теми же ключами, что и в venue_stats
-            Object.keys(data.sales[allVenues[0]] || {}).forEach(cat => {
-                if (typeof data.sales[allVenues[0]][cat] === 'object') {
-                    totalSales[cat] = {};
-                    Object.keys(data.sales[allVenues[0]][cat]).forEach(item => {
-                        totalSales[cat][item] = 0;
-                    });
-                } else {
-                    totalSales[cat] = 0;
-                }
-            });
+            const totalSales = {
+                Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
+                'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп с курицей': 0, 'Тайский суп с креветкой': 0, 'Вьетнамский суп': 0 },
+                'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
+            };
 
             allVenues.forEach(venue => {
                 const salesStats = data.sales[venue] || {};
@@ -802,36 +789,59 @@
                             </thead>
                             <tbody>
                     `;
-                    Object.entries(salesStats).forEach(([cat, value]) => {
-                        if (typeof value === 'number' && value > 0) {
-                            const fixed = (cat === 'Соломка' || cat === 'Кубик' || cat === 'Кимчи') ? value.toFixed(2) : value.toFixed(0);
+                    const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
+                    categories.forEach(cat => {
+                        const value = salesStats[cat] || 0;
+                        if (value > 0) {
                             tableHtml += `
                                 <tr>
                                     <th>${cat}</th>
-                                    <td>${fixed}</td>
+                                    <td>${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}</td>
                                 </tr>
                             `;
                             totalSales[cat] += value;
-                        } else if (typeof value === 'object' && Object.values(value).some(v => v > 0)) {
-                            tableHtml += `
-                                <tr>
-                                    <th>${cat}</th>
-                                    <td></td>
-                                </tr>
-                            `;
-                            Object.entries(value).forEach(([item, subValue]) => {
-                                if (subValue > 0) {
-                                    tableHtml += `
-                                        <tr>
-                                            <td>${item}</td>
-                                            <td>${subValue}</td>
-                                        </tr>
-                                    `;
-                                    totalSales[cat][item] += subValue;
-                                }
-                            });
                         }
                     });
+                    const saladSup = salesStats['Салаты - Супы'];
+                    if (Object.values(saladSup).some(v => v > 0)) {
+                        tableHtml += `
+                            <tr>
+                                <th>Салаты - Супы</th>
+                                <td></td>
+                            </tr>
+                        `;
+                        Object.entries(saladSup).forEach(([item, value]) => {
+                            if (value > 0) {
+                                tableHtml += `
+                                    <tr>
+                                        <td>${item}</td>
+                                        <td>${value}</td>
+                                    </tr>
+                                `;
+                                totalSales['Салаты - Супы'][item] += value;
+                            }
+                        });
+                    }
+                    const pelmeniBao = salesStats['Пельмени - Бао-банс'];
+                    if (Object.values(pelmeniBao).some(v => v > 0)) {
+                        tableHtml += `
+                            <tr>
+                                <th>Пельмени - Бао-банс</th>
+                                <td></td>
+                            </tr>
+                        `;
+                        Object.entries(pelmeniBao).forEach(([item, value]) => {
+                            if (value > 0) {
+                                tableHtml += `
+                                    <tr>
+                                        <td>${item}</td>
+                                        <td>${value}</td>
+                                    </tr>
+                                `;
+                                totalSales['Пельмени - Бао-банс'][item] += value;
+                            }
+                        });
+                    }
                     tableHtml += '</tbody></table>';
                     if (tableHtml.includes('<tr>')) { // If there are any rows
                         html += `
@@ -867,34 +877,56 @@
                                 </thead>
                                 <tbody>
                 `;
-                Object.entries(totalSales).forEach(([cat, value]) => {
-                    if (typeof value === 'number' && value > 0) {
-                        const fixed = (cat === 'Соломка' || cat === 'Кубик' || cat === 'Кимчи') ? value.toFixed(2) : value.toFixed(0);
+                const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
+                categories.forEach(cat => {
+                    const value = totalSales[cat];
+                    if (value > 0) {
                         totalTableHtml += `
                             <tr>
                                 <th>${cat}</th>
-                                <td>${fixed}</td>
+                                <td>${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}</td>
                             </tr>
                         `;
-                    } else if (typeof value === 'object' && Object.values(value).some(v => v > 0)) {
-                        totalTableHtml += `
-                            <tr>
-                                <th>${cat}</th>
-                                <td></td>
-                            </tr>
-                        `;
-                        Object.entries(value).forEach(([item, subValue]) => {
-                            if (subValue > 0) {
-                                totalTableHtml += `
-                                    <tr>
-                                        <td>${item}</td>
-                                        <td>${subValue}</td>
-                                    </tr>
-                                `;
-                            }
-                        });
                     }
                 });
+                const saladSup = totalSales['Салаты - Супы'];
+                if (Object.values(saladSup).some(v => v > 0)) {
+                    totalTableHtml += `
+                        <tr>
+                            <th>Салаты - Супы</th>
+                            <td></td>
+                        </tr>
+                    `;
+                    Object.entries(saladSup).forEach(([item, value]) => {
+                        if (value > 0) {
+                            totalTableHtml += `
+                                <tr>
+                                    <td>${item}</td>
+                                    <td>${value}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                }
+                const pelmeniBao = totalSales['Пельмени - Бао-банс'];
+                if (Object.values(pelmeniBao).some(v => v > 0)) {
+                    totalTableHtml += `
+                        <tr>
+                            <th>Пельмени - Бао-банс</th>
+                            <td></td>
+                        </tr>
+                    `;
+                    Object.entries(pelmeniBao).forEach(([item, value]) => {
+                        if (value > 0) {
+                            totalTableHtml += `
+                                <tr>
+                                    <td>${item}</td>
+                                    <td>${value}</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                }
                 totalTableHtml += '</tbody></table>';
                 html += totalTableHtml;
             }
@@ -1306,22 +1338,36 @@
                         doc.setFontSize(10);
                         doc.text(`${venue}:`, 20, y);
                         y += 7;
-                        Object.entries(salesStats).forEach(([cat, value]) => {
-                            if (typeof value === 'number' && value > 0) {
-                                const fixed = (cat === 'Соломка' || cat === 'Кубик' || cat === 'Кимчи') ? value.toFixed(2) : value.toFixed(0);
-                                doc.text(`${cat}: ${fixed}`, 25, y);
+                        const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
+                        categories.forEach(cat => {
+                            const value = salesStats[cat] || 0;
+                            if (value > 0) {
+                                doc.text(`${cat}: ${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}`, 25, y);
                                 y += 7;
-                            } else if (typeof value === 'object' && Object.values(value).some(v => v > 0)) {
-                                doc.text(`${cat}:`, 25, y);
-                                y += 7;
-                                Object.entries(value).forEach(([item, subValue]) => {
-                                    if (subValue > 0) {
-                                        doc.text(`${item}: ${subValue}`, 30, y);
-                                        y += 7;
-                                    }
-                                });
                             }
                         });
+                        const saladSup = salesStats['Салаты - Супы'] || {};
+                        if (Object.values(saladSup).some(v => v > 0)) {
+                            doc.text('Салаты - Супы:', 25, y);
+                            y += 7;
+                            Object.entries(saladSup).forEach(([item, value]) => {
+                                if (value > 0) {
+                                    doc.text(`${item}: ${value}`, 30, y);
+                                    y += 7;
+                                }
+                            });
+                        }
+                        const pelmeniBao = salesStats['Пельмени - Бао-банс'] || {};
+                        if (Object.values(pelmeniBao).some(v => v > 0)) {
+                            doc.text('Пельмени - Бао-банс:', 25, y);
+                            y += 7;
+                            Object.entries(pelmeniBao).forEach(([item, value]) => {
+                                if (value > 0) {
+                                    doc.text(`${item}: ${value}`, 30, y);
+                                    y += 7;
+                                }
+                            });
+                        }
                         y += 5;
                     }
                 });
