@@ -16,7 +16,8 @@ AUTH_URL = "https://chi-fan-co.iiko.it/resto/api/auth"
 REPORT_URL = "https://chi-fan-co.iiko.it/resto/api/reports/olap"
 REPORT_V2_URL = "https://chi-fan-co.iiko.it/resto/api/v2/reports/olap"
 LOGIN = "User"
-PASSWORD = "9ab5284fa9b0a51a61a3b59189c04f9e4779720a"
+import os
+PASSWORD = os.getenv("IIKO_PASSWORD")
 
 RENAME_MAP = {
     "Чифань": "Чуркин", "Сибирцева": "Красота", "Вынос Светланская": "Светланская",
@@ -235,4 +236,5 @@ def main():
     logger.info(f"Обновлено {date_str} {time_str} → {totals['total_revenue']:,.0f} ₽")
 
 if __name__ == "__main__":
+
     main()
