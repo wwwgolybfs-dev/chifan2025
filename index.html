@@ -767,171 +767,99 @@
         }
 
         function renderSalesData(data) {
-            const salesContainer = document.getElementById('sales-data');
-            let html = '<div class="row">';
-            const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
-            const totalSales = {
-                Лапша: 0, Рис: 0, Курица: 0, Свинина: 0, Креветка: 0, Бекон: 0, Соломка: 0, Кубик: 0,
-                'Салаты - Супы': { 'Азиатский салат с курицей': 0, 'Азиатский салат с креветкой': 0, 'Тайский суп с курицей': 0, 'Тайский суп с креветкой': 0, 'Вьетнамский суп': 0 },
-                'Пельмени - Бао-банс': { 'Пельмени с курицей': 0, 'Бао-банс с курицей': 0 }
-            };
+    const salesContainer = document.getElementById('sales-data');
+    let html = '<div class="row">';
 
-            allVenues.forEach(venue => {
-                const salesStats = data.sales[venue] || {};
-                if (isSalesActive(salesStats)) {
-                    let tableHtml = `
-                        <table class="sales-table">
-                            <thead>
-                                <tr>
-                                    <th>Категория</th>
-                                    <th>Количество</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+    const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+
+    // Порядок и единицы измерения — как в твоём примере
+    const itemsOrder = [
+        { key: 'Лапша', unit: 'порц' },
+        { key: 'Стеклянная лапша', unit: 'порц' },
+        { key: 'Рис', unit: 'порц' },
+        { key: 'Курица', unit: 'порц' },
+        { key: 'Свинина', unit: 'порц' },
+        { key: 'Креветка', unit: 'порц' },
+        { key: 'Бекон', unit: 'порц' },
+        { key: 'Лук', unit: 'порц' },
+        { key: 'Соломка', unit: 'кг' },
+        { key: 'Кубик', unit: 'кг' },
+        { key: 'Салаты с курицей', unit: 'порц' },
+        { key: 'Салаты с креветкой', unit: 'порц' },
+        { key: 'Харбинский салат', unit: 'порц' },
+        { key: 'Го Ба Жоу', unit: 'порц' },
+        { key: 'Тайский суп с креветкой', unit: 'порц' },
+        { key: 'Тайский суп с курицей', unit: 'порц' },
+        { key: 'Вьетнамский суп', unit: 'порц' },
+        { key: 'Пельмени', unit: 'порц' },
+        { key: 'Бао-банс', unit: 'порц' },
+        { key: 'Сырники', unit: 'порц' },
+        { key: 'Картофель фри', unit: 'порц' },
+        { key: 'Куриные стрипсы', unit: 'упаковок' },
+        { key: 'Соус чифань', unit: 'л' },
+        { key: 'Соус сливочный', unit: 'л' },
+        { key: 'Соус сырный', unit: 'л' },
+        { key: 'Соус кимчи', unit: 'л' },
+        { key: 'Соус падтай', unit: 'л' },
+        { key: 'Масло растительное', unit: 'л' }
+    ];
+
+    allVenues.forEach(venue => {
+        const salesStats = data.sales[venue] || {};
+        let hasData = false;
+        itemsOrder.forEach(item => {
+            if ((salesStats[item.key] || 0) > 0) hasData = true;
+        });
+
+        if (hasData) {
+            let tableHtml = `
+                <table class="table table-striped table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Категория</th>
+                            <th style="text-align: right;">Количество</th>
+                            <th style="text-align: center;">Ед. изм.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            itemsOrder.forEach(item => {
+                const value = (salesStats[item.key] || 0);
+                if (value > 0 || true) {  // Показываем все строки, даже с 0 — как в твоём примере
+                    const formattedValue = item.unit === 'кг' || item.unit === 'л' 
+                        ? value.toFixed(2).replace('.', ',') 
+                        : value.toFixed(0);
+                    tableHtml += `
+                        <tr>
+                            <td>${item.key}</td>
+                            <td style="text-align: right;">${formattedValue}</td>
+                            <td style="text-align: center;">${item.unit}</td>
+                        </tr>
                     `;
-                    const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
-                    categories.forEach(cat => {
-                        const value = salesStats[cat] || 0;
-                        if (value > 0) {
-                            tableHtml += `
-                                <tr>
-                                    <th>${cat}</th>
-                                    <td>${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}</td>
-                                </tr>
-                            `;
-                            totalSales[cat] += value;
-                        }
-                    });
-                    const saladSup = salesStats['Салаты - Супы'];
-                    if (Object.values(saladSup).some(v => v > 0)) {
-                        tableHtml += `
-                            <tr>
-                                <th>Салаты - Супы</th>
-                                <td></td>
-                            </tr>
-                        `;
-                        Object.entries(saladSup).forEach(([item, value]) => {
-                            if (value > 0) {
-                                tableHtml += `
-                                    <tr>
-                                        <td>${item}</td>
-                                        <td>${value}</td>
-                                    </tr>
-                                `;
-                                totalSales['Салаты - Супы'][item] += value;
-                            }
-                        });
-                    }
-                    const pelmeniBao = salesStats['Пельмени - Бао-банс'];
-                    if (Object.values(pelmeniBao).some(v => v > 0)) {
-                        tableHtml += `
-                            <tr>
-                                <th>Пельмени - Бао-банс</th>
-                                <td></td>
-                            </tr>
-                        `;
-                        Object.entries(pelmeniBao).forEach(([item, value]) => {
-                            if (value > 0) {
-                                tableHtml += `
-                                    <tr>
-                                        <td>${item}</td>
-                                        <td>${value}</td>
-                                    </tr>
-                                `;
-                                totalSales['Пельмени - Бао-банс'][item] += value;
-                            }
-                        });
-                    }
-                    tableHtml += '</tbody></table>';
-                    if (tableHtml.includes('<tr>')) { // If there are any rows
-                        html += `
-                            <div class="col-md-6">
-                                <div class="card fade-in">
-                                    <div class="card-header">
-                                        <h3 class="card-title">${venue}</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        ${tableHtml}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
                 }
             });
-            html += '</div>';
-            // Итоговые значения
-            if (Object.keys(totalSales).some(cat => totalSales[cat] > 0 || (typeof totalSales[cat] === 'object' && Object.values(totalSales[cat]).some(v => v > 0)))) {
-                let totalTableHtml = `
-                    <div class="card mt-3">
+
+            tableHtml += `</tbody></table>`;
+
+            html += `
+                <div class="col-lg-6 col-xxl-4 mb-3">
+                    <div class="card h-100">
                         <div class="card-header">
-                            <h3 class="card-title">Итого</h3>
+                            <h3 class="card-title mb-0">Филиал: ${venue}</h3>
                         </div>
-                        <div class="card-body">
-                            <table class="sales-table">
-                                <thead>
-                                    <tr>
-                                        <th>Категория</th>
-                                        <th>Количество</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-                const categories = ['Лапша', 'Рис', 'Курица', 'Свинина', 'Креветка', 'Бекон', 'Соломка', 'Кубик'];
-                categories.forEach(cat => {
-                    const value = totalSales[cat];
-                    if (value > 0) {
-                        totalTableHtml += `
-                            <tr>
-                                <th>${cat}</th>
-                                <td>${value.toFixed(cat === 'Соломка' || cat === 'Кубик' ? 2 : 0)}</td>
-                            </tr>
-                        `;
-                    }
-                });
-                const saladSup = totalSales['Салаты - Супы'];
-                if (Object.values(saladSup).some(v => v > 0)) {
-                    totalTableHtml += `
-                        <tr>
-                            <th>Салаты - Супы</th>
-                            <td></td>
-                        </tr>
-                    `;
-                    Object.entries(saladSup).forEach(([item, value]) => {
-                        if (value > 0) {
-                            totalTableHtml += `
-                                <tr>
-                                    <td>${item}</td>
-                                    <td>${value}</td>
-                                </tr>
-                            `;
-                        }
-                    });
-                }
-                const pelmeniBao = totalSales['Пельмени - Бао-банс'];
-                if (Object.values(pelmeniBao).some(v => v > 0)) {
-                    totalTableHtml += `
-                        <tr>
-                            <th>Пельмени - Бао-банс</th>
-                            <td></td>
-                        </tr>
-                    `;
-                    Object.entries(pelmeniBao).forEach(([item, value]) => {
-                        if (value > 0) {
-                            totalTableHtml += `
-                                <tr>
-                                    <td>${item}</td>
-                                    <td>${value}</td>
-                                </tr>
-                            `;
-                        }
-                    });
-                }
-                totalTableHtml += '</tbody></table>';
-                html += totalTableHtml;
-            }
-            salesContainer.innerHTML = html;
+                        <div class="card-body p-0">
+                            ${tableHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
+    });
+
+    html += '</div>';
+    salesContainer.innerHTML = html;
+}
 
         function renderTimeChart(startDate, endDate, dailyData) {
             const ctxTime = document.getElementById('timeChart')?.getContext('2d');
@@ -1414,3 +1342,4 @@
     </script>
 </body>
 </html>
+
