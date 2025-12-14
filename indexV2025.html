@@ -782,87 +782,132 @@
         }
         
         function renderSalesData(data) {
-            const salesContainer = document.getElementById('sales-data');
-            let html = '<div class="row">';
+    const salesContainer = document.getElementById('sales-data');
+    let html = '<div class="row">';
+    
+    // Полный маппинг всех позиций из JSON данных
+    const itemMapping = {
+        'Лапша': { name: 'Лапша', unit: 'порц' },
+        'Стеклянная лапша': { name: 'Стеклянная лапша', unit: 'порц' },
+        'Рис': { name: 'Рис', unit: 'порц' },
+        'Курица': { name: 'Курица', unit: 'порц' },
+        'Свинина': { name: 'Свинина', unit: 'порц' },
+        'Креветка': { name: 'Креветка', unit: 'порц' },
+        'Бекон': { name: 'Бекон', unit: 'порц' },
+        'Соломка': { name: 'Соломка', unit: 'кг' },
+        'Кубик': { name: 'Кубик', unit: 'кг' },
+        'Лук': { name: 'Лук (порезанный)', unit: 'порц' },
+        'Куриные стрипсы (порции)': { name: 'Куриные стрипсы', unit: 'упаковок' },
+        'Салаты_курица': { name: 'Салат с курицей', unit: 'порц' },
+        'Салаты_креветка': { name: 'Салат с креветкой', unit: 'порц' },
+        'Харбинский салат': { name: 'Харбинский салат', unit: 'порц' },
+        'Го Ба Жоу': { name: 'Го Ба Жоу', unit: 'порц' },
+        'Супы_тайские_креветка': { name: 'Тайский суп (креветка)', unit: 'порц' },
+        'Супы_тайские_курица': { name: 'Тайский суп (курица)', unit: 'порц' },
+        'Супы_вьетнамские': { name: 'Вьетнамский суп', unit: 'порц' },
+        'Пельмени': { name: 'Пельмени', unit: 'порц' },
+        'Бао-банс': { name: 'Бао-банс', unit: 'порц' },
+        'Сырники': { name: 'Сырники', unit: 'порц' },
+        'Картофель_фри': { name: 'Картофель фри', unit: 'порц' },
+        'Соус_Чифань_л': { name: 'Соус Чи-Фань', unit: 'л' },
+        'Соус_Сливочный_л': { name: 'Сливочный соус', unit: 'л' },
+        'Соус_Сырный_л': { name: 'Сырный соус', unit: 'л' },
+        'Соус_Кимчи_л': { name: 'Соус кимчи', unit: 'л' },
+        'Соус_Падтай_л': { name: 'Соус падтай', unit: 'л' },
+        'Масло_л': { name: 'Масло растительное', unit: 'л' }
+    };
+    
+    const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+    let venuesWithSales = 0; // Счетчик филиалов с продажами
+    
+    allVenues.forEach(venue => {
+        const salesStats = data.sales[venue] || {};
+        let hasAnyData = false;
+        
+        // Проверяем, есть ли хоть одно ненулевое значение по этому филиалу
+        for (const key in itemMapping) {
+            if (salesStats[key] > 0) {
+                hasAnyData = true;
+                break;
+            }
+        }
+        
+        // Пропускаем филиалы без продаж
+        if (!hasAnyData) return;
+        
+        venuesWithSales++;
+        
+        let tableHtml = `
+            <table class="table table-striped table-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Наименование</th>
+                        <th style="text-align: right; min-width: 80px;">Количество</th>
+                        <th style="text-align: center; min-width: 60px;">Ед. изм.</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        // Отображаем ТОЛЬКО позиции с ненулевыми значениями
+        let hasRows = false;
+        for (const key in itemMapping) {
+            const value = salesStats[key] || 0;
+            if (value <= 0) continue; // Пропускаем нулевые значения
             
-            const allVenues = [...YEAR_ROUND_VENUES, ...SEASONAL_VENUES];
+            const item = itemMapping[key];
+            hasRows = true;
             
-            allVenues.forEach(venue => {
-                const salesStats = data.sales[venue] || {};
-                
-                // Всегда отображаем все филиалы, даже если нет продаж
-                let tableHtml = `
-                    <table class="table table-striped table-sm">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Наименование</th>
-                                <th style="text-align: right; min-width: 80px;">Количество</th>
-                                <th style="text-align: center; min-width: 60px;">Ед. изм.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                // Отображаем ВСЕ позиции в нужном порядке, даже если значение = 0
-                let hasRows = false;
-                for (const key in ITEM_MAPPING) {
-                    const value = salesStats[key] || 0;
-                    const item = ITEM_MAPPING[key];
-                    hasRows = true;
-                    
-                    let formattedValue;
-                    if (item.unit === 'кг' || item.unit === 'л') {
-                        formattedValue = value.toFixed(2).replace('.', ',');
-                    } else {
-                        formattedValue = Math.round(value);
-                    }
-                    
-                    // Добавляем класс для позиций с нулевым значением для лучшей читаемости
-                    const rowClass = value === 0 ? 'text-muted' : '';
-                    
-                    tableHtml += `
-                        <tr class="${rowClass}">
-                            <td>${item.name}</td>
-                            <td style="text-align: right;">${formattedValue}</td>
-                            <td style="text-align: center;">${item.unit}</td>
-                        </tr>
-                    `;
-                }
-                
-                if (!hasRows) {
-                    tableHtml += `
-                        <tr>
-                            <td colspan="3" class="text-center text-muted py-3">
-                                Нет данных по продажам полуфабрикатов
-                            </td>
-                        </tr>
-                    `;
-                }
-                
-                tableHtml += `</tbody></table>`;
-                
-                html += `
-                    <div class="col-lg-6 col-xxl-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header bg-primary-light">
-                                <h3 class="card-title mb-0 fw-bold">${venue}</h3>
-                            </div>
-                            <div class="card-body p-0 overflow-auto" style="max-height: 500px;">
-                                ${tableHtml}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            if (html === '<div class="row">') {
-                html = '<div class="alert alert-info">Нет данных по продажам полуфабрикатов за выбранный период</div>';
+            let formattedValue;
+            if (item.unit === 'кг' || item.unit === 'л') {
+                formattedValue = value.toFixed(2).replace('.', ',');
             } else {
-                html += '</div>';
+                formattedValue = Math.round(value);
             }
             
-            salesContainer.innerHTML = html;
+            tableHtml += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td style="text-align: right;">${formattedValue}</td>
+                    <td style="text-align: center;">${item.unit}</td>
+                </tr>
+            `;
         }
+        
+        if (!hasRows) {
+            tableHtml += `
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-3">
+                        Нет данных по продажам полуфабрикатов
+                    </td>
+                </tr>
+            `;
+        }
+        
+        tableHtml += `</tbody></table>`;
+        
+        html += `
+            <div class="col-lg-6 col-xxl-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-primary-light">
+                        <h3 class="card-title mb-0 fw-bold">${venue}</h3>
+                    </div>
+                    <div class="card-body p-0 overflow-auto" style="max-height: 500px;">
+                        ${tableHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    if (venuesWithSales === 0) {
+        html = '<div class="alert alert-info">Нет данных по продажам полуфабрикатов за выбранный период</div>';
+    } else {
+        html += '</div>';
+    }
+    
+    salesContainer.innerHTML = html;
+}
         
         function renderTimeChart(startDate, endDate, dailyData) {
             const ctxTime = document.getElementById('timeChart')?.getContext('2d');
@@ -1332,3 +1377,4 @@
     </script>
 </body>
 </html>
+
