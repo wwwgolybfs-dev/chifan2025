@@ -1,6 +1,6 @@
 {
   "date": "2025-12-21",
-  "time": "10:30",
+  "time": "11:00",
   "year_round": {
     "Красота": {
       "total_orders": 32,
@@ -13,46 +13,46 @@
       "cafe_revenue": 2493.0
     },
     "Тобольская": {
+      "total_orders": 3,
+      "total_revenue": 727.0,
+      "delivery_orders": 0,
+      "delivery_revenue": 0.0,
+      "pickup_orders": 0,
+      "pickup_revenue": 0.0,
+      "cafe_orders": 3,
+      "cafe_revenue": 727.0
+    },
+    "Тихая": {
       "total_orders": 2,
-      "total_revenue": 558.0,
+      "total_revenue": 545.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 0,
       "pickup_revenue": 0.0,
       "cafe_orders": 2,
-      "cafe_revenue": 558.0
-    },
-    "Тихая": {
-      "total_orders": 1,
-      "total_revenue": 155.0,
-      "delivery_orders": 0,
-      "delivery_revenue": 0.0,
-      "pickup_orders": 0,
-      "pickup_revenue": 0.0,
-      "cafe_orders": 1,
-      "cafe_revenue": 155.0
+      "cafe_revenue": 545.0
     },
     "Чуркин": {
-      "total_orders": 1,
-      "total_revenue": 375.0,
+      "total_orders": 2,
+      "total_revenue": 1235.5,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
       "pickup_orders": 0,
       "pickup_revenue": 0.0,
-      "cafe_orders": 1,
-      "cafe_revenue": 375.0
+      "cafe_orders": 2,
+      "cafe_revenue": 1235.5
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 36,
-    "total_revenue": 42833.0,
+    "total_orders": 39,
+    "total_revenue": 44252.5,
     "total_delivery_orders": 24,
     "total_delivery_revenue": 36984.0,
     "total_pickup_orders": 3,
     "total_pickup_revenue": 2268.0,
-    "total_cafe_orders": 9,
-    "total_cafe_revenue": 3581.0
+    "total_cafe_orders": 12,
+    "total_cafe_revenue": 5000.5
   },
   "plan": {
     "revenue": 11100863.3935,
@@ -120,16 +120,16 @@
       "Масло_л": 0.03
     },
     "Чуркин": {
-      "Лапша": 1,
+      "Лапша": 2,
       "Стеклянная лапша": 0,
       "Рис": 0,
       "Курица": 0,
-      "Свинина": 1,
-      "Креветка": 0,
+      "Свинина": 2,
+      "Креветка": 1,
       "Бекон": 0,
-      "Соломка": 0.1,
+      "Соломка": 0.2,
       "Кубик": 0.0,
-      "Лук": 0,
+      "Лук": 1,
       "Куриные стрипсы (порции)": 0,
       "Салаты_курица": 0,
       "Салаты_креветка": 0,
@@ -142,12 +142,12 @@
       "Бао-банс": 0,
       "Сырники": 0,
       "Картофель_фри": 0,
-      "Соус_Чифань_л": 0.09,
-      "Соус_Сливочный_л": 0.0,
+      "Соус_Чифань_л": 0.18,
+      "Соус_Сливочный_л": 0.09,
       "Соус_Сырный_л": 0.0,
       "Соус_Кимчи_л": 0.0,
       "Соус_Падтай_л": 0.0,
-      "Масло_л": 0.03
+      "Масло_л": 0.09
     },
     "Луговая": {
       "Лапша": 0,
