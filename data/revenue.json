@@ -1,28 +1,28 @@
 {
   "date": "2025-12-23",
-  "time": "03:00",
+  "time": "03:30",
   "year_round": {
     "Красота": {
-      "total_orders": 24,
-      "total_revenue": 35136.0,
+      "total_orders": 25,
+      "total_revenue": 36104.0,
       "delivery_orders": 20,
       "delivery_revenue": 31448.0,
       "pickup_orders": 3,
       "pickup_revenue": 2077.0,
-      "cafe_orders": 1,
-      "cafe_revenue": 1611.0
+      "cafe_orders": 2,
+      "cafe_revenue": 2579.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 24,
-    "total_revenue": 35136.0,
+    "total_orders": 25,
+    "total_revenue": 36104.0,
     "total_delivery_orders": 20,
     "total_delivery_revenue": 31448.0,
     "total_pickup_orders": 3,
     "total_pickup_revenue": 2077.0,
-    "total_cafe_orders": 1,
-    "total_cafe_revenue": 1611.0
+    "total_cafe_orders": 2,
+    "total_cafe_revenue": 2579.0
   },
   "plan": {
     "revenue": 11100863.3935,
@@ -30,14 +30,14 @@
   },
   "sales": {
     "Красота": {
-      "Лапша": 21,
+      "Лапша": 23,
       "Стеклянная лапша": 0,
       "Рис": 12,
       "Курица": 17,
-      "Свинина": 4,
+      "Свинина": 6,
       "Креветка": 13,
       "Бекон": 4,
-      "Соломка": 1.6,
+      "Соломка": 1.8000000000000003,
       "Кубик": 1.1,
       "Лук": 7,
       "Куриные стрипсы (порции)": 48,
@@ -52,12 +52,12 @@
       "Бао-банс": 4,
       "Сырники": 3,
       "Картофель_фри": 1,
-      "Соус_Чифань_л": 2.34,
+      "Соус_Чифань_л": 2.52,
       "Соус_Сливочный_л": 0.45,
       "Соус_Сырный_л": 0.81,
       "Соус_Кимчи_л": 0.18,
       "Соус_Падтай_л": 0.0,
-      "Масло_л": 1.26
+      "Масло_л": 1.3200000000000003
     },
     "Луговая": {
       "Лапша": 0,
