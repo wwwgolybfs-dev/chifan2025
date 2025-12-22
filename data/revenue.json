@@ -1,6 +1,6 @@
 {
   "date": "2025-12-22",
-  "time": "10:00",
+  "time": "10:30",
   "year_round": {
     "Красота": {
       "total_orders": 33,
@@ -13,24 +13,24 @@
       "cafe_revenue": 3879.0
     },
     "Тобольская": {
-      "total_orders": 2,
-      "total_revenue": 1901.0,
+      "total_orders": 3,
+      "total_revenue": 2591.0,
       "delivery_orders": 0,
       "delivery_revenue": 0.0,
-      "pickup_orders": 0,
-      "pickup_revenue": 0.0,
+      "pickup_orders": 1,
+      "pickup_revenue": 690.0,
       "cafe_orders": 2,
       "cafe_revenue": 1901.0
     }
   },
   "seasonal": {},
   "total": {
-    "total_orders": 35,
-    "total_revenue": 53414.0,
+    "total_orders": 36,
+    "total_revenue": 54104.0,
     "total_delivery_orders": 26,
     "total_delivery_revenue": 46117.0,
-    "total_pickup_orders": 2,
-    "total_pickup_revenue": 1517.0,
+    "total_pickup_orders": 3,
+    "total_pickup_revenue": 2207.0,
     "total_cafe_orders": 7,
     "total_cafe_revenue": 5780.0
   },
@@ -71,11 +71,11 @@
     },
     "Тобольская": {
       "Лапша": 2,
-      "Стеклянная лапша": 0,
+      "Стеклянная лапша": 1,
       "Рис": 0,
       "Курица": 1,
       "Свинина": 1,
-      "Креветка": 0,
+      "Креветка": 2,
       "Бекон": 0,
       "Соломка": 0.2,
       "Кубик": 0.0,
@@ -85,7 +85,7 @@
       "Салаты_креветка": 0,
       "Харбинский салат": 0,
       "Го Ба Жоу": 0,
-      "Супы_тайские_креветка": 0,
+      "Супы_тайские_креветка": 1,
       "Супы_тайские_курица": 1,
       "Супы_вьетнамские": 0,
       "Пельмени": 0,
@@ -96,8 +96,8 @@
       "Соус_Сливочный_л": 0.0,
       "Соус_Сырный_л": 0.0,
       "Соус_Кимчи_л": 0.0,
-      "Соус_Падтай_л": 0.0,
-      "Масло_л": 0.06
+      "Соус_Падтай_л": 0.09,
+      "Масло_л": 0.09
     },
     "Луговая": {
       "Лапша": 0,
