@@ -1,6 +1,6 @@
 {
   "date": "2025-12-30",
-  "time": "00:30",
+  "time": "01:00",
   "year_round": {
     "Светланская": {
       "total_orders": 75,
@@ -23,14 +23,14 @@
       "cafe_revenue": 20001.0
     },
     "Тобольская": {
-      "total_orders": 130,
-      "total_revenue": 152448.0,
+      "total_orders": 132,
+      "total_revenue": 153030.0,
       "delivery_orders": 53,
       "delivery_revenue": 99561.0,
-      "pickup_orders": 26,
-      "pickup_revenue": 23451.0,
-      "cafe_orders": 51,
-      "cafe_revenue": 29436.0
+      "pickup_orders": 27,
+      "pickup_revenue": 23884.0,
+      "cafe_orders": 52,
+      "cafe_revenue": 29585.0
     },
     "Тихая": {
       "total_orders": 69,
@@ -55,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 549,
-    "total_revenue": 559865.0,
+    "total_orders": 551,
+    "total_revenue": 560447.0,
     "total_delivery_orders": 177,
     "total_delivery_revenue": 302887.0,
-    "total_pickup_orders": 107,
-    "total_pickup_revenue": 84639.0,
-    "total_cafe_orders": 265,
-    "total_cafe_revenue": 172339.0
+    "total_pickup_orders": 108,
+    "total_pickup_revenue": 85072.0,
+    "total_cafe_orders": 266,
+    "total_cafe_revenue": 172488.0
   },
   "plan": {
     "revenue": 11100863.3935,
@@ -130,7 +130,7 @@
       "Масло_л": 5.7299999999999995
     },
     "Тобольская": {
-      "Лапша": 100,
+      "Лапша": 101,
       "Стеклянная лапша": 13,
       "Рис": 51,
       "Курица": 69,
@@ -154,10 +154,10 @@
       "Картофель_фри": 9,
       "Соус_Чифань_л": 10.08,
       "Соус_Сливочный_л": 3.15,
-      "Соус_Сырный_л": 3.2399999999999998,
+      "Соус_Сырный_л": 3.33,
       "Соус_Кимчи_л": 0.99,
       "Соус_Падтай_л": 1.17,
-      "Масло_л": 6.330000000000001
+      "Масло_л": 6.360000000000001
     },
     "Тихая": {
       "Лапша": 44,
