@@ -1,6 +1,6 @@
 {
   "date": "2025-12-31",
-  "time": "21:00",
+  "time": "21:30",
   "year_round": {
     "Светланская": {
       "total_orders": 32,
@@ -13,24 +13,24 @@
       "cafe_revenue": 9482.0
     },
     "Красота": {
-      "total_orders": 55,
-      "total_revenue": 68453.0,
+      "total_orders": 56,
+      "total_revenue": 68866.0,
       "delivery_orders": 32,
       "delivery_revenue": 53559.0,
-      "pickup_orders": 6,
-      "pickup_revenue": 4630.0,
+      "pickup_orders": 7,
+      "pickup_revenue": 5043.0,
       "cafe_orders": 17,
       "cafe_revenue": 10264.0
     },
     "Тобольская": {
-      "total_orders": 50,
-      "total_revenue": 54529.0,
+      "total_orders": 51,
+      "total_revenue": 54728.0,
       "delivery_orders": 19,
       "delivery_revenue": 39566.0,
       "pickup_orders": 7,
       "pickup_revenue": 4515.0,
-      "cafe_orders": 24,
-      "cafe_revenue": 10448.0
+      "cafe_orders": 25,
+      "cafe_revenue": 10647.0
     },
     "Тихая": {
       "total_orders": 43,
@@ -55,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 248,
-    "total_revenue": 255403.0,
+    "total_orders": 250,
+    "total_revenue": 256015.0,
     "total_delivery_orders": 80,
     "total_delivery_revenue": 142806.0,
-    "total_pickup_orders": 40,
-    "total_pickup_revenue": 31401.0,
-    "total_cafe_orders": 128,
-    "total_cafe_revenue": 81196.0
+    "total_pickup_orders": 41,
+    "total_pickup_revenue": 31814.0,
+    "total_cafe_orders": 129,
+    "total_cafe_revenue": 81395.0
   },
   "plan": {
     "revenue": 11100863.3935,
@@ -106,10 +106,10 @@
       "Курица": 24,
       "Свинина": 8,
       "Креветка": 24,
-      "Бекон": 19,
+      "Бекон": 20,
       "Соломка": 2.5,
       "Кубик": 1.87,
-      "Лук": 25,
+      "Лук": 26,
       "Куриные стрипсы (порции)": 35,
       "Салаты_курица": 2,
       "Салаты_креветка": 0,
@@ -123,11 +123,11 @@
       "Сырники": 1,
       "Картофель_фри": 6,
       "Соус_Чифань_л": 3.7800000000000002,
-      "Соус_Сливочный_л": 1.53,
+      "Соус_Сливочный_л": 1.62,
       "Соус_Сырный_л": 1.35,
       "Соус_Кимчи_л": 0.72,
       "Соус_Падтай_л": 0.27,
-      "Масло_л": 2.5500000000000003
+      "Масло_л": 2.58
     },
     "Тобольская": {
       "Лапша": 26,
