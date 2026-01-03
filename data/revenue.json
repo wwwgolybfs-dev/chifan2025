@@ -1,6 +1,6 @@
 {
   "date": "2026-01-03",
-  "time": "00:30",
+  "time": "01:00",
   "year_round": {
     "Светланская": {
       "total_orders": 76,
@@ -23,10 +23,10 @@
       "cafe_revenue": 19765.0
     },
     "Тобольская": {
-      "total_orders": 78,
-      "total_revenue": 96210.0,
-      "delivery_orders": 44,
-      "delivery_revenue": 74517.0,
+      "total_orders": 79,
+      "total_revenue": 97822.0,
+      "delivery_orders": 45,
+      "delivery_revenue": 76129.0,
       "pickup_orders": 14,
       "pickup_revenue": 9023.0,
       "cafe_orders": 20,
@@ -65,10 +65,10 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 496,
-    "total_revenue": 488378.5,
-    "total_delivery_orders": 136,
-    "total_delivery_revenue": 242523.5,
+    "total_orders": 497,
+    "total_revenue": 489990.5,
+    "total_delivery_orders": 137,
+    "total_delivery_revenue": 244135.5,
     "total_pickup_orders": 69,
     "total_pickup_revenue": 60976.0,
     "total_cafe_orders": 291,
@@ -142,7 +142,7 @@
     "Тобольская": {
       "Лапша": 55,
       "Стеклянная лапша": 10,
-      "Рис": 30,
+      "Рис": 31,
       "Курица": 45,
       "Свинина": 9,
       "Креветка": 33,
@@ -157,7 +157,7 @@
       "Го Ба Жоу": 0,
       "Супы_тайские_креветка": 6,
       "Супы_тайские_курица": 2,
-      "Супы_вьетнамские": 11,
+      "Супы_вьетнамские": 12,
       "Пельмени": 0,
       "Бао-банс": 7,
       "Сырники": 1,
@@ -167,7 +167,7 @@
       "Соус_Сырный_л": 1.8,
       "Соус_Кимчи_л": 0.81,
       "Соус_Падтай_л": 0.9,
-      "Масло_л": 3.749999999999999
+      "Масло_л": 3.7799999999999994
     },
     "Фетисов арена": {
       "Лапша": 0,
