@@ -1,6 +1,6 @@
 {
   "date": "2026-01-07",
-  "time": "00:00",
+  "time": "00:30",
   "year_round": {
     "Светланская": {
       "total_orders": 67,
@@ -23,10 +23,10 @@
       "cafe_revenue": 13366.0
     },
     "Тобольская": {
-      "total_orders": 83,
-      "total_revenue": 90901.0,
-      "delivery_orders": 26,
-      "delivery_revenue": 43982.0,
+      "total_orders": 84,
+      "total_revenue": 92476.0,
+      "delivery_orders": 27,
+      "delivery_revenue": 45557.0,
       "pickup_orders": 20,
       "pickup_revenue": 20462.0,
       "cafe_orders": 37,
@@ -55,10 +55,10 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 353,
-    "total_revenue": 351032.0,
-    "total_delivery_orders": 95,
-    "total_delivery_revenue": 163997.0,
+    "total_orders": 354,
+    "total_revenue": 352607.0,
+    "total_delivery_orders": 96,
+    "total_delivery_revenue": 165572.0,
     "total_pickup_orders": 56,
     "total_pickup_revenue": 52545.0,
     "total_cafe_orders": 202,
@@ -135,7 +135,7 @@
       "Рис": 24,
       "Курица": 49,
       "Свинина": 17,
-      "Креветка": 40,
+      "Креветка": 41,
       "Бекон": 24,
       "Соломка": 5.699999999999999,
       "Кубик": 1.43,
@@ -145,7 +145,7 @@
       "Салаты_креветка": 3,
       "Харбинский салат": 0,
       "Го Ба Жоу": 0,
-      "Супы_тайские_креветка": 8,
+      "Супы_тайские_креветка": 9,
       "Супы_тайские_курица": 5,
       "Супы_вьетнамские": 9,
       "Пельмени": 0,
