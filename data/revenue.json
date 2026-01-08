@@ -1,6 +1,6 @@
 {
   "date": "2026-01-08",
-  "time": "00:00",
+  "time": "00:30",
   "year_round": {
     "Светланская": {
       "total_orders": 80,
@@ -23,10 +23,10 @@
       "cafe_revenue": 16879.0
     },
     "Тобольская": {
-      "total_orders": 69,
-      "total_revenue": 82132.0,
-      "delivery_orders": 30,
-      "delivery_revenue": 51572.0,
+      "total_orders": 70,
+      "total_revenue": 82963.0,
+      "delivery_orders": 31,
+      "delivery_revenue": 52403.0,
       "pickup_orders": 12,
       "pickup_revenue": 12451.0,
       "cafe_orders": 27,
@@ -55,10 +55,10 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 379,
-    "total_revenue": 376288.0,
-    "total_delivery_orders": 114,
-    "total_delivery_revenue": 192952.0,
+    "total_orders": 380,
+    "total_revenue": 377119.0,
+    "total_delivery_orders": 115,
+    "total_delivery_revenue": 193783.0,
     "total_pickup_orders": 83,
     "total_pickup_revenue": 65211.0,
     "total_cafe_orders": 182,
@@ -147,7 +147,7 @@
       "Го Ба Жоу": 0,
       "Супы_тайские_креветка": 10,
       "Супы_тайские_курица": 5,
-      "Супы_вьетнамские": 2,
+      "Супы_вьетнамские": 3,
       "Пельмени": 0,
       "Бао-банс": 6,
       "Сырники": 2,
