@@ -1,6 +1,6 @@
 {
   "date": "2026-01-08",
-  "time": "23:30",
+  "time": "00:00",
   "year_round": {
     "Светланская": {
       "total_orders": 80,
@@ -23,14 +23,14 @@
       "cafe_revenue": 16879.0
     },
     "Тобольская": {
-      "total_orders": 67,
-      "total_revenue": 79821.0,
-      "delivery_orders": 29,
-      "delivery_revenue": 49656.0,
+      "total_orders": 69,
+      "total_revenue": 82132.0,
+      "delivery_orders": 30,
+      "delivery_revenue": 51572.0,
       "pickup_orders": 12,
       "pickup_revenue": 12451.0,
-      "cafe_orders": 26,
-      "cafe_revenue": 17714.0
+      "cafe_orders": 27,
+      "cafe_revenue": 18109.0
     },
     "Тихая": {
       "total_orders": 53,
@@ -55,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 377,
-    "total_revenue": 373977.0,
-    "total_delivery_orders": 113,
-    "total_delivery_revenue": 191036.0,
+    "total_orders": 379,
+    "total_revenue": 376288.0,
+    "total_delivery_orders": 114,
+    "total_delivery_revenue": 192952.0,
     "total_pickup_orders": 83,
     "total_pickup_revenue": 65211.0,
-    "total_cafe_orders": 181,
-    "total_cafe_revenue": 117730.0
+    "total_cafe_orders": 182,
+    "total_cafe_revenue": 118125.0
   },
   "plan": {
     "revenue": 12992939.558,
@@ -132,13 +132,13 @@
     "Тобольская": {
       "Лапша": 43,
       "Стеклянная лапша": 8,
-      "Рис": 30,
+      "Рис": 31,
       "Курица": 35,
       "Свинина": 9,
-      "Креветка": 39,
+      "Креветка": 41,
       "Бекон": 20,
-      "Соломка": 3.6,
-      "Кубик": 1.87,
+      "Соломка": 3.7,
+      "Кубик": 1.98,
       "Лук": 27,
       "Куриные стрипсы (порции)": 30,
       "Салаты_курица": 4,
@@ -152,12 +152,12 @@
       "Бао-банс": 6,
       "Сырники": 2,
       "Картофель_фри": 4,
-      "Соус_Чифань_л": 4.77,
+      "Соус_Чифань_л": 4.949999999999999,
       "Соус_Сливочный_л": 1.62,
       "Соус_Сырный_л": 1.3499999999999999,
       "Соус_Кимчи_л": 0.81,
       "Соус_Падтай_л": 0.72,
-      "Масло_л": 3.21
+      "Масло_л": 3.2700000000000005
     },
     "Тихая": {
       "Лапша": 28,
