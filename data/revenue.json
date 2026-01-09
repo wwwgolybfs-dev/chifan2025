@@ -1,6 +1,6 @@
 {
   "date": "2026-01-09",
-  "time": "01:30",
+  "time": "02:00",
   "year_round": {
     "Светланская": {
       "total_orders": 61,
@@ -23,10 +23,10 @@
       "cafe_revenue": 18431.0
     },
     "Тобольская": {
-      "total_orders": 101,
-      "total_revenue": 118185.0,
-      "delivery_orders": 43,
-      "delivery_revenue": 77691.0,
+      "total_orders": 102,
+      "total_revenue": 119330.0,
+      "delivery_orders": 44,
+      "delivery_revenue": 78836.0,
       "pickup_orders": 22,
       "pickup_revenue": 19396.0,
       "cafe_orders": 36,
@@ -55,10 +55,10 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 393,
-    "total_revenue": 400243.5,
-    "total_delivery_orders": 123,
-    "total_delivery_revenue": 217641.5,
+    "total_orders": 394,
+    "total_revenue": 401388.5,
+    "total_delivery_orders": 124,
+    "total_delivery_revenue": 218786.5,
     "total_pickup_orders": 79,
     "total_pickup_revenue": 56629.0,
     "total_cafe_orders": 191,
@@ -140,7 +140,7 @@
       "Соломка": 5.1000000000000005,
       "Кубик": 2.86,
       "Лук": 51,
-      "Куриные стрипсы (порции)": 88,
+      "Куриные стрипсы (порции)": 89,
       "Салаты_курица": 5,
       "Салаты_креветка": 3,
       "Харбинский салат": 0,
@@ -149,9 +149,9 @@
       "Супы_тайские_курица": 3,
       "Супы_вьетнамские": 7,
       "Пельмени": 0,
-      "Бао-банс": 4,
+      "Бао-банс": 5,
       "Сырники": 1,
-      "Картофель_фри": 7,
+      "Картофель_фри": 8,
       "Соус_Чифань_л": 6.93,
       "Соус_Сливочный_л": 3.6900000000000004,
       "Соус_Сырный_л": 2.79,
