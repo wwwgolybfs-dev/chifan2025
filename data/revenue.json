@@ -1,6 +1,6 @@
 {
   "date": "2026-01-10",
-  "time": "19:00",
+  "time": "19:30",
   "year_round": {
     "Светланская": {
       "total_orders": 13,
@@ -13,24 +13,24 @@
       "cafe_revenue": 2913.0
     },
     "Красота": {
-      "total_orders": 39,
-      "total_revenue": 63193.5,
+      "total_orders": 41,
+      "total_revenue": 63679.5,
       "delivery_orders": 35,
       "delivery_revenue": 61610.5,
-      "pickup_orders": 3,
-      "pickup_revenue": 1093.0,
-      "cafe_orders": 1,
-      "cafe_revenue": 490.0
+      "pickup_orders": 4,
+      "pickup_revenue": 1261.0,
+      "cafe_orders": 2,
+      "cafe_revenue": 808.0
     },
     "Тобольская": {
-      "total_orders": 26,
-      "total_revenue": 37263.0,
-      "delivery_orders": 16,
-      "delivery_revenue": 28581.0,
-      "pickup_orders": 3,
-      "pickup_revenue": 2843.0,
-      "cafe_orders": 7,
-      "cafe_revenue": 5839.0
+      "total_orders": 29,
+      "total_revenue": 40141.0,
+      "delivery_orders": 17,
+      "delivery_revenue": 29957.0,
+      "pickup_orders": 4,
+      "pickup_revenue": 3551.0,
+      "cafe_orders": 8,
+      "cafe_revenue": 6633.0
     },
     "Тихая": {
       "total_orders": 30,
@@ -55,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 164,
-    "total_revenue": 213093.5,
-    "total_delivery_orders": 79,
-    "total_delivery_revenue": 153076.5,
-    "total_pickup_orders": 20,
-    "total_pickup_revenue": 15784.0,
-    "total_cafe_orders": 65,
-    "total_cafe_revenue": 44233.0
+    "total_orders": 169,
+    "total_revenue": 216457.5,
+    "total_delivery_orders": 80,
+    "total_delivery_revenue": 154452.5,
+    "total_pickup_orders": 22,
+    "total_pickup_revenue": 16660.0,
+    "total_cafe_orders": 67,
+    "total_cafe_revenue": 45345.0
   },
   "plan": {
     "revenue": 12992939.558,
@@ -121,7 +121,7 @@
       "Пельмени": 0,
       "Бао-банс": 10,
       "Сырники": 1,
-      "Картофель_фри": 3,
+      "Картофель_фри": 4,
       "Соус_Чифань_л": 3.15,
       "Соус_Сливочный_л": 1.44,
       "Соус_Сырный_л": 1.08,
@@ -130,17 +130,17 @@
       "Масло_л": 2.3099999999999996
     },
     "Тобольская": {
-      "Лапша": 20,
+      "Лапша": 22,
       "Стеклянная лапша": 5,
       "Рис": 5,
-      "Курица": 19,
-      "Свинина": 3,
-      "Креветка": 11,
-      "Бекон": 2,
-      "Соломка": 1.8,
+      "Курица": 20,
+      "Свинина": 4,
+      "Креветка": 12,
+      "Бекон": 3,
+      "Соломка": 2.0,
       "Кубик": 0.55,
-      "Лук": 3,
-      "Куриные стрипсы (порции)": 33,
+      "Лук": 5,
+      "Куриные стрипсы (порции)": 45,
       "Салаты_курица": 2,
       "Салаты_креветка": 0,
       "Харбинский салат": 0,
@@ -152,12 +152,12 @@
       "Бао-банс": 5,
       "Сырники": 3,
       "Картофель_фри": 8,
-      "Соус_Чифань_л": 2.0700000000000003,
-      "Соус_Сливочный_л": 0.27,
+      "Соус_Чифань_л": 2.25,
+      "Соус_Сливочный_л": 0.45,
       "Соус_Сырный_л": 0.54,
       "Соус_Кимчи_л": 0.0,
       "Соус_Падтай_л": 0.45,
-      "Масло_л": 1.11
+      "Масло_л": 1.23
     },
     "Тихая": {
       "Лапша": 25,
