@@ -1,6 +1,6 @@
 {
   "date": "2026-01-17",
-  "time": "00:30",
+  "time": "01:00",
   "year_round": {
     "Светланская": {
       "total_orders": 62,
@@ -23,14 +23,14 @@
       "cafe_revenue": 13199.0
     },
     "Тобольская": {
-      "total_orders": 102,
-      "total_revenue": 122466.0,
+      "total_orders": 103,
+      "total_revenue": 122625.0,
       "delivery_orders": 41,
       "delivery_revenue": 82288.0,
       "pickup_orders": 25,
       "pickup_revenue": 16377.0,
-      "cafe_orders": 36,
-      "cafe_revenue": 23801.0
+      "cafe_orders": 37,
+      "cafe_revenue": 23960.0
     },
     "Фетисов арена": {
       "total_orders": 116,
@@ -65,14 +65,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 535,
-    "total_revenue": 494473.0,
+    "total_orders": 536,
+    "total_revenue": 494632.0,
     "total_delivery_orders": 128,
     "total_delivery_revenue": 236672.0,
     "total_pickup_orders": 94,
     "total_pickup_revenue": 61745.0,
-    "total_cafe_orders": 313,
-    "total_cafe_revenue": 196056.0
+    "total_cafe_orders": 314,
+    "total_cafe_revenue": 196215.0
   },
   "plan": {
     "revenue": 12992939.558,
