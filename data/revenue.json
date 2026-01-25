@@ -1,17 +1,28 @@
 {
   "date": "2026-01-25",
-  "time": "09:30",
-  "year_round": {},
+  "time": "10:00",
+  "year_round": {
+    "Тобольская": {
+      "total_orders": 1,
+      "total_revenue": 179.0,
+      "delivery_orders": 0,
+      "delivery_revenue": 0.0,
+      "pickup_orders": 0,
+      "pickup_revenue": 0.0,
+      "cafe_orders": 1,
+      "cafe_revenue": 179.0
+    }
+  },
   "seasonal": {},
   "total": {
-    "total_orders": 0,
-    "total_revenue": 0,
+    "total_orders": 1,
+    "total_revenue": 179.0,
     "total_delivery_orders": 0,
-    "total_delivery_revenue": 0,
+    "total_delivery_revenue": 0.0,
     "total_pickup_orders": 0,
-    "total_pickup_revenue": 0,
-    "total_cafe_orders": 0,
-    "total_cafe_revenue": 0
+    "total_pickup_revenue": 0.0,
+    "total_cafe_orders": 1,
+    "total_cafe_revenue": 179.0
   },
   "plan": {
     "revenue": 12992939.558,
