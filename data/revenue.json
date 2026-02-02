@@ -1,6 +1,6 @@
 {
   "date": "2026-02-02",
-  "time": "23:30",
+  "time": "00:00",
   "year_round": {
     "Светланская": {
       "total_orders": 48,
@@ -13,24 +13,24 @@
       "cafe_revenue": 12457.0
     },
     "Красота": {
-      "total_orders": 73,
-      "total_revenue": 77553.0,
-      "delivery_orders": 29,
-      "delivery_revenue": 51527.0,
+      "total_orders": 74,
+      "total_revenue": 78962.0,
+      "delivery_orders": 30,
+      "delivery_revenue": 52936.0,
       "pickup_orders": 15,
       "pickup_revenue": 9655.0,
       "cafe_orders": 29,
       "cafe_revenue": 16371.0
     },
     "Тобольская": {
-      "total_orders": 59,
-      "total_revenue": 46791.0,
+      "total_orders": 60,
+      "total_revenue": 46950.0,
       "delivery_orders": 16,
       "delivery_revenue": 22767.0,
       "pickup_orders": 13,
       "pickup_revenue": 7450.0,
-      "cafe_orders": 30,
-      "cafe_revenue": 16574.0
+      "cafe_orders": 31,
+      "cafe_revenue": 16733.0
     },
     "Тихая": {
       "total_orders": 45,
@@ -55,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 307,
-    "total_revenue": 263798.0,
-    "total_delivery_orders": 71,
-    "total_delivery_revenue": 122605.0,
+    "total_orders": 309,
+    "total_revenue": 265366.0,
+    "total_delivery_orders": 72,
+    "total_delivery_revenue": 124014.0,
     "total_pickup_orders": 71,
     "total_pickup_revenue": 43210.0,
-    "total_cafe_orders": 165,
-    "total_cafe_revenue": 97983.0
+    "total_cafe_orders": 166,
+    "total_cafe_revenue": 98142.0
   },
   "plan": {
     "revenue": 11783168.38,
@@ -100,7 +100,7 @@
       "Масло_л": 1.74
     },
     "Красота": {
-      "Лапша": 39,
+      "Лапша": 40,
       "Стеклянная лапша": 2,
       "Рис": 26,
       "Курица": 29,
@@ -124,10 +124,10 @@
       "Картофель_фри": 12,
       "Соус_Чифань_л": 3.8699999999999997,
       "Соус_Сливочный_л": 1.62,
-      "Соус_Сырный_л": 1.44,
+      "Соус_Сырный_л": 1.53,
       "Соус_Кимчи_л": 0.63,
       "Соус_Падтай_л": 0.18,
-      "Масло_л": 2.5799999999999996
+      "Масло_л": 2.6099999999999994
     },
     "Тобольская": {
       "Лапша": 42,
