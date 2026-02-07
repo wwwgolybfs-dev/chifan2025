@@ -1,6 +1,6 @@
 {
   "date": "2026-02-07",
-  "time": "00:00",
+  "time": "00:30",
   "year_round": {
     "Светланская": {
       "total_orders": 45,
@@ -23,10 +23,10 @@
       "cafe_revenue": 15959.0
     },
     "Тобольская": {
-      "total_orders": 96,
-      "total_revenue": 117192.0,
-      "delivery_orders": 40,
-      "delivery_revenue": 74717.0,
+      "total_orders": 97,
+      "total_revenue": 118417.0,
+      "delivery_orders": 41,
+      "delivery_revenue": 75942.0,
       "pickup_orders": 20,
       "pickup_revenue": 17360.0,
       "cafe_orders": 36,
@@ -55,10 +55,10 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 367,
-    "total_revenue": 366957.0,
-    "total_delivery_orders": 95,
-    "total_delivery_revenue": 172971.0,
+    "total_orders": 368,
+    "total_revenue": 368182.0,
+    "total_delivery_orders": 96,
+    "total_delivery_revenue": 174196.0,
     "total_pickup_orders": 75,
     "total_pickup_revenue": 53742.0,
     "total_cafe_orders": 197,
@@ -130,7 +130,7 @@
       "Масло_л": 2.34
     },
     "Тобольская": {
-      "Лапша": 64,
+      "Лапша": 65,
       "Стеклянная лапша": 11,
       "Рис": 47,
       "Курица": 59,
@@ -154,10 +154,10 @@
       "Картофель_фри": 8,
       "Соус_Чифань_л": 8.01,
       "Соус_Сливочный_л": 2.43,
-      "Соус_Сырный_л": 0.63,
+      "Соус_Сырный_л": 0.72,
       "Соус_Кимчи_л": 1.35,
       "Соус_Падтай_л": 0.99,
-      "Масло_л": 4.680000000000001
+      "Масло_л": 4.71
     },
     "Тихая": {
       "Лапша": 38,
