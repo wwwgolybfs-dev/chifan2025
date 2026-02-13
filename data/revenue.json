@@ -1,6 +1,6 @@
 {
   "date": "2026-02-13",
-  "time": "00:00",
+  "time": "00:30",
   "year_round": {
     "Светланская": {
       "total_orders": 92,
@@ -23,14 +23,14 @@
       "cafe_revenue": 21920.0
     },
     "Тобольская": {
-      "total_orders": 102,
-      "total_revenue": 121743.0,
+      "total_orders": 103,
+      "total_revenue": 122531.0,
       "delivery_orders": 34,
       "delivery_revenue": 72815.0,
       "pickup_orders": 23,
       "pickup_revenue": 18243.0,
-      "cafe_orders": 45,
-      "cafe_revenue": 30685.0
+      "cafe_orders": 46,
+      "cafe_revenue": 31473.0
     },
     "Тихая": {
       "total_orders": 69,
@@ -55,14 +55,14 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 474,
-    "total_revenue": 449522.0,
+    "total_orders": 475,
+    "total_revenue": 450310.0,
     "total_delivery_orders": 102,
     "total_delivery_revenue": 189391.0,
     "total_pickup_orders": 118,
     "total_pickup_revenue": 87629.0,
-    "total_cafe_orders": 254,
-    "total_cafe_revenue": 172502.0
+    "total_cafe_orders": 255,
+    "total_cafe_revenue": 173290.0
   },
   "plan": {
     "revenue": 11783168.38,
@@ -140,7 +140,7 @@
       "Соломка": 3.6,
       "Кубик": 3.41,
       "Лук": 28,
-      "Куриные стрипсы (порции)": 54,
+      "Куриные стрипсы (порции)": 62,
       "Салаты_курица": 9,
       "Салаты_креветка": 4,
       "Харбинский салат": 0,
