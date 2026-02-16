@@ -1,6 +1,6 @@
 {
   "date": "2026-02-16",
-  "time": "00:00",
+  "time": "00:30",
   "year_round": {
     "Светланская": {
       "total_orders": 56,
@@ -13,12 +13,12 @@
       "cafe_revenue": 14470.0
     },
     "Красота": {
-      "total_orders": 73,
-      "total_revenue": 70986.0,
+      "total_orders": 74,
+      "total_revenue": 71385.0,
       "delivery_orders": 18,
       "delivery_revenue": 34659.0,
-      "pickup_orders": 15,
-      "pickup_revenue": 11614.0,
+      "pickup_orders": 16,
+      "pickup_revenue": 12013.0,
       "cafe_orders": 40,
       "cafe_revenue": 24713.0
     },
@@ -55,12 +55,12 @@
   },
   "seasonal": {},
   "total": {
-    "total_orders": 363,
-    "total_revenue": 309357.5,
+    "total_orders": 364,
+    "total_revenue": 309756.5,
     "total_delivery_orders": 75,
     "total_delivery_revenue": 134996.5,
-    "total_pickup_orders": 76,
-    "total_pickup_revenue": 50309.0,
+    "total_pickup_orders": 77,
+    "total_pickup_revenue": 50708.0,
     "total_cafe_orders": 212,
     "total_cafe_revenue": 124052.0
   },
@@ -106,10 +106,10 @@
       "Курица": 36,
       "Свинина": 13,
       "Креветка": 38,
-      "Бекон": 14,
+      "Бекон": 15,
       "Соломка": 4.4,
       "Кубик": 2.6399999999999997,
-      "Лук": 25,
+      "Лук": 26,
       "Куриные стрипсы (порции)": 39,
       "Салаты_курица": 1,
       "Салаты_креветка": 1,
@@ -123,11 +123,11 @@
       "Сырники": 1,
       "Картофель_фри": 3,
       "Соус_Чифань_л": 6.12,
-      "Соус_Сливочный_л": 1.62,
+      "Соус_Сливочный_л": 1.71,
       "Соус_Сырный_л": 0.72,
       "Соус_Кимчи_л": 0.63,
       "Соус_Падтай_л": 0.36,
-      "Масло_л": 3.2100000000000004
+      "Масло_л": 3.24
     },
     "Тобольская": {
       "Лапша": 52,
